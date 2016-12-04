@@ -39,10 +39,10 @@ public class Hardware
         hwMap = ahwMap;
 
         // Define and Initialize Motors
-        leftDriveMotor  = hwMap.dcMotor.get("left_drive");
-        rightDriveMotor = hwMap.dcMotor.get("right_drive");
-        sweeperMotor    = hwMap.dcMotor.get("sweeper");
-        launcherMotor   = hwMap.dcMotor.get("launcher");
+        leftDriveMotor  = hwMap.dcMotor.get(ID_LEFT_DRIVE_MOTOR);
+        rightDriveMotor = hwMap.dcMotor.get(ID_RIGHT_DRIVE_MOTOR);
+        sweeperMotor    = hwMap.dcMotor.get(ID_SWEEPER_MOTOR);
+        launcherMotor   = hwMap.dcMotor.get(ID_LAUNCHER_MOTOR);
         leftDriveMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         rightDriveMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
 
@@ -60,7 +60,7 @@ public class Hardware
         launcherMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Define and initialize ALL installed servos.
-        scooperServo = hwMap.servo.get("scooperServo");
+        scooperServo = hwMap.servo.get(ID_SCOOPER_SERVO);
         scooperServo.setPosition(POS_SCOOPER_SERVO_DOWN);
     }
 
