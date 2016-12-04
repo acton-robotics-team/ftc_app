@@ -13,6 +13,7 @@ public class Hardware
     public DcMotor leftDriveMotor  = null;
     public DcMotor rightDriveMotor = null;
     public DcMotor sweeperMotor = null;
+    public DcMotor launcherMotor = null;
     public Servo scooper = null;
 
     public static final double SCOOPER_DOWN_POSITION = ...;
@@ -34,6 +35,7 @@ public class Hardware
         leftDriveMotor  = hwMap.dcMotor.get("left_drive");
         rightDriveMotor = hwMap.dcMotor.get("right_drive");
         sweeperMotor    = hwMap.dcMotor.get("sweeper");
+        launcherMotor   = hwMap.dcMotor.get("launcher");
         leftDriveMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         rightDriveMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
 
@@ -41,12 +43,14 @@ public class Hardware
         leftDriveMotor.setPower(0);
         rightDriveMotor.setPower(0);
         sweeperMotor.setPower(0);
+        launcherMotor.setPower(0);
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
         leftDriveMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightDriveMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         sweeperMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        launcherMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Define and initialize ALL installed servos.
         scooper = hwMap.servo.get("scooper");
