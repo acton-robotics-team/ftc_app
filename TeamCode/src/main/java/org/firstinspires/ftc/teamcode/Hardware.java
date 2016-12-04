@@ -9,22 +9,29 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 public class Hardware
 {
+    public static final String ID_LEFT_DRIVE_MOTOR = "left_drive";
+    public static final String ID_RIGHT_DRIVE_MOTOR = "right_drive";
+    public static final String ID_SWEEPER_MOTOR = "sweeper";
+    public static final String ID_LAUNCHER_MOTOR = "launcher";
+    public static final String ID_SCOOPER_SERVO = "scooperServo";
+
+    public static final double POS_SCOOPER_SERVO_DOWN = ...;
+    public static final double POS_SCOOPER_SERVO_UP = ...;
+
     /* Public OpMode members. */
     public DcMotor leftDriveMotor  = null;
     public DcMotor rightDriveMotor = null;
     public DcMotor sweeperMotor = null;
     public DcMotor launcherMotor = null;
-    public Servo scooper = null;
+    public Servo scooperServo = null;
 
-    public static final double SCOOPER_DOWN_POSITION = ...;
-    public static final double SCOOPER_UP_POSITION = ...;
 
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
     private ElapsedTime period  = new ElapsedTime();
 
     /* Constructor */
-    public Hardware(){ }
+    public Hardware() { }
 
     /* Initialize standard Hardware interfaces */
     public void init(HardwareMap ahwMap) {
@@ -53,8 +60,8 @@ public class Hardware
         launcherMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Define and initialize ALL installed servos.
-        scooper = hwMap.servo.get("scooper");
-        scooper.setPosition(SCOOPER_DOWN_POSITION);
+        scooperServo = hwMap.servo.get("scooperServo");
+        scooperServo.setPosition(POS_SCOOPER_SERVO_DOWN);
     }
 
     /***
@@ -67,7 +74,7 @@ public class Hardware
      */
     public void waitForTick(long periodMs) {
 
-        long  remaining = periodMs - (long)period.milliseconds();
+        long remaining = periodMs - (long)period.milliseconds();
 
         // sleep for the remaining portion of the regular cycle period.
         if (remaining > 0) {
