@@ -13,7 +13,7 @@ public class Hardware
     public static final String ID_RIGHT_DRIVE_MOTOR = "right_drive";
     public static final String ID_SWEEPER_MOTOR = "sweeper";
     public static final String ID_LAUNCHER_MOTOR = "launcher";
-    public static final String ID_SCOOPER_SERVO = "scooperServo";
+    public static final String ID_SCOOPER_SERVO = "scooper";
 
     public static final double POS_SCOOPER_SERVO_DOWN = ...;
     public static final double POS_SCOOPER_SERVO_UP = ...;

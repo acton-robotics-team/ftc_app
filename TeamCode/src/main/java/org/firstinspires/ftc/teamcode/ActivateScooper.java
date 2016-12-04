@@ -30,7 +30,7 @@ public class ActivateScooper extends LinearOpMode {
     static final int    CYCLE_MS    =   50;     // period of each cycle
 
     // Define class members
-    Servo   servo;
+    Servo servo;
     double position = Hardware.POS_SCOOPER_SERVO_DOWN;
     boolean isMovingUpward = true;
 
