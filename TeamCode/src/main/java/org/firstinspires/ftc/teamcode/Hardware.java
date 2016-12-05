@@ -15,8 +15,8 @@ public class Hardware
     public static final String ID_LAUNCHER_MOTOR = "launcher";
     public static final String ID_SCOOPER_SERVO = "scooper";
 
-    public static final double POS_SCOOPER_SERVO_DOWN = ...;
-    public static final double POS_SCOOPER_SERVO_UP = ...;
+    public static final double POS_SCOOPER_SERVO_DOWN = 1;
+    public static final double POS_SCOOPER_SERVO_UP =1;
 
     /* Public OpMode members. */
     public DcMotor leftDriveMotor  = null;
