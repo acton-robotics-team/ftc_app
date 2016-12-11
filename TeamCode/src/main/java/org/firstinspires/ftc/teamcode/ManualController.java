@@ -29,6 +29,8 @@ public class ManualController extends OpMode {
     @Override
     public void start() {
         super.start();
+
+        scooperServo.setPosition(Hardware.POS_SCOOPER_SERVO_DOWN);
     }
 
 
