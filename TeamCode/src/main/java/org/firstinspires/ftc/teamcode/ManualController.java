@@ -16,7 +16,6 @@ public class ManualController extends OpMode {
     private DcMotor rightDriveMotor = null;
     private DcMotor launcherMotor = null;
     private Servo scooperServo = null;
-    private boolean isLaunching = false;
 
     @Override
     public void init() {
@@ -44,7 +43,6 @@ public class ManualController extends OpMode {
             // Firing sequence
             telemetry.addData("Status", "PREPARE FOR DEATH");
             telemetry.update();
-            isLaunching = true;
 
             launcherMotor.setPower(1.0); // FULL SPEED AHEAD
 
