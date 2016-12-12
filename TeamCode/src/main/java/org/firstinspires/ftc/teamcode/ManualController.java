@@ -33,12 +33,7 @@ public class ManualController extends OpMode {
     }
 
 
-    @Override
-    public void loop() {
-        // Set drive motor levels
-        leftDriveMotor.setPower(gamepad1.left_stick_y);
-        rightDriveMotor.setPower(gamepad1.right_stick_y);
-
+    private void loopTop() {
         if (gamepad2.x) {
             // Full speed
             launcherMotor.setPower(1.0); // FULL SPEED AHEAD
@@ -55,5 +50,23 @@ public class ManualController extends OpMode {
         else if(gamepad2.a){
             launcherMotor.setPower(0.0);
         }
+
+        if (gamepad2.left_button) {
+            sweeperServo.setPosition(Hardware.POS_SWEEPER_SERVO_UP);
+        } else if (gamepad2.right_button) {
+            sweeperServo.setPosition(Hardware.POS_SWEEPER_SERVO_DOWN);
+        }
+    }
+
+    private void loopBottom() {
+        // Set drive motor levels
+        leftDriveMotor.setPower(gamepad1.left_stick_y);
+        rightDriveMotor.setPower(gamepad1.right_stick_y);
+    }
+
+    @Override
+    public void loop() {
+        loopTop();
+        loopBottom();
     }
 }
