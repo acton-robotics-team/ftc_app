@@ -9,8 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 /**
  * Created by Steven on 12/5/2016.
  */
-
-@TeleOp(name = "Activate scooper", group = "Always on")
+@TeleOp(name = "Manual Controller", group = "Always on")
 public class ManualController extends OpMode {
     private DcMotor leftDriveMotor = null;
     private DcMotor rightDriveMotor = null;
@@ -29,6 +28,7 @@ public class ManualController extends OpMode {
     public void start() {
         super.start();
 
+        launcherMotor.setPower(0);
         scooperServo.setPosition(Hardware.POS_SCOOPER_SERVO_DOWN);
     }
 
@@ -39,20 +39,20 @@ public class ManualController extends OpMode {
         leftDriveMotor.setPower(gamepad1.left_stick_y);
         rightDriveMotor.setPower(gamepad1.right_stick_y);
 
-        if (gamepad2.right_bumper && gamepad2.left_bumper) {
-            // Firing sequence
-            telemetry.addData("Status", "PREPARE FOR DEATH");
-            telemetry.update();
-
+        if (gamepad2.x) {
+            // Full speed
             launcherMotor.setPower(1.0); // FULL SPEED AHEAD
 
-            // Scan servo
-            if (scooperServo.getPosition() == Hardware.POS_SCOOPER_SERVO_DOWN) {
-                scooperServo.setPosition(Hardware.POS_SCOOPER_SERVO_UP);
-            } else if (scooperServo.getPosition() == Hardware.POS_SCOOPER_SERVO_UP) {
-                scooperServo.setPosition(Hardware.POS_SCOOPER_SERVO_DOWN);
-            }
-        } else {
+        }
+        else if(gamepad2.y){
+            //Medium Speed
+            launcherMotor.setPower(0.66);
+        }
+        else if(gamepad2.b){
+            //Slow speed
+            launcherMotor.setPower(0.33);
+        }
+        else if(gamepad2.a){
             launcherMotor.setPower(0.0);
         }
     }
