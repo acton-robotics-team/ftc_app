@@ -36,18 +36,15 @@ public class ManualController extends OpMode {
     private void loopTop() {
         if (gamepad2.x) {
             // Full speed
-            launcherMotor.setPower(1.0); // FULL SPEED AHEAD
-
-        }
-        else if(gamepad2.y){
-            //Medium Speed
+            launcherMotor.setPower(1.0);
+        } else if (gamepad2.y) {
+            // Medium speed
             launcherMotor.setPower(0.66);
-        }
-        else if(gamepad2.b){
-            //Slow speed
+        } else if (gamepad2.b) {
+            // Slow speed
             launcherMotor.setPower(0.33);
-        }
-        else if(gamepad2.a){
+        } else if (gamepad2.a) {
+            // Off
             launcherMotor.setPower(0.0);
         }
 
