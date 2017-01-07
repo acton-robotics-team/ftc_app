@@ -32,7 +32,9 @@ public class ManualController extends OpMode {
         scooperServo.setPosition(Hardware.POS_SCOOPER_SERVO_DOWN);
     }
 
-
+    /**
+     * Top - launcher, scooper
+     */
     private void loopTop() {
         // LAUNCHER MOTOR CONTROL
         if (gamepad2.x) {
@@ -59,6 +61,9 @@ public class ManualController extends OpMode {
 
     }
 
+    /**
+     * Bottom - drive control
+     */
     private void loopBottom() {
         // Set drive motor levels
         leftDriveMotor.setPower(gamepad1.left_stick_y);
