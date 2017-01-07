@@ -38,16 +38,16 @@ public class ManualController extends OpMode {
         // LAUNCHER MOTOR CONTROL
         if (gamepad2.x) {
             // Full speed
-            launcherMotor.setPower(1.0);
+            launcherMotor.setPower(1);
         } else if (gamepad2.y) {
             // Medium speed
-            launcherMotor.setPower(0.66);
+            launcherMotor.setPower(2/3);
         } else if (gamepad2.b) {
             // Slow speed
-            launcherMotor.setPower(0.33);
+            launcherMotor.setPower(1/3);
         } else if (gamepad2.a) {
             // Off
-            launcherMotor.setPower(0.0);
+            launcherMotor.setPower(0/3);
         }
 
         // SCOOPER SERVO CONTROL
