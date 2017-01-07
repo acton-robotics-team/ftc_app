@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -9,7 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 /**
  * Created by Steven on 12/5/2016.
  */
-@TeleOp(name = "Manual Controller", group = "Always on")
+@TeleOp(name = "Manual Controller", group = "Manual")
 public class ManualController extends OpMode {
     private DcMotor leftDriveMotor = null;
     private DcMotor rightDriveMotor = null;
@@ -57,8 +56,6 @@ public class ManualController extends OpMode {
         } else if (gamepad2.right_bumper) {
             scooperServo.setPosition(Hardware.POS_SCOOPER_SERVO_UP);
         }
-
-
     }
 
     /**
