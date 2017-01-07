@@ -11,20 +11,16 @@ public class Hardware
 {
     public static final String ID_LEFT_DRIVE_MOTOR = "left_drive";
     public static final String ID_RIGHT_DRIVE_MOTOR = "right_drive";
-    public static final String ID_SWEEPER_SERVO = "sweeper";
     public static final String ID_LAUNCHER_MOTOR = "launcher";
     public static final String ID_SCOOPER_SERVO = "scooper";
 
     public static final double POS_SCOOPER_SERVO_DOWN = 1;
     public static final double POS_SCOOPER_SERVO_UP = 1;
-    public static final double POS_SWEEPER_SERVO_DOWN = 1;
-    public static final double POS_SWEEPER_SERVO_UP = 1;
 
     /* Public OpMode members. */
     public DcMotor leftDriveMotor  = null;
     public DcMotor rightDriveMotor = null;
     public DcMotor launcherMotor = null;
-    public Servo sweeperServo = null;
     public Servo scooperServo = null;
 
 
@@ -60,9 +56,7 @@ public class Hardware
 
         // Define and initialize ALL installed servos.
         scooperServo = hwMap.servo.get(ID_SCOOPER_SERVO);
-        sweeperServo = hwMap.servo.get(ID_SWEEPER_SERVO);
         scooperServo.setPosition(POS_SCOOPER_SERVO_DOWN);
-        sweeperServo.setPosition(POS_SWEEPER_SERVO_DOWN);
     }
 
     /***

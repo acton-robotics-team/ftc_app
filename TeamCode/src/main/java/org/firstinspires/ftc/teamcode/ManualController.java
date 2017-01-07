@@ -15,7 +15,6 @@ public class ManualController extends OpMode {
     private DcMotor rightDriveMotor = null;
     private DcMotor launcherMotor = null;
     private Servo scooperServo = null;
-    private Servo sweeperServo = null;
 
     @Override
     public void init() {
@@ -23,7 +22,6 @@ public class ManualController extends OpMode {
         rightDriveMotor = hardwareMap.dcMotor.get(Hardware.ID_RIGHT_DRIVE_MOTOR);
         launcherMotor = hardwareMap.dcMotor.get(Hardware.ID_LAUNCHER_MOTOR);
         scooperServo = hardwareMap.servo.get(Hardware.ID_SCOOPER_SERVO);
-        sweeperServo = hardwareMap.servo.get(Hardware.ID_SWEEPER_SERVO);
     }
 
     @Override
@@ -32,11 +30,11 @@ public class ManualController extends OpMode {
 
         launcherMotor.setPower(0);
         scooperServo.setPosition(Hardware.POS_SCOOPER_SERVO_DOWN);
-        sweeperServo.setPosition(Hardware.POS_SWEEPER_SERVO_DOWN);
     }
 
 
     private void loopTop() {
+        // LAUNCHER MOTOR CONTROL
         if (gamepad2.x) {
             // Full speed
             launcherMotor.setPower(1.0);
@@ -51,11 +49,14 @@ public class ManualController extends OpMode {
             launcherMotor.setPower(0.0);
         }
 
+        // SCOOPER SERVO CONTROL
         if (gamepad2.left_bumper) {
-            sweeperServo.setPosition(Hardware.POS_SWEEPER_SERVO_UP);
+            scooperServo.setPosition(Hardware.POS_SCOOPER_SERVO_DOWN);
         } else if (gamepad2.right_bumper) {
-            sweeperServo.setPosition(Hardware.POS_SWEEPER_SERVO_DOWN);
+            scooperServo.setPosition(Hardware.POS_SCOOPER_SERVO_UP);
         }
+
+
     }
 
     private void loopBottom() {
