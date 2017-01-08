@@ -25,7 +25,9 @@ class Hardware
     private static final String ID_LAUNCHER_SERVO = "launcher_servo";
 
     public static final double POS_SCOOPER_SERVO_DOWN = 1;
-    public static final double POS_SCOOPER_SERVO_UP = 1;
+    public static final double POS_SCOOPER_SERVO_UP = -1;
+    public static final double POS_SCOOPER_SERVO_HALF_UP = 0.5;
+    public static final double POS_SCOOPER_SERVO_HALF_DOWN = -0.5;
 
     /* Public OpMode members. */
     public DcMotor leftDriveMotor  = null;
