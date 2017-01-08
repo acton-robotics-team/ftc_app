@@ -67,12 +67,6 @@ class RunAutonomous extends LinearOpMode {
         robot.leftDriveMotor.setPower(1);
         robot.rightDriveMotor.setPower(1);
 
-        // Displays readings from the ultrasonic sensor when the opMode is active
-        while (opModeIsActive()) {
-            telemetry.addLine(robot.sideFrontUltrasonicSensor.getUltrasonicLevel()+"");
-            telemetry.addLine(robot.sideBackUltrasonicSensor.getUltrasonicLevel()+"");
-        }
-
         // Keep moving until required distance is reached
         while (opModeIsActive() &&
                 robot.sideFrontUltrasonicSensor.getUltrasonicLevel() > ULTRASONIC_WALL_DISTANCE) {
