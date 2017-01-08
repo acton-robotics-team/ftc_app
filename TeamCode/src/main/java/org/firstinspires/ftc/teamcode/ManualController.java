@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -67,9 +68,10 @@ class ManualController extends OpMode {
     public void loop() {
         robot.leftDriveMotor.setPower(gamepad1.left_stick_y);
         robot.rightDriveMotor.setPower(gamepad1.right_stick_y);
-        telemetry.addLine("Iteration: " + iteration);
+        telemetry.addLine("Iteration2: " + iteration);
         telemetry.addLine("Left: " + gamepad1.left_stick_y);
-        telemetry.addLine("Right: " + gamepad1.right_stick_y);
+        telemetry.addLine("Right: " + gamepad1.toString());
+        telemetry.addLine("BUTTON "+gamepad1.a);
         iteration++;
     }
 }

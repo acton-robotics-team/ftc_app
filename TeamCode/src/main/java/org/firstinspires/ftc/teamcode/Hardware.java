@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 class Hardware
 {
-    private static final String ID_LEFT_DRIVE_MOTOR = "left_drive";
+    public static final String ID_LEFT_DRIVE_MOTOR = "left_drive";
     private static final String ID_RIGHT_DRIVE_MOTOR = "right_drive";
 //    private static final String ID_LAUNCHER_MOTOR = "launcher";
     private static final String ID_SCOOPER_SERVO = "scooper";
@@ -48,8 +48,8 @@ class Hardware
         leftDriveMotor  = hwMap.dcMotor.get(ID_LEFT_DRIVE_MOTOR);
         rightDriveMotor = hwMap.dcMotor.get(ID_RIGHT_DRIVE_MOTOR);
 //        launcherMotor   = hwMap.dcMotor.get(ID_LAUNCHER_MOTOR);
-        leftDriveMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
-        rightDriveMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
+        leftDriveMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
+        rightDriveMotor.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
 
         // Set all motors to zero power
         leftDriveMotor.setPower(0);
