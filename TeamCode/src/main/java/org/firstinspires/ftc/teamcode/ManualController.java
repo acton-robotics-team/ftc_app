@@ -22,8 +22,8 @@ class ManualController extends OpMode {
     public void start() {
         super.start();
 
-//        robot.launcherMotor.setPower(0);
-//        robot.scooperServo.setPosition(Hardware.POS_SCOOPER_SERVO_DOWN);
+        robot.launcherMotor.setPower(0);
+        robot.scooperServo.setPosition(Hardware.POS_SCOOPER_SERVO_DOWN);
     }
 
     /**
@@ -52,11 +52,11 @@ class ManualController extends OpMode {
             robot.scooperServo.setPosition(Hardware.POS_SCOOPER_SERVO_UP);
         }
         //Launcher servo control
-        if(gamepad1.left_bumper){
-            robot.launcherServo.setPosition(Hardware.POS_SCOOPER_SERVO_DOWN);
+        if(gamepad1.dpad_left){
+            robot.launcherServo.setPosition(Hardware.POS_LAUNCHER_SERVO_DOWN);
         }
-        else if(gamepad1.right_bumper){
-            robot.launcherServo.setPosition(Hardware.POS_SCOOPER_SERVO_UP);
+        else if(gamepad1.dpad_right){
+            robot.launcherServo.setPosition(Hardware.POS_LAUNCHER_SERVO_UP);
         }
     }
 
@@ -69,16 +69,9 @@ class ManualController extends OpMode {
         robot.rightDriveMotor.setPower(gamepad1.right_stick_y);
     }
 
-    private int iteration = 0;
-
     @Override
     public void loop() {
-        robot.leftDriveMotor.setPower(gamepad1.left_stick_y);
-        robot.rightDriveMotor.setPower(gamepad1.right_stick_y);
-        telemetry.addLine("Iteration2: " + iteration);
-        telemetry.addLine("Left: " + gamepad1.left_stick_y);
-        telemetry.addLine("Right: " + gamepad1.toString());
-        telemetry.addLine("BUTTON "+gamepad1.a);
-        iteration++;
+        loopTop();
+        loopBottom();
     }
 }
