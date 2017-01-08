@@ -12,9 +12,12 @@ import com.qualcomm.robotcore.hardware.Servo;
 @Autonomous(name = "Run Autonomous", group = "Autonomous")
 class RunAutonomous extends LinearOpMode {
     private Hardware robot = new Hardware();
+    // Constants to create
+    private static final int LINE_THRESHOLD = 0;
+    private static final int RED_COLOR_VALUE = 5000;
+    private static final int ULTRASONIC_ERROR_MARGIN = 0;
 
     private boolean lineNotDetected() {
-        final int LINE_THRESHOLD = 0;
         return robot.floorLightSensor.getLightDetected() < LINE_THRESHOLD;
     }
 
@@ -32,10 +35,9 @@ class RunAutonomous extends LinearOpMode {
 
     private void pressCorrectBeaconButton() {
         int colorSensorValue = robot.sideColorSensor.argb();
-        final int RED_VALUE = 5000;
         Servo servoToMove;
 
-        if (colorSensorValue >= RED_VALUE) {
+        if (colorSensorValue >= RED_COLOR_VALUE) {
             servoToMove = robot.beaconRightServo;
         }
         else {
@@ -87,7 +89,6 @@ class RunAutonomous extends LinearOpMode {
             robot.leftDriveMotor.setPower(1);
             */
 
-        final int ULTRASONIC_ERROR_MARGIN = 0;
         while (opModeIsActive() &&
                 Math.abs(
                         robot.sideFrontUltrasonicSensor.getUltrasonicLevel() -
