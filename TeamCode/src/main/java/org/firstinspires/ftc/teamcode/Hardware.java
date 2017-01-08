@@ -14,10 +14,11 @@ class Hardware
 {
     public static final String ID_LEFT_DRIVE_MOTOR = "left_drive";
     private static final String ID_RIGHT_DRIVE_MOTOR = "right_drive";
-//    private static final String ID_LAUNCHER_MOTOR = "launcher";
+    private static final String ID_LAUNCHER_MOTOR = "launcher";
     private static final String ID_SCOOPER_SERVO = "scooper";
     private static final String ID_SIDE_COLOR_SENSOR = "side_color";
-    private static final String ID_SIDE_ULTRASONIC_SENSOR = "side_ultrasonic";
+    private static final String ID_SIDE_FRONT_ULTRASONIC_SENSOR = "side_front_ultrasonic";
+    private static final String ID_SIDE_BACK_ULTRASONIC_SENSOR = "side_back_ultrasonic";
     private static final String ID_FLOOR_LIGHT_SENSOR = "floor_light";
 
     public static final double POS_SCOOPER_SERVO_DOWN = 1;
@@ -29,7 +30,8 @@ class Hardware
 //    public DcMotor launcherMotor = null;
 //    public Servo scooperServo = null;
     public ColorSensor sideColorSensor = null;
-    public UltrasonicSensor sideUltrasonicSensor = null;
+    public UltrasonicSensor sideFrontUltrasonicSensor = null;
+    public UltrasonicSensor sideBackUltrasonicSensor = null;
     public LightSensor floorLightSensor = null;
 
     /* local OpMode members. */
@@ -67,9 +69,10 @@ class Hardware
 //        scooperServo.setPosition(POS_SCOOPER_SERVO_DOWN);
 
         // Sensors
-        //sideColorSensor = hwMap.colorSensor.get(ID_SIDE_COLOR_SENSOR);
-        //sideUltrasonicSensor = hwMap.ultrasonicSensor.get(ID_SIDE_ULTRASONIC_SENSOR);
-        //floorLightSensor = hwMap.lightSensor.get(ID_FLOOR_LIGHT_SENSOR);
+        sideColorSensor = hwMap.colorSensor.get(ID_SIDE_COLOR_SENSOR);
+        sideFrontUltrasonicSensor = hwMap.ultrasonicSensor.get(ID_SIDE_FRONT_ULTRASONIC_SENSOR);
+        sideBackUltrasonicSensor = hwMap.ultrasonicSensor.get(ID_SIDE_BACK_ULTRASONIC_SENSOR);
+        floorLightSensor = hwMap.lightSensor.get(ID_FLOOR_LIGHT_SENSOR);
     }
 
     /***
