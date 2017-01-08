@@ -92,5 +92,24 @@ class RunAutonomous extends LinearOpMode {
 
 
         // STEP 6 -- ACTIVATE BEACON
+
+        if (colorSensorValue >= RED_VALUE) {
+            robot.beaconRightServo.setPosition(Hardware.POS_BEACON_SERVO_EXTENDED);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            robot.beaconRightServo.setPosition(Hardware.POS_BEACON_SERVO_RETRACTED);
+        }
+        else {
+            robot.beaconLeftServo.setPosition(Hardware.POS_BEACON_SERVO_EXTENDED);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            robot.beaconLeftServo.setPosition(Hardware.POS_BEACON_SERVO_RETRACTED);
+        }
     }
 }
