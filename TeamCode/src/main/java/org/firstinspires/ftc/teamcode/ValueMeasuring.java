@@ -28,6 +28,9 @@ public class ValueMeasuring extends OpMode {
         telemetry.addLine("Back ultrasonic distance: " +
                 robot.sideBackUltrasonicSensor.getUltrasonicLevel());
         telemetry.addLine("Side color sensor values: " + robot.sideColorSensor.argb());
+        telemetry.addLine(" --> Red: " + robot.sideColorSensor.red() +
+                " Blue: " + robot.sideColorSensor.blue() +
+                " Green: " + robot.sideColorSensor.green());
         telemetry.addLine("Light sensor values: " + robot.floorLightSensor.getLightDetected());
     }
 }

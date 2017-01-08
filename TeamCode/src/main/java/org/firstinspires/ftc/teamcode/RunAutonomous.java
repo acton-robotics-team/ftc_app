@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import android.graphics.Color;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -14,12 +15,11 @@ import com.qualcomm.robotcore.hardware.Servo;
 class RunAutonomous extends LinearOpMode {
     private Hardware robot = new Hardware();
     // Constants to create
-    private static final int LINE_LIGHT_THRESHOLD = 0;
-    private static final int RED_COLOR_VALUE =  ;
-    private static final int ULTRASONIC_WALL_DISTANCE = 0;
-    private static final int ULTRASONIC_ERROR_MARGIN = 0;
+    private static final int LINE_LIGHT_THRESHOLD = 80;
+    private static final int ULTRASONIC_WALL_DISTANCE = 200;
+    private static final int ULTRASONIC_ERROR_MARGIN = 20;
 
-    private static final int SPEED = 1;
+    private static final double SPEED = 0.5;
 
     private boolean lineNotDetected() {
         return robot.floorLightSensor.getLightDetected() < LINE_LIGHT_THRESHOLD;
@@ -48,11 +48,13 @@ class RunAutonomous extends LinearOpMode {
 
         Servo servoToMove;
 
+        // FLIP DEPENDING ON WHICH TEAM
         if (hsv[0] * 360 >= 345 || hsv[0] * 360 <= 15) {
             // Red
             servoToMove = robot.beaconRightServo;
         }
         else {
+            // Blue (probably)
             servoToMove = robot.beaconLeftServo;
         }
 

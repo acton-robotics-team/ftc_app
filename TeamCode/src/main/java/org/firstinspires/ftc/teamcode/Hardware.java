@@ -17,19 +17,19 @@ class Hardware
     private static final String ID_LAUNCHER_MOTOR = "launcher";
     private static final String ID_SWEEPER_MOTOR = "sweeper";
     private static final String ID_SCOOPER_SERVO = "scooper";
-    private static final String ID_BEACON_RIGHT_SERVO = "beacon_right_servo";
-    private static final String ID_BEACON_LEFT_SERVO = "beacon_left_servo";
+    private static final String ID_BEACON_RIGHT_SERVO = "right_beacon";
+    private static final String ID_BEACON_LEFT_SERVO = "left_beacon";
     private static final String ID_SIDE_COLOR_SENSOR = "side_color";
-    private static final String ID_SIDE_FRONT_ULTRASONIC_SENSOR = "side_front_ultrasonic";
-    private static final String ID_SIDE_BACK_ULTRASONIC_SENSOR = "side_back_ultrasonic";
+    private static final String ID_SIDE_FRONT_ULTRASONIC_SENSOR = "front_ultrasonic";
+    private static final String ID_SIDE_BACK_ULTRASONIC_SENSOR = "back_ultrasonic";
     private static final String ID_FLOOR_LIGHT_SENSOR = "floor_light";
     private static final String ID_LAUNCHER_SERVO = "launcher_servo";
 
     public static final double POS_SCOOPER_SERVO_DOWN = 1;
-    public static final double POS_SCOOPER_SERVO_UP = 1;
+    public static final double POS_SCOOPER_SERVO_UP = 0;
     public static final double POS_LAUNCHER_SERVO_DOWN = 1;
-    public static final double POS_LAUNCHER_SERVO_UP = 1;
-    public static final double POS_BEACON_SERVO_EXTENDED = 0.45;
+    public static final double POS_LAUNCHER_SERVO_UP = 0;
+    public static final double POS_BEACON_SERVO_EXTENDED = 0.75;
     public static final double POS_BEACON_SERVO_RETRACTED = 0;
 
     /* Public OpMode members. */
@@ -64,10 +64,10 @@ class Hardware
         launcherMotor   = hwMap.dcMotor.get(ID_LAUNCHER_MOTOR);
         sweeperMotor    = hwMap.dcMotor.get(ID_SWEEPER_MOTOR);
 
-        leftDriveMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
-        rightDriveMotor.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
-        launcherMotor.setDirection(DcMotor.Direction.FORWARD);
-        sweeperMotor.setDirection(DcMotor.Direction.FORWARD);
+        leftDriveMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
+        rightDriveMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
+        launcherMotor.setDirection(DcMotor.Direction.REVERSE);
+        sweeperMotor.setDirection(DcMotor.Direction.REVERSE);
 
         // Set all motors to zero power
         leftDriveMotor.setPower(0);
@@ -86,8 +86,11 @@ class Hardware
         scooperServo = hwMap.servo.get(ID_SCOOPER_SERVO);
         scooperServo.setPosition(POS_SCOOPER_SERVO_DOWN);
         beaconRightServo = hwMap.servo.get(ID_BEACON_RIGHT_SERVO);
+        beaconRightServo.setPosition(POS_BEACON_SERVO_RETRACTED);
         beaconLeftServo = hwMap.servo.get(ID_BEACON_LEFT_SERVO);
+        beaconLeftServo.setPosition(POS_BEACON_SERVO_RETRACTED);
         launcherServo = hwMap.servo.get(ID_LAUNCHER_SERVO);
+        launcherServo.setPosition(POS_LAUNCHER_SERVO_DOWN);
         // Sensors
         sideColorSensor = hwMap.colorSensor.get(ID_SIDE_COLOR_SENSOR);
         sideFrontUltrasonicSensor = hwMap.ultrasonicSensor.get(ID_SIDE_FRONT_ULTRASONIC_SENSOR);
