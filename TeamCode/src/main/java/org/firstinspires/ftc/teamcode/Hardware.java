@@ -1,8 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
@@ -13,6 +16,9 @@ public class Hardware
     public static final String ID_RIGHT_DRIVE_MOTOR = "right_drive";
     public static final String ID_LAUNCHER_MOTOR = "launcher";
     public static final String ID_SCOOPER_SERVO = "scooper";
+    public static final String ID_SIDE_COLOR_SENSOR = "side_color";
+    public static final String ID_SIDE_ULTRASONIC_SENSOR = "side_ultrasonic";
+    public static final String ID_FLOOR_LIGHT_SENSOR = "floor_light";
 
     public static final double POS_SCOOPER_SERVO_DOWN = 1;
     public static final double POS_SCOOPER_SERVO_UP = 1;
@@ -22,7 +28,9 @@ public class Hardware
     public DcMotor rightDriveMotor = null;
     public DcMotor launcherMotor = null;
     public Servo scooperServo = null;
-
+    public ColorSensor sideColorSensor = null;
+    public UltrasonicSensor sideUltrasonicSensor = null;
+    public LightSensor floorLightSensor = null;
 
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
@@ -57,6 +65,11 @@ public class Hardware
         // Define and initialize ALL installed servos.
         scooperServo = hwMap.servo.get(ID_SCOOPER_SERVO);
         scooperServo.setPosition(POS_SCOOPER_SERVO_DOWN);
+
+        // Sensors
+        sideColorSensor = hwMap.colorSensor.get(ID_SIDE_COLOR_SENSOR);
+        sideUltrasonicSensor = hwMap.ultrasonicSensor.get(ID_SIDE_ULTRASONIC_SENSOR);
+        floorLightSensor = hwMap.lightSensor.get(ID_FLOOR_LIGHT_SENSOR);
     }
 
     /***

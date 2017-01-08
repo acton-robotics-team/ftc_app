@@ -9,6 +9,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 @Autonomous(name = "Run Autonomous", group = "Autonomous")
 public class RunAutonomous extends OpMode {
+    private Hardware robot = new Hardware();
+
     @Override
     public void init() {
 
