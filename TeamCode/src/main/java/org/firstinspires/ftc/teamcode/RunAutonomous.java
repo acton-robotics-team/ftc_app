@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.Servo;
 
 /**
  * Created by kevin on 07/01/17.
@@ -11,6 +12,48 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 @Autonomous(name = "Run Autonomous", group = "Autonomous")
 class RunAutonomous extends LinearOpMode {
     private Hardware robot = new Hardware();
+
+    private boolean lineNotDetected() {
+        final int LINE_THRESHOLD = 0;
+        return robot.floorLightSensor.getLightDetected() < LINE_THRESHOLD;
+    }
+
+    private void reverseToNextLine() {
+        robot.leftDriveMotor.setPower(-1);
+        robot.rightDriveMotor.setPower(-1);
+
+        while (opModeIsActive() && lineNotDetected()) {
+            idle();
+        }
+
+        robot.leftDriveMotor.setPower(0);
+        robot.rightDriveMotor.setPower(0);
+    }
+
+    private void pressCorrectBeaconButton() {
+        int colorSensorValue = robot.sideColorSensor.argb();
+        final int RED_VALUE = 5000;
+        Servo servoToMove;
+
+        if (colorSensorValue >= RED_VALUE) {
+            servoToMove = robot.beaconRightServo;
+        }
+        else {
+            servoToMove = robot.beaconLeftServo;
+        }
+
+        servoToMove.setPosition(Hardware.POS_BEACON_SERVO_EXTENDED);
+
+        while (servoToMove.getPosition() != Hardware.POS_BEACON_SERVO_EXTENDED) {
+            idle();
+        }
+
+        servoToMove.setPosition(Hardware.POS_BEACON_SERVO_RETRACTED);
+
+        while (servoToMove.getPortNumber() != Hardware.POS_BEACON_SERVO_RETRACTED) {
+            idle();
+        }
+    }
 
     @Override
     public void runOpMode() {
@@ -29,11 +72,20 @@ class RunAutonomous extends LinearOpMode {
         }
 
         // Keep moving until required distance is reached
-        while (opModeIsActive() && robot.sideFrontUltrasonicSensor.getUltrasonicLevel() < 34) {
+        while (opModeIsActive() && lineNotDetected()) {
             idle();
         }
 
         // STEP 2 -- ROTATE TO BE PARALLEL TO WALL
+
+        // Turning right
+        robot.leftDriveMotor.setPower(1);
+        robot.rightDriveMotor.setPower(-1);
+
+        /* CODE FOR TURNING LEFT
+            robot.rightDriveMotor.setPower(-1);
+            robot.leftDriveMotor.setPower(1);
+            */
 
         final int ULTRASONIC_ERROR_MARGIN = 0;
         while (opModeIsActive() &&
@@ -41,75 +93,23 @@ class RunAutonomous extends LinearOpMode {
                         robot.sideFrontUltrasonicSensor.getUltrasonicLevel() -
                                 robot.sideBackUltrasonicSensor.getUltrasonicLevel())
                         >= ULTRASONIC_ERROR_MARGIN) {
-            // TURNING RIGHT
-            robot.leftDriveMotor.setPower(1);
-            robot.rightDriveMotor.setPower(-1);
-
-            /* CODE FOR TURNING LEFT
-            robot.rightDriveMotor.setPower(-1);
-            robot.leftDriveMotor.setPower(1);
-            */
+            idle();
         }
 
         // STEP 3 -- MOVE TO FIRST BEACON
 
+        reverseToNextLine();
 
         // STEP 4 -- ACTIVATE BEACON
 
-        int colorSensorValue = robot.sideColorSensor.argb();
-        final int RED_VALUE = 5000;
-
-        if (colorSensorValue >= RED_VALUE) {
-            robot.beaconRightServo.setPosition(Hardware.POS_BEACON_SERVO_EXTENDED);
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            robot.beaconRightServo.setPosition(Hardware.POS_BEACON_SERVO_RETRACTED);
-        }
-        else {
-            robot.beaconLeftServo.setPosition(Hardware.POS_BEACON_SERVO_EXTENDED);
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            robot.beaconLeftServo.setPosition(Hardware.POS_BEACON_SERVO_RETRACTED);
-        }
+        pressCorrectBeaconButton();
 
         // STEP 5 -- MOVE TO SECOND BEACON
 
-        final int WAIT_FOR_SECOND_BEACON = 1000;
-
-        robot.leftDriveMotor.setPower(1);
-        robot.rightDriveMotor.setPower(1);
-        try {
-            Thread.sleep(WAIT_FOR_SECOND_BEACON);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
+        reverseToNextLine();
 
         // STEP 6 -- ACTIVATE BEACON
 
-        if (colorSensorValue >= RED_VALUE) {
-            robot.beaconRightServo.setPosition(Hardware.POS_BEACON_SERVO_EXTENDED);
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            robot.beaconRightServo.setPosition(Hardware.POS_BEACON_SERVO_RETRACTED);
-        }
-        else {
-            robot.beaconLeftServo.setPosition(Hardware.POS_BEACON_SERVO_EXTENDED);
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            robot.beaconLeftServo.setPosition(Hardware.POS_BEACON_SERVO_RETRACTED);
-        }
+        pressCorrectBeaconButton();
     }
 }
