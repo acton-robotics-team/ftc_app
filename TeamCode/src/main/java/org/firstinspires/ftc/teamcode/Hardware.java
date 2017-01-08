@@ -12,9 +12,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 class Hardware
 {
-    public static final String ID_LEFT_DRIVE_MOTOR = "left_drive";
+    private static final String ID_LEFT_DRIVE_MOTOR = "left_drive";
     private static final String ID_RIGHT_DRIVE_MOTOR = "right_drive";
     private static final String ID_LAUNCHER_MOTOR = "launcher";
+    private static final String ID_SWEEPER_MOTOR = "sweeper";
     private static final String ID_SCOOPER_SERVO = "scooper";
     private static final String ID_BEACON_RIGHT_SERVO = "beacon_right_servo";
     private static final String ID_BEACON_LEFT_SERVO = "beacon_left_servo";
@@ -31,11 +32,11 @@ class Hardware
     public static final double POS_BEACON_SERVO_EXTENDED = 0.45;
     public static final double POS_BEACON_SERVO_RETRACTED = 0;
 
-
     /* Public OpMode members. */
     public DcMotor leftDriveMotor  = null;
     public DcMotor rightDriveMotor = null;
     public DcMotor launcherMotor = null;
+    public DcMotor sweeperMotor = null;
     public Servo launcherServo = null;
     public Servo scooperServo = null;
     public Servo beaconRightServo = null;
@@ -46,8 +47,8 @@ class Hardware
     public LightSensor floorLightSensor = null;
 
     /* local OpMode members. */
-    private HardwareMap hwMap           =  null;
-    private ElapsedTime period  = new ElapsedTime();
+    private HardwareMap hwMap = null;
+    private ElapsedTime period = new ElapsedTime();
 
     /* Constructor */
     public Hardware() { }
@@ -61,19 +62,25 @@ class Hardware
         leftDriveMotor  = hwMap.dcMotor.get(ID_LEFT_DRIVE_MOTOR);
         rightDriveMotor = hwMap.dcMotor.get(ID_RIGHT_DRIVE_MOTOR);
         launcherMotor   = hwMap.dcMotor.get(ID_LAUNCHER_MOTOR);
+        sweeperMotor    = hwMap.dcMotor.get(ID_SWEEPER_MOTOR);
+
         leftDriveMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         rightDriveMotor.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
+        launcherMotor.setDirection(DcMotor.Direction.FORWARD);
+        sweeperMotor.setDirection(DcMotor.Direction.FORWARD);
 
         // Set all motors to zero power
         leftDriveMotor.setPower(0);
         rightDriveMotor.setPower(0);
         launcherMotor.setPower(0);
+        sweeperMotor.setPower(0);
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
         leftDriveMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightDriveMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         launcherMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        sweeperMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Define and initialize ALL installed servos.
         scooperServo = hwMap.servo.get(ID_SCOOPER_SERVO);

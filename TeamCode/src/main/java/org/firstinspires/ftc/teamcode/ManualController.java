@@ -12,6 +12,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 @TeleOp(name = "Manual Controller", group = "Manual")
 class ManualController extends OpMode {
     private Hardware robot = new Hardware();
+    private boolean isLauncherOn = false;
 
     @Override
     public void init() {
@@ -32,17 +33,19 @@ class ManualController extends OpMode {
     private void loopTop() {
         // LAUNCHER MOTOR CONTROL
         if (gamepad2.x) {
-            // Full speed
-            robot.launcherMotor.setPower(1);
-        } else if (gamepad2.y) {
+            robot.launcherMotor.setPower(isLauncherOn ? 0 : 1);
+        }
+
+        // SWEEPER MOTOR
+        if (gamepad2.y) {
             // Medium speed
-            robot.launcherMotor.setPower(2/3);
+            robot.sweeperMotor.setPower(2/3);
         } else if (gamepad2.b) {
             // Slow speed
-            robot.launcherMotor.setPower(1/3);
+            robot.sweeperMotor.setPower(1/3);
         } else if (gamepad2.a) {
             // Off
-            robot.launcherMotor.setPower(0/3);
+            robot.sweeperMotor.setPower(0/3);
         }
 
         // SCOOPER SERVO CONTROL
@@ -51,6 +54,7 @@ class ManualController extends OpMode {
         } else if (gamepad2.right_bumper) {
             robot.scooperServo.setPosition(Hardware.POS_SCOOPER_SERVO_UP);
         }
+
         // Launcher servo control
         if(gamepad1.dpad_left){
             robot.launcherServo.setPosition(Hardware.POS_LAUNCHER_SERVO_DOWN);
