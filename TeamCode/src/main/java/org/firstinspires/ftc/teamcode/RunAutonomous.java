@@ -17,13 +17,15 @@ class RunAutonomous extends LinearOpMode {
     private static final int ULTRASONIC_WALL_DISTANCE = 0;
     private static final int ULTRASONIC_ERROR_MARGIN = 0;
 
+    private static final int SPEED = 1;
+
     private boolean lineNotDetected() {
         return robot.floorLightSensor.getLightDetected() < LINE_LIGHT_THRESHOLD;
     }
 
     private void reverseToNextLine() {
-        robot.leftDriveMotor.setPower(-1);
-        robot.rightDriveMotor.setPower(-1);
+        robot.leftDriveMotor.setPower(-SPEED);
+        robot.rightDriveMotor.setPower(-SPEED);
 
         while (opModeIsActive() && lineNotDetected()) {
             idle();
@@ -65,8 +67,8 @@ class RunAutonomous extends LinearOpMode {
         // STEP 1 -- MOVE TO CORNER
 
         // Motors full throttle ahead
-        robot.leftDriveMotor.setPower(1);
-        robot.rightDriveMotor.setPower(1);
+        robot.leftDriveMotor.setPower(SPEED);
+        robot.rightDriveMotor.setPower(SPEED);
 
         // Keep moving until required distance is reached
         while (opModeIsActive() &&
@@ -77,12 +79,12 @@ class RunAutonomous extends LinearOpMode {
         // STEP 2 -- ROTATE TO BE PARALLEL TO WALL
 
         // Turning right
-        robot.leftDriveMotor.setPower(1);
-        robot.rightDriveMotor.setPower(-1);
+        robot.leftDriveMotor.setPower(SPEED);
+        robot.rightDriveMotor.setPower(-SPEED);
 
         /* CODE FOR TURNING LEFT
-            robot.rightDriveMotor.setPower(-1);
-            robot.leftDriveMotor.setPower(1);
+            robot.rightDriveMotor.setPower(-SPEED);
+            robot.leftDriveMotor.setPower(SPEED);
             */
 
         while (opModeIsActive() &&
