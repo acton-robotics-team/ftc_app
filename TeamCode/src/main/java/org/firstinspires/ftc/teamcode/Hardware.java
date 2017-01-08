@@ -22,6 +22,7 @@ class Hardware
     private static final String ID_SIDE_FRONT_ULTRASONIC_SENSOR = "side_front_ultrasonic";
     private static final String ID_SIDE_BACK_ULTRASONIC_SENSOR = "side_back_ultrasonic";
     private static final String ID_FLOOR_LIGHT_SENSOR = "floor_light";
+    private static final String ID_LAUNCHER_SERVO = "launcher_servo";
 
     public static final double POS_SCOOPER_SERVO_DOWN = 1;
     public static final double POS_SCOOPER_SERVO_UP = 1;
@@ -30,6 +31,7 @@ class Hardware
     public DcMotor leftDriveMotor  = null;
     public DcMotor rightDriveMotor = null;
     public DcMotor launcherMotor = null;
+    public Servo launcherServo = null;
     public Servo scooperServo = null;
     public Servo beaconRightServo = null;
     public Servo beaconLeftServo = null;
@@ -73,6 +75,7 @@ class Hardware
         scooperServo.setPosition(POS_SCOOPER_SERVO_DOWN);
         beaconRightServo = hwMap.servo.get(ID_BEACON_RIGHT_SERVO);
         beaconLeftServo = hwMap.servo.get(ID_BEACON_LEFT_SERVO);
+        launcherServo = hwMap.servo.get(ID_LAUNCHER_SERVO);
         // Sensors
         sideColorSensor = hwMap.colorSensor.get(ID_SIDE_COLOR_SENSOR);
         sideFrontUltrasonicSensor = hwMap.ultrasonicSensor.get(ID_SIDE_FRONT_ULTRASONIC_SENSOR);
