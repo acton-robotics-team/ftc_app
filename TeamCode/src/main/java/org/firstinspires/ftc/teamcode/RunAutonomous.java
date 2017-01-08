@@ -60,6 +60,7 @@ class RunAutonomous extends LinearOpMode {
     @Override
     public void runOpMode() {
         robot.init(hardwareMap);
+        waitForStart();
 
         // STEP 1 -- MOVE TO CORNER
 
