@@ -26,6 +26,8 @@ class Hardware
 
     public static final double POS_SCOOPER_SERVO_DOWN = 1;
     public static final double POS_SCOOPER_SERVO_UP = 1;
+    public static final double POS_BEACON_SERVO_EXTENDED = 0.45;
+    public static final double POS_BEACON_SERVO_RETRACTED = 0;
 
     /* Public OpMode members. */
     public DcMotor leftDriveMotor  = null;

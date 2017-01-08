@@ -58,25 +58,24 @@ class RunAutonomous extends LinearOpMode {
 
         int colorSensorValue = robot.sideColorSensor.argb();
         final int RED_VALUE = 5000;
-        final int BEACON_DEGREES = 45;
 
         if (colorSensorValue >= RED_VALUE) {
-            robot.beaconRightServo.setPosition(BEACON_DEGREES/180);
+            robot.beaconRightServo.setPosition(Hardware.POS_BEACON_SERVO_EXTENDED);
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            robot.beaconRightServo.setPosition(0);
+            robot.beaconRightServo.setPosition(Hardware.POS_BEACON_SERVO_RETRACTED);
         }
         else {
-            robot.beaconLeftServo.setPosition(BEACON_DEGREES/180);
+            robot.beaconLeftServo.setPosition(Hardware.POS_BEACON_SERVO_EXTENDED);
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            robot.beaconLeftServo.setPosition(0);
+            robot.beaconLeftServo.setPosition(Hardware.POS_BEACON_SERVO_RETRACTED);
         }
 
         // STEP 5 -- MOVE TO SECOND BEACON
