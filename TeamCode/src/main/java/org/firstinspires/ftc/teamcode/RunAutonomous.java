@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 /**
  * Created by kevin on 07/01/17.
@@ -17,16 +18,23 @@ class RunAutonomous extends LinearOpMode {
 
         // STEP 1 -- MOVE TO CORNER
 
+        // Motors full throttle ahead
         robot.leftDriveMotor.setPower(1);
         robot.rightDriveMotor.setPower(1);
 
-        while (opModeIsActive() && robot.floorLightSensor.getLightDetected() < 34) {
+        // Displays readings from the ultrasonic sensor when the opMode is active
+        while (opModeIsActive()) {
+            telemetry.addLine(robot.sideUltrasonicSensor.getUltrasonicLevel()+"");
+        }
+
+        // Keep moving until required distance is reached
+        while (opModeIsActive() && robot.sideUltrasonicSensor.getUltrasonicLevel() < 34) {
             idle();
         }
 
         // STEP 2 -- ROTATE TO BE PARALLEL TO WALL
 
-        
+
 
         // STEP 3 -- MOVE TO FIRST BEACON
 
@@ -37,6 +45,6 @@ class RunAutonomous extends LinearOpMode {
         // STEP 5 -- MOVE TO SECOND BEACON
 
 
-        // STEP 6 -- ACTIVATE BEACOn
+        // STEP 6 -- ACTIVATE BEACON
     }
 }

@@ -28,8 +28,8 @@ class Hardware
     public DcMotor rightDriveMotor = null;
 //    public DcMotor launcherMotor = null;
 //    public Servo scooperServo = null;
-    private ColorSensor sideColorSensor = null;
-    private UltrasonicSensor sideUltrasonicSensor = null;
+    public ColorSensor sideColorSensor = null;
+    public UltrasonicSensor sideUltrasonicSensor = null;
     public LightSensor floorLightSensor = null;
 
     /* local OpMode members. */
