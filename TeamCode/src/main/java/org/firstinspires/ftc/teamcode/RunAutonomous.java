@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Color;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -13,7 +15,7 @@ class RunAutonomous extends LinearOpMode {
     private Hardware robot = new Hardware();
     // Constants to create
     private static final int LINE_LIGHT_THRESHOLD = 0;
-    private static final int RED_COLOR_VALUE = 5000;
+    private static final int RED_COLOR_VALUE =  ;
     private static final int ULTRASONIC_WALL_DISTANCE = 0;
     private static final int ULTRASONIC_ERROR_MARGIN = 0;
 
@@ -36,10 +38,18 @@ class RunAutonomous extends LinearOpMode {
     }
 
     private void pressCorrectBeaconButton() {
-        int colorSensorValue = robot.sideColorSensor.argb();
+        float hsv[] = { 0F, 0F, 0F };
+
+        Color.RGBToHSV(
+                (robot.sideColorSensor.red() * 255) / 800,
+                (robot.sideColorSensor.green() * 255) / 800,
+                (robot.sideColorSensor.blue() * 255) / 800,
+                hsv);
+
         Servo servoToMove;
 
-        if (colorSensorValue >= RED_COLOR_VALUE) {
+        if (hsv[0] * 360 >= 345 || hsv[0] * 360 <= 15) {
+            // Red
             servoToMove = robot.beaconRightServo;
         }
         else {
