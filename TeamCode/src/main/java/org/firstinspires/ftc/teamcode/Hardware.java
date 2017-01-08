@@ -16,6 +16,8 @@ class Hardware
     private static final String ID_RIGHT_DRIVE_MOTOR = "right_drive";
     private static final String ID_LAUNCHER_MOTOR = "launcher";
     private static final String ID_SCOOPER_SERVO = "scooper";
+    private static final String ID_BEACON_RIGHT_SERVO = "beacon_right_servo";
+    private static final String ID_BEACON_LEFT_SERVO = "beacon_left_servo";
     private static final String ID_SIDE_COLOR_SENSOR = "side_color";
     private static final String ID_SIDE_FRONT_ULTRASONIC_SENSOR = "side_front_ultrasonic";
     private static final String ID_SIDE_BACK_ULTRASONIC_SENSOR = "side_back_ultrasonic";
@@ -29,6 +31,8 @@ class Hardware
     public DcMotor rightDriveMotor = null;
 //    public DcMotor launcherMotor = null;
 //    public Servo scooperServo = null;
+    public Servo beaconRightServo = null;
+    public Servo beaconLeftServo = null;
     public ColorSensor sideColorSensor = null;
     public UltrasonicSensor sideFrontUltrasonicSensor = null;
     public UltrasonicSensor sideBackUltrasonicSensor = null;
@@ -67,6 +71,8 @@ class Hardware
         // Define and initialize ALL installed servos.
 //        scooperServo = hwMap.servo.get(ID_SCOOPER_SERVO);
 //        scooperServo.setPosition(POS_SCOOPER_SERVO_DOWN);
+        beaconRightServo = hwMap.servo.get(ID_BEACON_RIGHT_SERVO);
+        beaconLeftServo = hwMap.servo.get(ID_BEACON_LEFT_SERVO);
 
         // Sensors
         sideColorSensor = hwMap.colorSensor.get(ID_SIDE_COLOR_SENSOR);
