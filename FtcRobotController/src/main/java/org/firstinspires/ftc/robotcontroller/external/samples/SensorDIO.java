@@ -60,10 +60,10 @@ import com.qualcomm.robotcore.hardware.DigitalChannelController;
 */
 @TeleOp(name = "Sensor: DIM DIO", group = "Sensor")
 @Disabled
-public class SensorDIO extends LinearOpMode {
+class SensorDIO extends LinearOpMode {
 
-final int BLUE_LED_CHANNEL = 0;
-final int RED_LED_CHANNEL = 1;
+private final int BLUE_LED_CHANNEL = 0;
+private final int RED_LED_CHANNEL = 1;
 
   @Override
   public void runOpMode() {

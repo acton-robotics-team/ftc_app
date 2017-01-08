@@ -54,10 +54,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
  */
 @Autonomous(name = "Sensor: MR compass", group = "Sensor")
 @Disabled   // comment out or remove this line to enable this opmode
-public class SensorMRCompass extends LinearOpMode {
+class SensorMRCompass extends LinearOpMode {
 
-    ModernRoboticsI2cCompassSensor compass;
-    ElapsedTime                    timer = new ElapsedTime();
+    private ModernRoboticsI2cCompassSensor compass;
+    private ElapsedTime                    timer = new ElapsedTime();
 
     @Override public void runOpMode() {
 
@@ -119,7 +119,7 @@ public class SensorMRCompass extends LinearOpMode {
         }
     }
 
-    protected void doTelemetry() {
+    private void doTelemetry() {
 
         if (compass.isCalibrating()) {
 

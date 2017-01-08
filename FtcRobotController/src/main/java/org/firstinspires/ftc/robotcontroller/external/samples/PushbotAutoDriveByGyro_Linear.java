@@ -73,26 +73,26 @@ import com.qualcomm.robotcore.util.Range;
 
 @Autonomous(name="Pushbot: Auto Drive By Gyro", group="Pushbot")
 @Disabled
-public class PushbotAutoDriveByGyro_Linear extends LinearOpMode {
+class PushbotAutoDriveByGyro_Linear extends LinearOpMode {
 
     /* Declare OpMode members. */
-    HardwarePushbot         robot   = new HardwarePushbot();   // Use a Pushbot's hardware
-    ModernRoboticsI2cGyro   gyro    = null;                    // Additional Gyro device
+    private HardwarePushbot         robot   = new HardwarePushbot();   // Use a Pushbot's hardware
+    private ModernRoboticsI2cGyro   gyro    = null;                    // Additional Gyro device
 
-    static final double     COUNTS_PER_MOTOR_REV    = 1440 ;    // eg: TETRIX Motor Encoder
-    static final double     DRIVE_GEAR_REDUCTION    = 2.0 ;     // This is < 1.0 if geared UP
-    static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
-    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
+    private static final double     COUNTS_PER_MOTOR_REV    = 1440 ;    // eg: TETRIX Motor Encoder
+    private static final double     DRIVE_GEAR_REDUCTION    = 2.0 ;     // This is < 1.0 if geared UP
+    private static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
+    private static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
                                                       (WHEEL_DIAMETER_INCHES * 3.1415);
 
     // These constants define the desired driving/control characteristics
     // The can/should be tweaked to suite the specific robot drive train.
-    static final double     DRIVE_SPEED             = 0.7;     // Nominal speed for better accuracy.
-    static final double     TURN_SPEED              = 0.5;     // Nominal half speed for better accuracy.
+    private static final double     DRIVE_SPEED             = 0.7;     // Nominal speed for better accuracy.
+    private static final double     TURN_SPEED              = 0.5;     // Nominal half speed for better accuracy.
 
-    static final double     HEADING_THRESHOLD       = 1 ;      // As tight as we can make it with an integer gyro
-    static final double     P_TURN_COEFF            = 0.1;     // Larger is more responsive, but also less stable
-    static final double     P_DRIVE_COEFF           = 0.15;     // Larger is more responsive, but also less stable
+    private static final double     HEADING_THRESHOLD       = 1 ;      // As tight as we can make it with an integer gyro
+    private static final double     P_TURN_COEFF            = 0.1;     // Larger is more responsive, but also less stable
+    private static final double     P_DRIVE_COEFF           = 0.15;     // Larger is more responsive, but also less stable
 
 
     @Override
@@ -165,9 +165,9 @@ public class PushbotAutoDriveByGyro_Linear extends LinearOpMode {
     *                   0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
     *                   If a relative angle is required, add/subtract from current heading.
     */
-    public void gyroDrive ( double speed,
-                            double distance,
-                            double angle) {
+   private void gyroDrive(double speed,
+                          double distance,
+                          double angle) {
 
         int     newLeftTarget;
         int     newRightTarget;
@@ -254,7 +254,7 @@ public class PushbotAutoDriveByGyro_Linear extends LinearOpMode {
      *                   0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
      *                   If a relative angle is required, add/subtract from current heading.
      */
-    public void gyroTurn (  double speed, double angle) {
+    private void gyroTurn(double speed, double angle) {
 
         // keep looping while we are still active, and not on heading.
         while (opModeIsActive() && !onHeading(speed, angle, P_TURN_COEFF)) {
@@ -273,7 +273,7 @@ public class PushbotAutoDriveByGyro_Linear extends LinearOpMode {
      *                   If a relative angle is required, add/subtract from current heading.
      * @param holdTime   Length of time (in seconds) to hold the specified heading.
      */
-    public void gyroHold( double speed, double angle, double holdTime) {
+    private void gyroHold(double speed, double angle, double holdTime) {
 
         ElapsedTime holdTimer = new ElapsedTime();
 
@@ -300,7 +300,7 @@ public class PushbotAutoDriveByGyro_Linear extends LinearOpMode {
      * @param PCoeff    Proportional Gain coefficient
      * @return
      */
-    boolean onHeading(double speed, double angle, double PCoeff) {
+    private boolean onHeading(double speed, double angle, double PCoeff) {
         double   error ;
         double   steer ;
         boolean  onTarget = false ;
@@ -340,7 +340,7 @@ public class PushbotAutoDriveByGyro_Linear extends LinearOpMode {
      * @return  error angle: Degrees in the range +/- 180. Centered on the robot's frame of reference
      *          +ve error means the robot should turn LEFT (CCW) to reduce error.
      */
-    public double getError(double targetAngle) {
+    private double getError(double targetAngle) {
 
         double robotError;
 
@@ -357,7 +357,7 @@ public class PushbotAutoDriveByGyro_Linear extends LinearOpMode {
      * @param PCoeff  Proportional Gain Coefficient
      * @return
      */
-    public double getSteer(double error, double PCoeff) {
+    private double getSteer(double error, double PCoeff) {
         return Range.clip(error * PCoeff, -1, 1);
     }
 

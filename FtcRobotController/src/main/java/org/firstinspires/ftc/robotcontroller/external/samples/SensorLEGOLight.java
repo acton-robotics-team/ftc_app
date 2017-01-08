@@ -56,9 +56,9 @@ import com.qualcomm.robotcore.hardware.LightSensor;
  */
 @TeleOp(name = "Sensor: LEGO light", group = "Sensor")
 @Disabled
-public class SensorLEGOLight extends LinearOpMode {
+class SensorLEGOLight extends LinearOpMode {
 
-  LightSensor lightSensor;  // Hardware Device Object
+  private LightSensor lightSensor;  // Hardware Device Object
 
   @Override
   public void runOpMode() {

@@ -59,16 +59,16 @@ import com.qualcomm.robotcore.hardware.LightSensor;
 
 @Autonomous(name="Pushbot: Auto Drive To Line", group="Pushbot")
 @Disabled
-public class PushbotAutoDriveToLine_Linear extends LinearOpMode {
+class PushbotAutoDriveToLine_Linear extends LinearOpMode {
 
     /* Declare OpMode members. */
-    HardwarePushbot         robot   = new HardwarePushbot();   // Use a Pushbot's hardware
+    private HardwarePushbot         robot   = new HardwarePushbot();   // Use a Pushbot's hardware
                                                                // could also use HardwarePushbotMatrix class.
-    LightSensor             lightSensor;      // Primary LEGO Light sensor,
+                                                               private LightSensor             lightSensor;      // Primary LEGO Light sensor,
     // OpticalDistanceSensor   lightSensor;   // Alternative MR ODS sensor
 
-    static final double     WHITE_THRESHOLD = 0.2;  // spans between 0.1 - 0.5 from dark to light
-    static final double     APPROACH_SPEED  = 0.5;
+    private static final double     WHITE_THRESHOLD = 0.2;  // spans between 0.1 - 0.5 from dark to light
+    private static final double     APPROACH_SPEED  = 0.5;
 
     @Override
     public void runOpMode() {

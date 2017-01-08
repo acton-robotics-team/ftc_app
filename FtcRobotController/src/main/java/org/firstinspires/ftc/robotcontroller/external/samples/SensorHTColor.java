@@ -54,9 +54,9 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
  */
 @Autonomous(name = "Sensor: HT color", group = "Sensor")
 @Disabled
-public class SensorHTColor extends LinearOpMode {
+class SensorHTColor extends LinearOpMode {
 
-  ColorSensor colorSensor;  // Hardware Device Object
+  private ColorSensor colorSensor;  // Hardware Device Object
 
 
   @Override

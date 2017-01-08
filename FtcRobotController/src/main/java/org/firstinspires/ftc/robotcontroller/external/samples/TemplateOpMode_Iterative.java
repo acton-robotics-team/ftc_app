@@ -59,7 +59,7 @@ import java.util.Date;
 
 @TeleOp(name="Template: Iterative OpMode", group="Iterative Opmode")  // @Autonomous(...) is the other common choice
 @Disabled
-public class TemplateOpMode_Iterative extends OpMode
+class TemplateOpMode_Iterative extends OpMode
 {
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();

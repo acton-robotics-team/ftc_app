@@ -10,15 +10,15 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
  */
-public class Hardware
+class Hardware
 {
-    public static final String ID_LEFT_DRIVE_MOTOR = "left_drive";
-    public static final String ID_RIGHT_DRIVE_MOTOR = "right_drive";
-    public static final String ID_LAUNCHER_MOTOR = "launcher";
-    public static final String ID_SCOOPER_SERVO = "scooper";
-    public static final String ID_SIDE_COLOR_SENSOR = "side_color";
-    public static final String ID_SIDE_ULTRASONIC_SENSOR = "side_ultrasonic";
-    public static final String ID_FLOOR_LIGHT_SENSOR = "floor_light";
+    private static final String ID_LEFT_DRIVE_MOTOR = "left_drive";
+    private static final String ID_RIGHT_DRIVE_MOTOR = "right_drive";
+//    private static final String ID_LAUNCHER_MOTOR = "launcher";
+    private static final String ID_SCOOPER_SERVO = "scooper";
+    private static final String ID_SIDE_COLOR_SENSOR = "side_color";
+    private static final String ID_SIDE_ULTRASONIC_SENSOR = "side_ultrasonic";
+    private static final String ID_FLOOR_LIGHT_SENSOR = "floor_light";
 
     public static final double POS_SCOOPER_SERVO_DOWN = 1;
     public static final double POS_SCOOPER_SERVO_UP = 1;
@@ -26,14 +26,14 @@ public class Hardware
     /* Public OpMode members. */
     public DcMotor leftDriveMotor  = null;
     public DcMotor rightDriveMotor = null;
-    public DcMotor launcherMotor = null;
-    public Servo scooperServo = null;
-    public ColorSensor sideColorSensor = null;
-    public UltrasonicSensor sideUltrasonicSensor = null;
+//    public DcMotor launcherMotor = null;
+//    public Servo scooperServo = null;
+    private ColorSensor sideColorSensor = null;
+    private UltrasonicSensor sideUltrasonicSensor = null;
     public LightSensor floorLightSensor = null;
 
     /* local OpMode members. */
-    HardwareMap hwMap           =  null;
+    private HardwareMap hwMap           =  null;
     private ElapsedTime period  = new ElapsedTime();
 
     /* Constructor */
@@ -47,29 +47,29 @@ public class Hardware
         // Define and Initialize Motors
         leftDriveMotor  = hwMap.dcMotor.get(ID_LEFT_DRIVE_MOTOR);
         rightDriveMotor = hwMap.dcMotor.get(ID_RIGHT_DRIVE_MOTOR);
-        launcherMotor   = hwMap.dcMotor.get(ID_LAUNCHER_MOTOR);
+//        launcherMotor   = hwMap.dcMotor.get(ID_LAUNCHER_MOTOR);
         leftDriveMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         rightDriveMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
 
         // Set all motors to zero power
         leftDriveMotor.setPower(0);
         rightDriveMotor.setPower(0);
-        launcherMotor.setPower(0);
+//        launcherMotor.setPower(0);
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
         leftDriveMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightDriveMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        launcherMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        launcherMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Define and initialize ALL installed servos.
-        scooperServo = hwMap.servo.get(ID_SCOOPER_SERVO);
-        scooperServo.setPosition(POS_SCOOPER_SERVO_DOWN);
+//        scooperServo = hwMap.servo.get(ID_SCOOPER_SERVO);
+//        scooperServo.setPosition(POS_SCOOPER_SERVO_DOWN);
 
         // Sensors
-        sideColorSensor = hwMap.colorSensor.get(ID_SIDE_COLOR_SENSOR);
-        sideUltrasonicSensor = hwMap.ultrasonicSensor.get(ID_SIDE_ULTRASONIC_SENSOR);
-        floorLightSensor = hwMap.lightSensor.get(ID_FLOOR_LIGHT_SENSOR);
+        //sideColorSensor = hwMap.colorSensor.get(ID_SIDE_COLOR_SENSOR);
+        //sideUltrasonicSensor = hwMap.ultrasonicSensor.get(ID_SIDE_ULTRASONIC_SENSOR);
+        //floorLightSensor = hwMap.lightSensor.get(ID_FLOOR_LIGHT_SENSOR);
     }
 
     /***

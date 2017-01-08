@@ -57,13 +57,13 @@ import com.qualcomm.robotcore.util.Range;
 
 @TeleOp(name="Pushbot: Teleop Tank", group="Pushbot")
 @Disabled
-public class PushbotTeleopTank_Iterative extends OpMode{
+class PushbotTeleopTank_Iterative extends OpMode{
 
     /* Declare OpMode members. */
-    HardwarePushbot robot       = new HardwarePushbot(); // use the class created to define a Pushbot's hardware
+    private HardwarePushbot robot       = new HardwarePushbot(); // use the class created to define a Pushbot's hardware
                                                          // could also use HardwarePushbotMatrix class.
-    double          clawOffset  = 0.0 ;                  // Servo mid position
-    final double    CLAW_SPEED  = 0.02 ;                 // sets rate to move servo
+                                                         private double          clawOffset  = 0.0 ;                  // Servo mid position
+    private final double    CLAW_SPEED  = 0.02 ;                 // sets rate to move servo
 
 
     /*

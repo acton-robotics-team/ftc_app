@@ -86,17 +86,17 @@ import java.util.List;
 
 @Autonomous(name="Concept: Vuforia Navigation", group ="Concept")
 @Disabled
-public class ConceptVuforiaNavigation extends LinearOpMode {
+class ConceptVuforiaNavigation extends LinearOpMode {
 
-    public static final String TAG = "Vuforia Sample";
+    private static final String TAG = "Vuforia Sample";
 
-    OpenGLMatrix lastLocation = null;
+    private OpenGLMatrix lastLocation = null;
 
     /**
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
      * localization engine.
      */
-    VuforiaLocalizer vuforia;
+    private VuforiaLocalizer vuforia;
 
     @Override public void runOpMode() {
         /**
@@ -326,7 +326,7 @@ public class ConceptVuforiaNavigation extends LinearOpMode {
      * A simple utility that extracts positioning information from a transformation matrix
      * and formats it in a form palatable to a human being.
      */
-    String format(OpenGLMatrix transformationMatrix) {
+    private String format(OpenGLMatrix transformationMatrix) {
         return transformationMatrix.formatAsTransform();
     }
 }

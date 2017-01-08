@@ -61,15 +61,15 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name="Pushbot: Auto Drive By Time", group="Pushbot")
 @Disabled
-public class PushbotAutoDriveByTime_Linear extends LinearOpMode {
+class PushbotAutoDriveByTime_Linear extends LinearOpMode {
 
     /* Declare OpMode members. */
-    HardwarePushbot         robot   = new HardwarePushbot();   // Use a Pushbot's hardware
+    private HardwarePushbot         robot   = new HardwarePushbot();   // Use a Pushbot's hardware
     private ElapsedTime     runtime = new ElapsedTime();
 
 
-    static final double     FORWARD_SPEED = 0.6;
-    static final double     TURN_SPEED    = 0.5;
+    private static final double     FORWARD_SPEED = 0.6;
+    private static final double     TURN_SPEED    = 0.5;
 
     @Override
     public void runOpMode() {

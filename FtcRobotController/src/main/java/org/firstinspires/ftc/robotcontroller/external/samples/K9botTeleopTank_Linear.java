@@ -56,14 +56,14 @@ import com.qualcomm.robotcore.util.Range;
 
 @TeleOp(name="K9bot: Telop Tank", group="K9bot")
 @Disabled
-public class K9botTeleopTank_Linear extends LinearOpMode {
+class K9botTeleopTank_Linear extends LinearOpMode {
 
     /* Declare OpMode members. */
-    HardwareK9bot   robot           = new HardwareK9bot();              // Use a K9'shardware
-    double          armPosition     = robot.ARM_HOME;                   // Servo safe position
-    double          clawPosition    = robot.CLAW_HOME;                  // Servo safe position
-    final double    CLAW_SPEED      = 0.01 ;                            // sets rate to move servo
-    final double    ARM_SPEED       = 0.01 ;                            // sets rate to move servo
+    private HardwareK9bot   robot           = new HardwareK9bot();              // Use a K9'shardware
+    private double          armPosition     = robot.ARM_HOME;                   // Servo safe position
+    private double          clawPosition    = robot.CLAW_HOME;                  // Servo safe position
+    private final double    CLAW_SPEED      = 0.01 ;                            // sets rate to move servo
+    private final double    ARM_SPEED       = 0.01 ;                            // sets rate to move servo
 
     @Override
     public void runOpMode() {

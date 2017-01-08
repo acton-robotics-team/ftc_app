@@ -97,44 +97,44 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class FtcRobotControllerActivity extends Activity {
 
-  public static final String TAG = "RCActivity";
+  private static final String TAG = "RCActivity";
 
   private static final int REQUEST_CONFIG_WIFI_CHANNEL = 1;
   private static final boolean USE_DEVICE_EMULATION = false;
   private static final int NUM_GAMEPADS = 2;
 
-  public static final String NETWORK_TYPE_FILENAME = "ftc-network-type.txt";
+  private static final String NETWORK_TYPE_FILENAME = "ftc-network-type.txt";
 
-  protected WifiManager.WifiLock wifiLock;
-  protected RobotConfigFileManager cfgFileMgr;
+  private WifiManager.WifiLock wifiLock;
+  private RobotConfigFileManager cfgFileMgr;
 
-  protected ProgrammingModeController programmingModeController;
+  private ProgrammingModeController programmingModeController;
 
-  protected UpdateUI.Callback callback;
-  protected Context context;
-  protected Utility utility;
-  protected AppUtil appUtil = AppUtil.getInstance();
+  private UpdateUI.Callback callback;
+  private Context context;
+  private Utility utility;
+  private AppUtil appUtil = AppUtil.getInstance();
 
-  protected ImageButton buttonMenu;
-  protected TextView textDeviceName;
-  protected TextView textNetworkConnectionStatus;
-  protected TextView textRobotStatus;
-  protected TextView[] textGamepad = new TextView[NUM_GAMEPADS];
-  protected TextView textOpMode;
-  protected TextView textErrorMessage;
-  protected ImmersiveMode immersion;
+  private ImageButton buttonMenu;
+  private TextView textDeviceName;
+  private TextView textNetworkConnectionStatus;
+  private TextView textRobotStatus;
+  private TextView[] textGamepad = new TextView[NUM_GAMEPADS];
+  private TextView textOpMode;
+  private TextView textErrorMessage;
+  private ImmersiveMode immersion;
 
-  protected UpdateUI updateUI;
-  protected Dimmer dimmer;
-  protected LinearLayout entireScreenLayout;
+  private UpdateUI updateUI;
+  private Dimmer dimmer;
+  private LinearLayout entireScreenLayout;
 
-  protected FtcRobotControllerService controllerService;
-  protected NetworkType networkType;
+  private FtcRobotControllerService controllerService;
+  private NetworkType networkType;
 
-  protected FtcEventLoop eventLoop;
-  protected Queue<UsbDevice> receivedUsbAttachmentNotifications;
+  private FtcEventLoop eventLoop;
+  private Queue<UsbDevice> receivedUsbAttachmentNotifications;
 
-  protected class RobotRestarter implements Restarter {
+  private class RobotRestarter implements Restarter {
 
     public void requestRestart() {
       requestRobotRestart();
@@ -142,7 +142,7 @@ public class FtcRobotControllerActivity extends Activity {
 
   }
 
-  protected ServiceConnection connection = new ServiceConnection() {
+  private ServiceConnection connection = new ServiceConnection() {
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
       FtcRobotControllerBinder binder = (FtcRobotControllerBinder) service;
@@ -173,7 +173,7 @@ public class FtcRobotControllerActivity extends Activity {
     }
   }
 
-  protected void passReceivedUsbAttachmentsToEventLoop() {
+  private void passReceivedUsbAttachmentsToEventLoop() {
     if (this.eventLoop != null) {
       for (;;) {
         UsbDevice usbDevice = receivedUsbAttachmentNotifications.poll();
@@ -258,7 +258,7 @@ public class FtcRobotControllerActivity extends Activity {
     bindToService();
   }
 
-  protected UpdateUI createUpdateUI() {
+  private UpdateUI createUpdateUI() {
     Restarter restarter = new RobotRestarter();
     UpdateUI result = new UpdateUI(this, dimmer);
     result.setRestarter(restarter);
@@ -266,7 +266,7 @@ public class FtcRobotControllerActivity extends Activity {
     return result;
   }
 
-  protected UpdateUI.Callback createUICallback(UpdateUI updateUI) {
+  private UpdateUI.Callback createUICallback(UpdateUI updateUI) {
     UpdateUI.Callback result = updateUI.new Callback();
     result.setStateMonitor(new SoundPlayingRobotMonitor());
     return result;
@@ -328,24 +328,24 @@ public class FtcRobotControllerActivity extends Activity {
     RobotLog.cancelWriteLogcatToDisk();
   }
 
-  protected void bindToService() {
+  private void bindToService() {
     readNetworkType(NETWORK_TYPE_FILENAME);
     Intent intent = new Intent(this, FtcRobotControllerService.class);
     intent.putExtra(NetworkConnectionFactory.NETWORK_CONNECTION_TYPE, networkType);
     bindService(intent, connection, Context.BIND_AUTO_CREATE);
   }
 
-  protected void unbindFromService() {
+  private void unbindFromService() {
     if (controllerService != null) {
       unbindService(connection);
     }
   }
 
-  public void writeNetworkTypeFile(String fileName, String fileContents){
+  private void writeNetworkTypeFile(String fileName, String fileContents){
     ReadWriteFile.writeFile(AppUtil.FIRST_FOLDER, fileName, fileContents);
   }
 
-  protected void readNetworkType(String fileName) {
+  private void readNetworkType(String fileName) {
     NetworkType defaultNetworkType;
     File directory = RobotConfigFileManager.CONFIG_FILES_DIR;
     File networkTypeFile = new File(directory, fileName);
@@ -466,7 +466,7 @@ public class FtcRobotControllerActivity extends Activity {
     }
   }
 
-  public void onServiceBind(FtcRobotControllerService service) {
+  private void onServiceBind(FtcRobotControllerService service) {
     RobotLog.vv(FtcRobotControllerService.TAG, "%s.controllerService=bound", TAG);
     controllerService = service;
     updateUI.setControllerService(controllerService);
@@ -500,7 +500,7 @@ public class FtcRobotControllerActivity extends Activity {
     passReceivedUsbAttachmentsToEventLoop();
   }
 
-  protected OpModeRegister createOpModeRegister() {
+  private OpModeRegister createOpModeRegister() {
     return new FtcOpModeRegister();
   }
 
@@ -514,7 +514,7 @@ public class FtcRobotControllerActivity extends Activity {
     requestRobotSetup();
   }
 
-  protected void hittingMenuButtonBrightensScreen() {
+  private void hittingMenuButtonBrightensScreen() {
     ActionBar actionBar = getActionBar();
     if (actionBar != null) {
       actionBar.addOnMenuVisibilityListener(new ActionBar.OnMenuVisibilityListener() {

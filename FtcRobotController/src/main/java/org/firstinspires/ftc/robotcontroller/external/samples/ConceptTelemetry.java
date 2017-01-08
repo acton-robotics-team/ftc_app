@@ -52,14 +52,14 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  */
 @Autonomous(name = "Concept: Telemetry", group = "Concept")
 @Disabled
-public class ConceptTelemetry extends LinearOpMode  {
+class ConceptTelemetry extends LinearOpMode  {
     /** keeps track of the line of the poem which is to be emitted next */
-    int poemLine = 0;
+    private int poemLine = 0;
 
     /** keeps track of how long it's been since we last emitted a line of poetry */
-    ElapsedTime poemElapsed = new ElapsedTime();
+    private ElapsedTime poemElapsed = new ElapsedTime();
 
-    static final String[] poem = new String[] {
+    private static final String[] poem = new String[] {
 
         "Mary had a little lamb,",
         "His fleece was white as snow,",
@@ -161,14 +161,14 @@ public class ConceptTelemetry extends LinearOpMode  {
     }
 
     // emits a line of poetry to the telemetry log
-    void emitPoemLine() {
+    private void emitPoemLine() {
         telemetry.log().add(poem[poemLine]);
         poemLine = (poemLine+1) % poem.length;
         poemElapsed.reset();
     }
 
     // Computes the current battery voltage
-    double getBatteryVoltage() {
+    private double getBatteryVoltage() {
         double result = Double.POSITIVE_INFINITY;
         for (VoltageSensor sensor : hardwareMap.voltageSensor) {
             double voltage = sensor.getVoltage();

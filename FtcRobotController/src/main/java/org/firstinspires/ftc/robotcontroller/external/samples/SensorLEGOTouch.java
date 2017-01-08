@@ -47,9 +47,9 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
  */
 @TeleOp(name = "Sensor: LEGO touch", group = "Sensor")
 @Disabled
-public class SensorLEGOTouch extends LinearOpMode {
+class SensorLEGOTouch extends LinearOpMode {
 
-  TouchSensor touchSensor;  // Hardware Device Object
+  private TouchSensor touchSensor;  // Hardware Device Object
 
   @Override
   public void runOpMode() {

@@ -48,55 +48,55 @@ import java.util.concurrent.locks.Lock;
  */
 @TeleOp(name = "Concept: I2c Address Change", group = "Concept")
 @Disabled
-public class ConceptI2cAddressChange extends LinearOpMode {
+class ConceptI2cAddressChange extends LinearOpMode {
 
-  public static final int ADDRESS_SET_NEW_I2C_ADDRESS = 0x70;
+  private static final int ADDRESS_SET_NEW_I2C_ADDRESS = 0x70;
   // trigger bytes used to change I2C address on ModernRobotics sensors.
-  public static final byte TRIGGER_BYTE_1 = 0x55;
-  public static final byte TRIGGER_BYTE_2 = (byte) 0xaa;
+  private static final byte TRIGGER_BYTE_1 = 0x55;
+  private static final byte TRIGGER_BYTE_2 = (byte) 0xaa;
 
   // Expected bytes from the Modern Robotics IR Seeker V3 memory map
-  public static final byte IR_SEEKER_V3_FIRMWARE_REV = 0x12;
-  public static final byte IR_SEEKER_V3_SENSOR_ID = 0x49;
-  public static final I2cAddr IR_SEEKER_V3_ORIGINAL_ADDRESS = I2cAddr.create8bit(0x38);
+  private static final byte IR_SEEKER_V3_FIRMWARE_REV = 0x12;
+  private static final byte IR_SEEKER_V3_SENSOR_ID = 0x49;
+  private static final I2cAddr IR_SEEKER_V3_ORIGINAL_ADDRESS = I2cAddr.create8bit(0x38);
 
   // Expected bytes from the Modern Robotics Color Sensor memory map
   public static final byte COLOR_SENSOR_FIRMWARE_REV = 0x10;
   public static final byte COLOR_SENSOR_SENSOR_ID = 0x43;
   public static final byte COLOR_SENSOR_ORIGINAL_ADDRESS = 0x3C;
 
-  public static final byte MANUFACTURER_CODE = 0x4d;
+  private static final byte MANUFACTURER_CODE = 0x4d;
   // Currently, this is set to expect the bytes from the IR Seeker.
   // If you change these values so you're setting "FIRMWARE_REV" to
   // COLOR_SENSOR_FIRMWARE_REV, and "SENSOR_ID" to "COLOR_SENSOR_SENSOR_ID",
   // you'll be able to change the I2C address of the ModernRoboticsColorSensor.
   // If the bytes you're expecting are different than what this op mode finds,
   // a comparison will be printed out into the logfile.
-  public static final byte FIRMWARE_REV = IR_SEEKER_V3_FIRMWARE_REV;
-  public static final byte SENSOR_ID = IR_SEEKER_V3_SENSOR_ID;
+  private static final byte FIRMWARE_REV = IR_SEEKER_V3_FIRMWARE_REV;
+  private static final byte SENSOR_ID = IR_SEEKER_V3_SENSOR_ID;
 
   // These byte values are common with most Modern Robotics sensors.
-  public static final int READ_MODE = 0x80;
-  public static final int ADDRESS_MEMORY_START = 0x0;
-  public static final int TOTAL_MEMORY_LENGTH = 0x0c;
-  public static final int BUFFER_CHANGE_ADDRESS_LENGTH = 0x03;
+  private static final int READ_MODE = 0x80;
+  private static final int ADDRESS_MEMORY_START = 0x0;
+  private static final int TOTAL_MEMORY_LENGTH = 0x0c;
+  private static final int BUFFER_CHANGE_ADDRESS_LENGTH = 0x03;
 
   // The port where your sensor is connected.
-  int port = 5;
+  private int port = 5;
 
-  byte[] readCache;
-  Lock readLock;
-  byte[] writeCache;
-  Lock writeLock;
+  private byte[] readCache;
+  private Lock readLock;
+  private byte[] writeCache;
+  private Lock writeLock;
 
-  I2cAddr currentAddress = IR_SEEKER_V3_ORIGINAL_ADDRESS;
+  private I2cAddr currentAddress = IR_SEEKER_V3_ORIGINAL_ADDRESS;
   // I2c addresses on Modern Robotics devices must be divisible by 2, and between 0x7e and 0x10
   // Different hardware may have different rules.
   // Be sure to read the requirements for the hardware you're using!
   // If you use an invalid address, you may make your device completely unusable.
-  I2cAddr newAddress = I2cAddr.create8bit(0x42);
+  private I2cAddr newAddress = I2cAddr.create8bit(0x42);
 
-  DeviceInterfaceModule dim;
+  private DeviceInterfaceModule dim;
 
   @Override
   public void runOpMode() {

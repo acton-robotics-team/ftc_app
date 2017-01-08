@@ -50,7 +50,7 @@ import com.qualcomm.robotcore.hardware.GyroSensor;
 */
 @TeleOp(name = "Sensor: MR Gyro", group = "Sensor")
 @Disabled
-public class SensorMRGyro extends LinearOpMode {
+class SensorMRGyro extends LinearOpMode {
 
   @Override
   public void runOpMode() {

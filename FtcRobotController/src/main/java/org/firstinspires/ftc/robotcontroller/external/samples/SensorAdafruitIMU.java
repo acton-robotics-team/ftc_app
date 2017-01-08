@@ -59,18 +59,18 @@ import java.util.Locale;
  */
 @Autonomous(name = "Sensor: Adafruit IMU", group = "Sensor")
 @Disabled                            // Uncomment this to add to the opmode list
-public class SensorAdafruitIMU extends LinearOpMode
+class SensorAdafruitIMU extends LinearOpMode
     {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     // The IMU sensor object
-    BNO055IMU imu;
+    private BNO055IMU imu;
 
     // State used for updating telemetry
-    Orientation angles;
-    Acceleration gravity;
+    private Orientation angles;
+    private Acceleration gravity;
 
     //----------------------------------------------------------------------------------------------
     // Main logic
@@ -114,7 +114,7 @@ public class SensorAdafruitIMU extends LinearOpMode
     // Telemetry Configuration
     //----------------------------------------------------------------------------------------------
 
-    void composeTelemetry() {
+    private void composeTelemetry() {
 
         // At the beginning of each telemetry update, grab a bunch of data
         // from the IMU that we will then display in separate lines.
@@ -177,11 +177,11 @@ public class SensorAdafruitIMU extends LinearOpMode
     // Formatting
     //----------------------------------------------------------------------------------------------
 
-    String formatAngle(AngleUnit angleUnit, double angle) {
+    private String formatAngle(AngleUnit angleUnit, double angle) {
         return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
     }
 
-    String formatDegrees(double degrees){
+    private String formatDegrees(double degrees){
         return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
     }
 }
