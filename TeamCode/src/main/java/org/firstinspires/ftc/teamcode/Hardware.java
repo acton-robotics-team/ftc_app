@@ -27,8 +27,8 @@ class Hardware
     /* Public OpMode members. */
     public DcMotor leftDriveMotor  = null;
     public DcMotor rightDriveMotor = null;
-//    public DcMotor launcherMotor = null;
-//    public Servo scooperServo = null;
+    public DcMotor launcherMotor = null;
+    public Servo scooperServo = null;
     public ColorSensor sideColorSensor = null;
     public UltrasonicSensor sideFrontUltrasonicSensor = null;
     public UltrasonicSensor sideBackUltrasonicSensor = null;
@@ -49,24 +49,24 @@ class Hardware
         // Define and Initialize Motors
         leftDriveMotor  = hwMap.dcMotor.get(ID_LEFT_DRIVE_MOTOR);
         rightDriveMotor = hwMap.dcMotor.get(ID_RIGHT_DRIVE_MOTOR);
-//        launcherMotor   = hwMap.dcMotor.get(ID_LAUNCHER_MOTOR);
+        launcherMotor   = hwMap.dcMotor.get(ID_LAUNCHER_MOTOR);
         leftDriveMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         rightDriveMotor.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
 
         // Set all motors to zero power
         leftDriveMotor.setPower(0);
         rightDriveMotor.setPower(0);
-//        launcherMotor.setPower(0);
+        launcherMotor.setPower(0);
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
         leftDriveMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightDriveMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        launcherMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        launcherMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Define and initialize ALL installed servos.
-//        scooperServo = hwMap.servo.get(ID_SCOOPER_SERVO);
-//        scooperServo.setPosition(POS_SCOOPER_SERVO_DOWN);
+        scooperServo = hwMap.servo.get(ID_SCOOPER_SERVO);
+        scooperServo.setPosition(POS_SCOOPER_SERVO_DOWN);
 
         // Sensors
         sideColorSensor = hwMap.colorSensor.get(ID_SIDE_COLOR_SENSOR);

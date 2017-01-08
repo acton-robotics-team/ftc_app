@@ -33,23 +33,23 @@ class ManualController extends OpMode {
         // LAUNCHER MOTOR CONTROL
         if (gamepad2.x) {
             // Full speed
-//            robot.launcherMotor.setPower(1);
+            robot.launcherMotor.setPower(1);
         } else if (gamepad2.y) {
             // Medium speed
-//            robot.launcherMotor.setPower(2/3);
+            robot.launcherMotor.setPower(2/3);
         } else if (gamepad2.b) {
             // Slow speed
-//            robot.launcherMotor.setPower(1/3);
+            robot.launcherMotor.setPower(1/3);
         } else if (gamepad2.a) {
             // Off
-//            robot.launcherMotor.setPower(0/3);
+            robot.launcherMotor.setPower(0/3);
         }
 
         // SCOOPER SERVO CONTROL
         if (gamepad2.left_bumper) {
-//            robot.scooperServo.setPosition(Hardware.POS_SCOOPER_SERVO_DOWN);
+            robot.scooperServo.setPosition(Hardware.POS_SCOOPER_SERVO_DOWN);
         } else if (gamepad2.right_bumper) {
-//            robot.scooperServo.setPosition(Hardware.POS_SCOOPER_SERVO_UP);
+            robot.scooperServo.setPosition(Hardware.POS_SCOOPER_SERVO_UP);
         }
     }
 
@@ -62,7 +62,7 @@ class ManualController extends OpMode {
         robot.rightDriveMotor.setPower(gamepad1.right_stick_y);
     }
 
-    int iteration = 0;
+    private int iteration = 0;
 
     @Override
     public void loop() {
