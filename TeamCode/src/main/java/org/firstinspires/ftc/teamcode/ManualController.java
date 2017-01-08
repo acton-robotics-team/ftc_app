@@ -51,7 +51,7 @@ class ManualController extends OpMode {
         } else if (gamepad2.right_bumper) {
             robot.scooperServo.setPosition(Hardware.POS_SCOOPER_SERVO_UP);
         }
-        //Launcher servo control
+        // Launcher servo control
         if(gamepad1.dpad_left){
             robot.launcherServo.setPosition(Hardware.POS_LAUNCHER_SERVO_DOWN);
         }

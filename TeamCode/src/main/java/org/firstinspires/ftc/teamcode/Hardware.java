@@ -31,6 +31,7 @@ class Hardware
     public static final double POS_BEACON_SERVO_EXTENDED = 0.45;
     public static final double POS_BEACON_SERVO_RETRACTED = 0;
 
+
     /* Public OpMode members. */
     public DcMotor leftDriveMotor  = null;
     public DcMotor rightDriveMotor = null;
