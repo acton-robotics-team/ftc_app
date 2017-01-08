@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /**
@@ -13,12 +12,12 @@ import com.qualcomm.robotcore.hardware.Servo;
 class RunAutonomous extends LinearOpMode {
     private Hardware robot = new Hardware();
     // Constants to create
-    private static final int LINE_THRESHOLD = 0;
+    private static final int LINE_LIGHT_THRESHOLD = 0;
     private static final int RED_COLOR_VALUE = 5000;
     private static final int ULTRASONIC_ERROR_MARGIN = 0;
 
     private boolean lineNotDetected() {
-        return robot.floorLightSensor.getLightDetected() < LINE_THRESHOLD;
+        return robot.floorLightSensor.getLightDetected() < LINE_LIGHT_THRESHOLD;
     }
 
     private void reverseToNextLine() {
