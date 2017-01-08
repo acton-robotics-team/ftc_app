@@ -14,6 +14,7 @@ class RunAutonomous extends LinearOpMode {
     // Constants to create
     private static final int LINE_LIGHT_THRESHOLD = 0;
     private static final int RED_COLOR_VALUE = 5000;
+    private static final int ULTRASONIC_WALL_DISTANCE = 0;
     private static final int ULTRASONIC_ERROR_MARGIN = 0;
 
     private boolean lineNotDetected() {
@@ -73,7 +74,8 @@ class RunAutonomous extends LinearOpMode {
         }
 
         // Keep moving until required distance is reached
-        while (opModeIsActive() && lineNotDetected()) {
+        while (opModeIsActive() &&
+                robot.sideFrontUltrasonicSensor.getUltrasonicLevel() > ULTRASONIC_WALL_DISTANCE) {
             idle();
         }
 
