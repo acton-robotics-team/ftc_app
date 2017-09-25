@@ -27,48 +27,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.GyroSensor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-/*
- * This is an example LinearOpMode that shows how to use
- * a legacy (NXT-compatible) Touch Sensor.
- * It assumes that the touch sensor is configured with a name of "sensor_touch".
- *
- * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
+/**
+ * Hardware access and abstraction.
  */
-@TeleOp(name = "Sensor: LEGO touch", group = "Sensor")
-@Disabled
-public class SensorLEGOTouch extends LinearOpMode {
+class Hardware
+{
+    final TouchSensor frontTouchSensor;
+    final GyroSensor gyroSensor;
 
-  TouchSensor touchSensor;  // Hardware Device Object
-
-  @Override
-  public void runOpMode() {
-
-    // get a reference to our Light Sensor object.
-    touchSensor = hardwareMap.get(TouchSensor.class, "sensor_touch");
-    int counter = 0;
-
-    // wait for the start button to be pressed.
-    waitForStart();
-
-    // while the op mode is active, loop and read the light levels.
-    // Note we use opModeIsActive() as our loop condition because it is an interruptible method.
-    while (opModeIsActive()) {
-
-      // send the info back to driver station using telemetry function.
-      if (touchSensor.isPressed())
-        telemetry.addData("Touch", "Is Pressed");
-      else
-        telemetry.addData("Touch", "Is Not Pressed");
-
-      telemetry.update();
+    /* Constructor */
+    Hardware(HardwareMap map) {
+        frontTouchSensor = map.get(TouchSensor.class, "front_touch_sensor");
+        gyroSensor = map.get(GyroSensor.class, "gyro_sensor");
     }
-  }
 }
+
