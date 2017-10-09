@@ -45,11 +45,9 @@ import java.util.concurrent.TimeUnit;
 @Autonomous(name = "Autonomous program")
 public class AutonomousMode extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
-    private String logText = "";
     private void log(String text) {
         String str = "[" + runtime.time(TimeUnit.SECONDS) + "] " + text;
-        logText = str + logText;
-        telemetry.addLine(logText);
+        telemetry.addLine(str);
         telemetry.update();
     }
 
@@ -139,8 +137,11 @@ public class AutonomousMode extends LinearOpMode {
                 sleep();
                 log("Waiting for touch");
             }
+
             RelicRecoveryVuMark correctGlyphColumn = detectPictogram();
             log("Got glyph column " + correctGlyphColumn);
+
+
         } catch (OpModeStoppedException e) {}
         log("Stopped op mode");
     }
