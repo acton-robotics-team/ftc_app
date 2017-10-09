@@ -3,6 +3,9 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -18,8 +21,8 @@ import java.util.concurrent.TimeUnit;
  * Created by nitro on 10/9/2017.
  */
 
-@Autonomous(name = "Autonomous program")
-public class Experimental extends LinearOpMode {
+@TeleOp(name = "Manual program")
+public class Manual extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private String logText = "";
     private void log(String text) {
@@ -44,11 +47,9 @@ public class Experimental extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
-        try {
-            hw.dcMotor.setPower(1);
-            hw.servo.setPosition(1);
-        } catch(Exception e) {
-            System.out.println(e);
+        while (opModeIsActive()) {
+            hw.dcMotor.setPower(gamepad1.left_stick_x);
+            sleep(40);
         }
     }
 }
