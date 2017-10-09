@@ -29,8 +29,10 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 /**
@@ -38,13 +40,13 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
  */
 class Hardware
 {
-    final TouchSensor frontTouchSensor;
-    final GyroSensor gyroSensor;
+    final DcMotor dcMotor;
+    final Servo servo;
 
     /* Constructor */
     Hardware(HardwareMap map) {
-        frontTouchSensor = map.get(TouchSensor.class, "front_touch_sensor");
-        gyroSensor = map.get(GyroSensor.class, "gyro_sensor");
+        dcMotor = map.dcMotor.get("motor");
+        servo = map.servo.get("servo");
     }
 }
 
