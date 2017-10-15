@@ -30,22 +30,27 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 
 /**
  * Hardware access and abstraction.
  */
 class Hardware
 {
-    final DcMotor dcMotor;
+    final DcMotor rightDriveMotor;
+    final DcMotor leftDriveMotor;
+    /**
+     * Motor used to raise arm
+     */
+    final DcMotor lifterMotor;
     final Servo servo;
 
     /* Constructor */
     Hardware(HardwareMap map) {
-        dcMotor = map.dcMotor.get("motor");
+        rightDriveMotor = map.dcMotor.get("right_drive_motor");
+        leftDriveMotor = map.dcMotor.get("left_drive_motor");
+        lifterMotor = map.dcMotor.get("lifter_motor");
         servo = map.servo.get("servo");
     }
 }
