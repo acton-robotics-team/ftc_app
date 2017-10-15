@@ -45,11 +45,9 @@ import java.util.concurrent.TimeUnit;
 @Autonomous(name = "Autonomous program")
 public class AutonomousMode extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
-    private String logText = "";
     private void log(String text) {
         String str = "[" + runtime.time(TimeUnit.SECONDS) + "] " + text;
-        logText = str + logText;
-        telemetry.addLine(logText);
+        telemetry.addLine(str);
         telemetry.update();
     }
 
