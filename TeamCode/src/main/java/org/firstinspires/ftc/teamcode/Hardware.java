@@ -38,6 +38,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  */
 class Hardware
 {
+
     final DcMotor rightDriveMotor;
     final DcMotor leftDriveMotor;
     /**

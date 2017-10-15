@@ -38,8 +38,12 @@ public class Manual extends LinearOpMode {
         runtime.reset();
 
         while (opModeIsActive()) {
-            hw.rightDriveMotor.setPower(gamepad1.left_stick_x);
-            sleep(40);
+            hw.rightDriveMotor.setPower(gamepad1.right_stick_y);
+            hw.leftDriveMotor.setPower(gamepad1.left_stick_y);
+
+            hw.servo.setPosition(gamepad2.right_trigger);
+
+            idle();
         }
     }
 }
