@@ -32,7 +32,6 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Hardware;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
@@ -122,6 +121,7 @@ public class AutonomousMode extends LinearOpMode {
                 return vuMark;
             } else {
                 log("VuMark not visible");
+                idle();
             }
         }
         throw new OpModeStoppedException();
@@ -136,13 +136,15 @@ public class AutonomousMode extends LinearOpMode {
         runtime.reset();
 
         try {
-            while (!hw.frontTouchSensor.isPressed()) {
+            /*while (false) {
                 sleep();
                 log("Waiting for touch");
-            }
+            }*/
             RelicRecoveryVuMark correctGlyphColumn = detectPictogram();
             log("Got glyph column " + correctGlyphColumn);
-        } catch (OpModeStoppedException e) {}
+        } catch (OpModeStoppedException e) {
+            log("Stopping op mode...");
+        }
         log("Stopped op mode");
     }
 }
