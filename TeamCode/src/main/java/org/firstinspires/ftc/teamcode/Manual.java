@@ -28,8 +28,7 @@ public class Manual extends LinearOpMode {
 
             hw.servo.setPosition(gamepad2.right_trigger);
 
-            OpticalDistanceSensor sensor = hardwareMap.opticalDistanceSensor.get("sensor");
-            telemetry.addLine(String.valueOf(sensor.getLightDetected()));
+            telemetry.addLine(String.valueOf(hw.opticalDistanceSensor.getLightDetected()));
             telemetry.update();
             idle();
         }

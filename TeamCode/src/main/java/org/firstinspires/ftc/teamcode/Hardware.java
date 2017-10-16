@@ -31,6 +31,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /**
@@ -47,12 +48,17 @@ class Hardware
     final DcMotor lifterMotor;
     final Servo servo;
 
+    final OpticalDistanceSensor opticalDistanceSensor;
+
     /* Constructor */
     Hardware(HardwareMap map) {
         rightDriveMotor = map.dcMotor.get("right_drive_motor");
         leftDriveMotor = map.dcMotor.get("left_drive_motor");
         lifterMotor = map.dcMotor.get("lifter_motor");
+
         servo = map.servo.get("servo");
+
+        opticalDistanceSensor = map.opticalDistanceSensor.get("optical_distance_sensor");
     }
 }
 
