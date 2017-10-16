@@ -37,7 +37,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 /**
  * Hardware access and abstraction.
  */
-class Hardware
+final class Hardware
 {
 
     final DcMotor rightDriveMotor;
