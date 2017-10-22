@@ -40,6 +40,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  */
 final class Hardware
 {
+    static final int TETRIX_TICKS_PER_REVOLUTION = 1440;
 
     final DcMotor rightDriveMotor;
     final DcMotor leftDriveMotor;
@@ -59,6 +60,7 @@ final class Hardware
         //lifterMotor.setPower(1);
         relicArmMotor = map.dcMotor.get("relic_arm_motor");
         relicHandServo = map.servo.get("relic_hand_servo");
+        relicHandServo.setDirection(Servo.Direction.REVERSE);
         leftGrabberServo = map.servo.get("left_grabber_servo");
         rightGrabberServo = map.servo.get("right_grabber_servo");
         rightGrabberServo.setDirection(Servo.Direction.REVERSE);
