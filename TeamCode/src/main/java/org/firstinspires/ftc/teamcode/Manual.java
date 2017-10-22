@@ -3,11 +3,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
-import com.qualcomm.robotcore.util.ElapsedTime;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by nitro on 10/9/2017.
@@ -26,7 +21,7 @@ public class Manual extends LinearOpMode {
             hw.rightDriveMotor.setPower(gamepad1.right_stick_y);
             hw.leftDriveMotor.setPower(gamepad1.left_stick_y);
 
-            hw.servo.setPosition(gamepad2.right_trigger);
+            hw.leftGrabberServo.setPosition(gamepad2.right_trigger);
 
             telemetry.addLine(String.valueOf(hw.opticalDistanceSensor.getLightDetected()));
             telemetry.update();
