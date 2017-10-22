@@ -13,12 +13,15 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class Test extends LinearOpMode {
     @Override
     public void runOpMode() {
-        Servo servo = hardwareMap.servo.get("servo");
+        Servo leftGrabberServo = hardwareMap.servo.get("left_grabber_servo");
+        Servo rightGrabberServo = hardwareMap.servo.get("right_grabber_servo");
         // wait for the start button to be pressed.
         waitForStart();
 
         while (opModeIsActive()) {
-            servo.setPosition(gamepad2.left_trigger);
+            leftGrabberServo.setPosition(gamepad2.left_trigger);
+            leftGrabberServo.setDirection(Servo.Direction.REVERSE);
+            rightGrabberServo.setPosition(gamepad2.right_trigger);
             idle();
         }
     }

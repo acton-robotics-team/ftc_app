@@ -30,6 +30,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -51,15 +52,16 @@ final class Hardware
     /* Constructor */
     Hardware(HardwareMap map) {
         rightDriveMotor = map.dcMotor.get("right_drive_motor");
+        rightDriveMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         leftDriveMotor = map.dcMotor.get("left_drive_motor");
         lifterMotor = map.dcMotor.get("lifter_motor");
         lifterMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        lifterMotor.setPower(1);
+        //lifterMotor.setPower(1);
         relicArmMotor = map.dcMotor.get("relic_arm_motor");
         relicHandServo = map.servo.get("relic_hand_servo");
         leftGrabberServo = map.servo.get("left_grabber_servo");
-        leftGrabberServo.setDirection(Servo.Direction.REVERSE);
         rightGrabberServo = map.servo.get("right_grabber_servo");
+        rightGrabberServo.setDirection(Servo.Direction.REVERSE);
     }
 }
 

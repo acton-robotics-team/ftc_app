@@ -21,10 +21,6 @@ public class Manual extends LinearOpMode {
             hw.rightDriveMotor.setPower(gamepad1.right_stick_y);
             hw.leftDriveMotor.setPower(gamepad1.left_stick_y);
 
-            hw.lifterMotor.setTargetPosition(
-                    hw.lifterMotor.getCurrentPosition() + (int)Math.floor(gamepad2.right_stick_y)
-            );
-
             hw.leftGrabberServo.setPosition(gamepad2.left_trigger);
             hw.rightGrabberServo.setPosition(gamepad2.right_trigger);
 
