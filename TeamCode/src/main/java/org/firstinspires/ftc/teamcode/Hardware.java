@@ -42,11 +42,11 @@ final class Hardware
 
     final DcMotor rightDriveMotor;
     final DcMotor leftDriveMotor;
-    /**
-     * Motor used to raise arm
-     */
     final DcMotor lifterMotor;
-    final Servo servo;
+    final DcMotor relicArmMotor;
+    final Servo relicHandServo;
+    final Servo leftGrabberServo;
+    final Servo rightGrabberServo;
 
     final OpticalDistanceSensor opticalDistanceSensor;
 
@@ -55,8 +55,10 @@ final class Hardware
         rightDriveMotor = map.dcMotor.get("right_drive_motor");
         leftDriveMotor = map.dcMotor.get("left_drive_motor");
         lifterMotor = map.dcMotor.get("lifter_motor");
-
-        servo = map.servo.get("servo");
+        relicArmMotor = map.dcMotor.get("relic_arm_motor");
+        relicHandServo = map.servo.get("relic_hand_servo");
+        leftGrabberServo = map.servo.get("left_grabber_servo");
+        rightGrabberServo = map.servo.get("right_grabber_servo");
 
         opticalDistanceSensor = map.opticalDistanceSensor.get("optical_distance_sensor");
     }
