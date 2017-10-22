@@ -10,6 +10,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name = "Manual program")
 public class Manual extends LinearOpMode {
+    private double limit(double value, double min, double max) {
+        return Math.min(value + min, max);
+    }
+
     @Override
     public void runOpMode() {
         Hardware hw = new Hardware(hardwareMap);
@@ -21,8 +25,8 @@ public class Manual extends LinearOpMode {
             hw.rightDriveMotor.setPower(gamepad1.right_stick_y);
             hw.leftDriveMotor.setPower(gamepad1.left_stick_y);
 
-            hw.leftGrabberServo.setPosition(gamepad2.left_trigger);
-            hw.rightGrabberServo.setPosition(gamepad2.right_trigger);
+            hw.leftGrabberServo.setPosition(limit(gamepad2.left_trigger, 0.2, 1.0));
+            hw.rightGrabberServo.setPosition(limit(gamepad2.right_trigger, 0.2, 1.0));
 
             idle();
         }

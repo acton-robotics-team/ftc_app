@@ -20,7 +20,7 @@ public class Test extends LinearOpMode {
 
         while (opModeIsActive()) {
             leftGrabberServo.setPosition(gamepad2.left_trigger);
-            leftGrabberServo.setDirection(Servo.Direction.REVERSE);
+            rightGrabberServo.setDirection(Servo.Direction.REVERSE);
             rightGrabberServo.setPosition(gamepad2.right_trigger);
             idle();
         }
