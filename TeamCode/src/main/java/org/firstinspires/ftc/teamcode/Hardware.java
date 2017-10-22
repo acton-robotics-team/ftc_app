@@ -48,19 +48,17 @@ final class Hardware
     final Servo leftGrabberServo;
     final Servo rightGrabberServo;
 
-    final OpticalDistanceSensor opticalDistanceSensor;
-
     /* Constructor */
     Hardware(HardwareMap map) {
         rightDriveMotor = map.dcMotor.get("right_drive_motor");
         leftDriveMotor = map.dcMotor.get("left_drive_motor");
         lifterMotor = map.dcMotor.get("lifter_motor");
+        lifterMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        lifterMotor.setPower(1);
         relicArmMotor = map.dcMotor.get("relic_arm_motor");
         relicHandServo = map.servo.get("relic_hand_servo");
         leftGrabberServo = map.servo.get("left_grabber_servo");
         rightGrabberServo = map.servo.get("right_grabber_servo");
-
-        opticalDistanceSensor = map.opticalDistanceSensor.get("optical_distance_sensor");
     }
 }
 
