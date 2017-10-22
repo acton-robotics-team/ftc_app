@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  * Created by nitro on 10/9/2017.
  */
 
-@TeleOp(name = "Manual program")
+@TeleOp(name = "Test")
 public class Test extends LinearOpMode {
     @Override
     public void runOpMode() {

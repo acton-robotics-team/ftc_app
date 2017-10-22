@@ -58,6 +58,7 @@ final class Hardware
         relicArmMotor = map.dcMotor.get("relic_arm_motor");
         relicHandServo = map.servo.get("relic_hand_servo");
         leftGrabberServo = map.servo.get("left_grabber_servo");
+        leftGrabberServo.setDirection(Servo.Direction.REVERSE);
         rightGrabberServo = map.servo.get("right_grabber_servo");
     }
 }
