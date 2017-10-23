@@ -49,7 +49,6 @@ final class Hardware
     final Servo relicHandServo;
     final Servo leftGrabberServo;
     final Servo rightGrabberServo;
-
     /* Constructor */
     Hardware(HardwareMap map) {
         rightDriveMotor = map.dcMotor.get("right_drive_motor");
