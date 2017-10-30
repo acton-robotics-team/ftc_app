@@ -14,6 +14,17 @@ public class Manual extends LinearOpMode {
     private double limit(double value, double min, double max) {
         return Math.min(Math.max(value, min), max);
     }
+    public void controlLimitedMotor(DcMotor motor, double bottomLimit, double topLimit, double controlAxis) {
+        int position = motor.getCurrentPosition();
+        telemetry.addData("LIMIT motor " + controlAxis + " " + position + " " + bottomLimit + " " + topLimit, "");
+        if (controlAxis > 0.1 && position < topLimit) {
+            motor.setPower(1);
+        } else if (controlAxis < -0.1 && position > bottomLimit) {
+            motor.setPower(-1);
+        } else {
+            motor.setPower(0);
+        }
+    }
     private int limit(int value, int min, int max) {
         return Math.min(Math.max(value, min), max);
     }
@@ -30,20 +41,18 @@ public class Manual extends LinearOpMode {
             hw.leftDriveMotor.setPower(gamepad1.left_stick_y * 0.5);
 
             hw.leftGrabberServo.setPosition(limit(gamepad2.left_trigger, 0.5, 1.0));
-            hw.rightGrabberServo.setPosition(limit(gamepad2.right_trigger, 0.5, 1.0));
+            hw.rightGrabberServo.setPosition(limit(gamepad2.left_trigger, 0.5, 1.0));
 
-            int position = hw.lifterMotor.getCurrentPosition();
-            telemetry.addData("Encoder Position", position);
-            if (gamepad2.right_stick_y > 0.1 && position < 4.5 * Hardware.TETRIX_TICKS_PER_REVOLUTION) { //4.5 reotations
-                // Actually pushing down -- positive offset = move DOWN
-                hw.lifterMotor.setPower(1);
+            controlLimitedMotor(
+                    hw.lifterMotor,
+                    0, 4.5 * Hardware.TETRIX_TICKS_PER_REVOLUTION,
+                    -gamepad2.left_stick_y);
 
-            } else if (gamepad2.right_stick_y < -0.1 && position > 0) {
-                // Actually pushing up -- negative offset = move UP
-                hw.lifterMotor.setPower(-1);
-            } else {
-                hw.lifterMotor.setPower(0);
-            }
+            hw.relicHandServo.setPosition(limit(gamepad2.right_trigger, 0.5, 1.0));
+            controlLimitedMotor(
+                    hw.relicArmMotor,
+                    0, 0.5 * Hardware.TETRIX_TICKS_PER_REVOLUTION,
+                    -gamepad2.right_stick_y);
             idle();
         }
     }
