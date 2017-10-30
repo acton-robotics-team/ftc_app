@@ -14,17 +14,14 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class Test extends LinearOpMode {
     @Override
     public void runOpMode() {
+        DcMotor lifterMotor = hardwareMap.dcMotor.get("lifter_motor");
         waitForStart();
 
         while (opModeIsActive()) {
-            int offset;
-            DcMotor lifterMotor = hardwareMap.dcMotor.get("lifter_motor");
-
-
             int position = lifterMotor.getCurrentPosition();
-           telemetry.addData("Encoder Position", position);
-           lifterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            if (gamepad2.right_stick_y > 0.1 && position < 4500) { //4.5 reotations
+            telemetry.addData("Encoder Position", position);
+            telemetry.update();
+            if (gamepad2.right_stick_y > 0.1 && position < 4.5 * Hardware.TETRIX_TICKS_PER_REVOLUTION) { //4.5 reotations
                 // Actually pushing down -- positive offset = move DOWN
                 lifterMotor.setPower(1);
 
