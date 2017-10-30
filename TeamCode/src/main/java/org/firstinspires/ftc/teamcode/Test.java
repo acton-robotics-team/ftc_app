@@ -33,7 +33,7 @@ public class Test extends LinearOpMode {
             controlLimitedMotor(
                     lifterMotor,
                     0, 4.5 * Hardware.TETRIX_TICKS_PER_REVOLUTION,
-                    gamepad2.left_stick_y);
+                    -gamepad2.left_stick_y);
             telemetry.update();
             idle();
         }
