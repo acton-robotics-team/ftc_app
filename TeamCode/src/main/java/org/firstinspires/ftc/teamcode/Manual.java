@@ -16,7 +16,9 @@ public class Manual extends LinearOpMode {
     }
     public void controlLimitedMotor(DcMotor motor, double bottomLimit, double topLimit, double controlAxis) {
         int position = motor.getCurrentPosition();
-        telemetry.addData("LIMIT motor " + controlAxis + " " + position + " " + bottomLimit + " " + topLimit, "");
+        telemetry.addData(
+                "LIMIT motor " + motor.getDeviceName() + " CTRL " + controlAxis +
+                        " POS " + position + " BOTTOM " + bottomLimit + " TOP " + topLimit, "");
         if (controlAxis > 0.1 && position < topLimit) {
             motor.setPower(1);
         } else if (controlAxis < -0.1 && position > bottomLimit) {
