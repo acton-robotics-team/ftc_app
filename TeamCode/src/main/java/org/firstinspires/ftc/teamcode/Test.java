@@ -24,7 +24,7 @@ public class Test extends LinearOpMode {
             int position = lifterMotor.getCurrentPosition();
            telemetry.addData("Encoder Position", position);
            lifterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            if (gamepad2.right_stick_y > 0.1 && position < 4500) { //4.5 reotations
+            if (gamepad2.right_stick_y > 0.1 && position < -4500) { //4.5 reotations
                 // Actually pushing down -- positive offset = move DOWN
                 lifterMotor.setPower(1);
 

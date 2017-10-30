@@ -36,10 +36,11 @@ public class Manual extends LinearOpMode {
             int position = hw.lifterMotor.getCurrentPosition();
             telemetry.addData("Encoder Position", position);
             hw.lifterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            if (gamepad2.right_stick_y > 0.1 && position < 0) {
+            if (gamepad2.right_stick_y > 0.1 && position < 4500) {
+                //CAN ONLY MOVE DOWN AT START
                 // Actually pushing down -- positive offset = move DOWN
                 hw.lifterMotor.setPower(1);
-            } else if (gamepad2.right_stick_y < -0.1 && position > -4500) {
+            } else if (gamepad2.right_stick_y < -0.1 && position >0) {
                 // Actually pushing up -- negative offset = move UP
                 hw.lifterMotor.setPower(-1);
             }
