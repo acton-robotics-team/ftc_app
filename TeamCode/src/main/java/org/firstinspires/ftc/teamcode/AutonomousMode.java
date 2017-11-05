@@ -86,7 +86,7 @@ public class AutonomousMode extends LinearOpMode {
 
         // wait for the start button to be pressed.
         waitForStart();
-        
+
         runtime.reset();
 
         // 1. Drive straight into wall

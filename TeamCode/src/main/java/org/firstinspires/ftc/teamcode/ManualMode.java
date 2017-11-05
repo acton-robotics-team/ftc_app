@@ -14,15 +14,15 @@ public class ManualMode extends LinearOpMode {
     private double limit(double value, double min, double max) {
         return Math.min(Math.max(value, min), max);
     }
-    public void controlLimitedMotor(DcMotor motor, double bottomLimit, double topLimit, double controlAxis) {
+    public void controlLimitedMotor(DcMotor motor, double bottomLimit, double topLimit, double controlAxis, double power) {
         int position = motor.getCurrentPosition();
         telemetry.addData(
                 "LIMIT motor " + motor.getDeviceName() + " CTRL " + controlAxis +
                         " POS " + position + " BOTTOM " + bottomLimit + " TOP " + topLimit, "");
         if (controlAxis > 0.1 && position < topLimit) {
-            motor.setPower(1);
+            motor.setPower(power);
         } else if (controlAxis < -0.1 && position > bottomLimit) {
-            motor.setPower(-1);
+            motor.setPower(-power);
         } else {
             motor.setPower(0);
         }
@@ -48,13 +48,13 @@ public class ManualMode extends LinearOpMode {
             controlLimitedMotor(
                     hw.lifterMotor,
                     0, 4.5 * Hardware.TETRIX_TICKS_PER_REVOLUTION,
-                    -gamepad2.left_stick_y);
+                    gamepad2.left_stick_y, 1);
 
             hw.relicHandServo.setPosition(limit(gamepad2.right_trigger, 0.5, 1.0));
             controlLimitedMotor(
                     hw.relicArmMotor,
                     0, 0.5 * Hardware.TETRIX_TICKS_PER_REVOLUTION,
-                    -gamepad2.right_stick_y);
+                    gamepad2.right_stick_y, 0.1);
             idle();
         }
     }
