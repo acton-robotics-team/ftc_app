@@ -9,8 +9,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
  * Created by nitro on 10/9/2017.
  */
 
-@TeleOp(name = "ManualMode program")
-public class ManualMode extends LinearOpMode {
+@TeleOp(name = "Manual: tank drive")
+public class ManualModeTankDrive extends LinearOpMode {
     private double limit(double value, double min, double max) {
         return Math.min(Math.max(value, min), max);
     }
