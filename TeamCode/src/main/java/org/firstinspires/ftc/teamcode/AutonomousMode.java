@@ -133,6 +133,12 @@ public class AutonomousMode extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
+        // 1. Drive straight into wall
+        // 2. Scan pictogram
+        // 3. Hit jewel
+        // 4. Put block we already have in cryptobox
+        // ...
+
         try {
             /*while (false) {
                 sleep();
