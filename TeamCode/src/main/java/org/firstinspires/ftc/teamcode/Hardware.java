@@ -57,6 +57,7 @@ final class Hardware
         lifterMotor = map.dcMotor.get("lifter_motor");
         lifterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lifterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        lifterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         relicArmMotor = map.dcMotor.get("relic_arm_motor");
         relicHandServo = map.servo.get("relic_hand_servo");
         relicHandServo.setDirection(Servo.Direction.REVERSE);

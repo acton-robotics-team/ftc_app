@@ -27,9 +27,6 @@ public class ManualMode extends LinearOpMode {
             motor.setPower(0);
         }
     }
-    private int limit(int value, int min, int max) {
-        return Math.min(Math.max(value, min), max);
-    }
 
     @Override
     public void runOpMode() {
@@ -47,8 +44,8 @@ public class ManualMode extends LinearOpMode {
 
             controlLimitedMotor(
                     hw.lifterMotor,
-                    0, 4.5 * Hardware.TETRIX_TICKS_PER_REVOLUTION,
-                    gamepad2.left_stick_y, 1);
+                    0, 4 * Hardware.TETRIX_TICKS_PER_REVOLUTION,
+                    -gamepad2.left_stick_y, 1);
 
             hw.relicHandServo.setPosition(limit(gamepad2.right_trigger, 0.5, 1.0));
             controlLimitedMotor(
