@@ -52,8 +52,8 @@ final class Hardware
     /* Constructor */
     Hardware(HardwareMap map) {
         rightDriveMotor = map.dcMotor.get("right_drive_motor");
-        rightDriveMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         leftDriveMotor = map.dcMotor.get("left_drive_motor");
+        leftDriveMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         lifterMotor = map.dcMotor.get("lifter_motor");
         lifterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lifterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
