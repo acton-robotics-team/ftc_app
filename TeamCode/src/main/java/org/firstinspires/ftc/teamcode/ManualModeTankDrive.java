@@ -26,7 +26,7 @@ public class ManualModeTankDrive extends LinearOpMode {
                 motor.setPower(power);
             }
         } else if (controlAxis < -0.1 && position > bottomLimit) {
-            if (boostOn && (gamepad1.b || gamepad1.right_bumper){
+            if (boostOn && (gamepad1.b || gamepad1.right_bumper)){
                 motor.setPower(-1);
             } else {
                 motor.setPower(-power);
@@ -35,23 +35,20 @@ public class ManualModeTankDrive extends LinearOpMode {
             motor.setPower(0);
         }
     }
-    public class ManualModeTankDrive extends LinearOpMode {
-        private double limit(double value, double min, double max) {
-            return Math.min(Math.max(value, min), max);
+
+    public void controlLimitedMotor(DcMotor motor, double bottomLimit, double topLimit, double controlAxis, double power) {
+        int position = motor.getCurrentPosition();
+        telemetry.addData(
+                "LIMIT motor " + motor.getDeviceName() + " CTRL " + controlAxis +
+                        " POS " + position + " BOTTOM " + bottomLimit + " TOP " + topLimit, "");
+        if (controlAxis > 0.1 && position < topLimit) {
+            motor.setPower(power);
+        } else if (controlAxis < -0.1 && position > bottomLimit) {
+            motor.setPower(-power);
+        } else {
+            motor.setPower(0);
         }
-        public void controlLimitedMotor(DcMotor motor, double bottomLimit, double topLimit, double controlAxis, double power) {
-            int position = motor.getCurrentPosition();
-            telemetry.addData(
-                    "LIMIT motor " + motor.getDeviceName() + " CTRL " + controlAxis +
-                            " POS " + position + " BOTTOM " + bottomLimit + " TOP " + topLimit, "");
-            if (controlAxis > 0.1 && position < topLimit) {
-                motor.setPower(power);
-            } else if (controlAxis < -0.1 && position > bottomLimit) {
-                motor.setPower(-power);
-            } else {
-                motor.setPower(0);
-            }
-        }
+    }
 
 
 
@@ -63,8 +60,18 @@ public class ManualModeTankDrive extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            hw.rightDriveMotor.setPower(gamepad1.right_stick_y * 0.5);
-            hw.leftDriveMotor.setPower(gamepad1.left_stick_y * 0.5);
+            if (gamepad1.left_bumper){
+                hw.rightDriveMotor.setPower(gamepad1.right_stick_y);
+                hw.leftDriveMotor.setPower(gamepad1.left_stick_y);
+            }
+            else if (gamepad1.right_bumper){
+                hw.rightDriveMotor.setPower(gamepad1.right_stick_y * 0.25);
+                hw.leftDriveMotor.setPower(gamepad1.left_stick_y * 0.25);
+            }
+            else {
+                hw.rightDriveMotor.setPower(gamepad1.right_stick_y * 0.5);
+                hw.leftDriveMotor.setPower(gamepad1.left_stick_y * 0.5);
+            }
 
             hw.leftGrabberServo.setPosition(limit(gamepad2.left_trigger, 0.5, 1.0));
             hw.rightGrabberServo.setPosition(limit(gamepad2.left_trigger, 0.5, 1.0));
