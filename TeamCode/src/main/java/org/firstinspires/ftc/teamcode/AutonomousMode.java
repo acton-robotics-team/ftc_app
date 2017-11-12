@@ -29,6 +29,10 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -39,8 +43,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 @Autonomous(name = "Autonomous program")
 public class AutonomousMode extends LinearOpMode {
@@ -58,7 +67,7 @@ public class AutonomousMode extends LinearOpMode {
             idle();
     }
 
-    private RelicRecoveryVuMark detectPictogram() throws OpModeStoppedException {
+    private RelicRecoveryVuMark detectPictogram() {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
         parameters.vuforiaLicenseKey = "AcdD/rP/////AAAAGQcYKmwTDk0lulf4t6n2JsQiodu68wCwukVguR/SeZyNkVD0OnUmmSWSrpM2jXTVVNorEhJRyV08URkTRak94XQN8/jPzVxzuOLCQ8VR8uYKuP/JoovnJM2MC3Pc1KvLlrLwWrL4185vpVaQMLRmvCkzNH+lyoEusMC7vwT4ayI6I22ceFumQuAubLp8APiT3omF4KG6W/lqNyJukt9YHgBYO/JJRVPfZg04LEhwFMixYOXfh+moWdf8zCMj+V7GUfH7Q7OGM0jobzVrg0uYboA2nrJBRjQS6j2eGoXX4yRwhmeVLVtBuklgw+n3qXgQ+OX9Lp48xNIApOByAlAhU117gDYYwE5NQ8ADKvtgupKd";
@@ -68,7 +77,7 @@ public class AutonomousMode extends LinearOpMode {
         VuforiaTrackable relicTemplate = relicTrackables.get(0);
         relicTemplate.setName("relicVuMarkTemplate"); // can help in debugging; otherwise not necessary
         relicTrackables.activate();
-        while (opModeIsActive()) {
+        while (true) {
             RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
             if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
                 return vuMark;
@@ -77,12 +86,13 @@ public class AutonomousMode extends LinearOpMode {
                 idle();
             }
         }
-        throw new OpModeStoppedException();
     }
 
     @Override
     public void runOpMode() {
         Hardware hw = new Hardware(hardwareMap);
+        //SensorManager sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        //Sensor gyro = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
 
         // wait for the start button to be pressed.
         waitForStart();
@@ -100,10 +110,54 @@ public class AutonomousMode extends LinearOpMode {
                 sleep();
                 log("Waiting for touch");
             }*/
-            RelicRecoveryVuMark correctGlyphColumn = detectPictogram();
+            // 3.25 sec
+            Thread jewelTask = new Thread(() -> {
+                hw.jewelArmServo.setPosition(0);
+                sleep(2000);
+                if (hw.jewelColorSensor.blue() > 200) {
+                    hw.jewelHandServo.setPosition(1);
+                } else {
+                    hw.jewelHandServo.setPosition(0);
+                }
+                sleep(250);
+                hw.jewelHandServo.setPosition(0.5);
+                hw.jewelArmServo.setPosition(0.5);
+                sleep(1000);
+            });
+            // ?? time
+            FutureTask<RelicRecoveryVuMark> detectGlyphTask =
+                    new FutureTask<>(this::detectPictogram);
+            jewelTask.start();
+            detectGlyphTask.run();
+
+            // wait for jewel task to finish
+            while (jewelTask.getState() != Thread.State.TERMINATED) {
+                sleep();
+            }
+            // Get (blocking) glyph column
+            RelicRecoveryVuMark correctGlyphColumn;
+            try {
+                correctGlyphColumn = detectGlyphTask.get(10, TimeUnit.SECONDS);
+            } catch (TimeoutException e) {
+                correctGlyphColumn = RelicRecoveryVuMark.UNKNOWN;
+            }
             log("Got glyph column " + correctGlyphColumn);
-        } catch (OpModeStoppedException e) {
-            log("Stopping op mode...");
+
+            // Turn 90 degrees to the right
+
+            // Detect with ODS
+
+            switch (correctGlyphColumn) {
+                case LEFT:
+                case RIGHT:
+                case CENTER:
+                case UNKNOWN:
+                    break;
+            }
+
+            //
+        } catch (Exception e) {
+            log("Stopping op mode... " + e);
         }
         log("Stopped op mode");
     }

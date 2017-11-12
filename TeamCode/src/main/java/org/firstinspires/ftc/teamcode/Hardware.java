@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -46,9 +47,13 @@ final class Hardware
     final DcMotor leftDriveMotor;
     final DcMotor lifterMotor;
     final DcMotor relicArmMotor;
+    final Servo jewelArmServo;
+    final Servo jewelHandServo;
     final Servo relicHandServo;
     final Servo leftGrabberServo;
     final Servo rightGrabberServo;
+    final ColorSensor jewelColorSensor;
+    final OpticalDistanceSensor ods;
     /* Constructor */
     Hardware(HardwareMap map) {
         rightDriveMotor = map.dcMotor.get("right_drive_motor");
@@ -59,11 +64,15 @@ final class Hardware
         lifterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         lifterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         relicArmMotor = map.dcMotor.get("relic_arm_motor");
+        jewelArmServo = map.servo.get("jewel_arm_servo");
+        jewelHandServo = map.servo.get("jewel_hand_servo");
         relicHandServo = map.servo.get("relic_hand_servo");
         relicHandServo.setDirection(Servo.Direction.REVERSE);
         leftGrabberServo = map.servo.get("left_grabber_servo");
         rightGrabberServo = map.servo.get("right_grabber_servo");
         rightGrabberServo.setDirection(Servo.Direction.REVERSE);
+        jewelColorSensor = map.colorSensor.get("jewel_color_sensor");
+        ods = map.opticalDistanceSensor.get("ods");
     }
 }
 
