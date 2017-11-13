@@ -68,6 +68,7 @@ public class ManualModeTankDrive extends LinearOpMode {
                     hw.relicArmMotor,
                     0, Hardware.RELIC_ARM_TOP_LIMIT,
                     gamepad2.right_stick_y, 0.1);
+            telemetry.update();
             idle();
         }
     }
