@@ -64,6 +64,8 @@ public class ManualModeTankDrive extends LinearOpMode {
                 hw.horizontalDriveMotor.setPower(-1);
             } else if (gamepad1.dpad_right) {
                 hw.horizontalDriveMotor.setPower(1);
+            } else {
+                hw.horizontalDriveMotor.setPower(0);
             }
 
             if (gamepad1.left_bumper){
