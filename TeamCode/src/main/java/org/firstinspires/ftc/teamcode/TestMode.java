@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  */
 
 @TeleOp(name = "Test")
-public class Test extends LinearOpMode {
+public class TestMode extends LinearOpMode {
     @Override
     public void runOpMode() {
         OpticalDistanceSensor ods = hardwareMap.opticalDistanceSensor.get("optical_dist");
