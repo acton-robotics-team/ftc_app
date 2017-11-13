@@ -29,10 +29,6 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import android.content.Context;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -43,10 +39,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -91,8 +83,9 @@ public class AutonomousMode extends LinearOpMode {
     @Override
     public void runOpMode() {
         Hardware hw = new Hardware(hardwareMap);
-        //SensorManager sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-        //Sensor gyro = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+
+        hw.leftGrabberServo.setPosition(Hardware.GRABBER_GRABBED);
+        hw.rightGrabberServo.setPosition(Hardware.GRABBER_GRABBED);
 
         // wait for the start button to be pressed.
         waitForStart();
@@ -111,7 +104,7 @@ public class AutonomousMode extends LinearOpMode {
                 log("Waiting for touch");
             }*/
             // 3.25 sec
-            Thread jewelTask = new Thread(() -> {
+            FutureTask<Void> jewelTask = new FutureTask<>(() -> {
                 hw.jewelArmServo.setPosition(0);
                 sleep(2000);
                 if (hw.jewelColorSensor.blue() > 200) {
@@ -123,17 +116,16 @@ public class AutonomousMode extends LinearOpMode {
                 hw.jewelHandServo.setPosition(0.5);
                 hw.jewelArmServo.setPosition(0.5);
                 sleep(1000);
+                return null;
             });
             // ?? time
             FutureTask<RelicRecoveryVuMark> detectGlyphTask =
                     new FutureTask<>(this::detectPictogram);
-            jewelTask.start();
+            jewelTask.run();
             detectGlyphTask.run();
 
             // wait for jewel task to finish
-            while (jewelTask.getState() != Thread.State.TERMINATED) {
-                sleep();
-            }
+            jewelTask.get();
             // Get (blocking) glyph column
             RelicRecoveryVuMark correctGlyphColumn;
             try {
@@ -143,7 +135,6 @@ public class AutonomousMode extends LinearOpMode {
             }
             log("Got glyph column " + correctGlyphColumn);
 
-            // Turn 90 degrees to the right
             hw.horizontalDriveMotor.setPower(0.25);
             sleep(2000);
             hw.horizontalDriveMotor.setPower(0);
@@ -158,10 +149,13 @@ public class AutonomousMode extends LinearOpMode {
             switch (correctGlyphColumn) {
                 case LEFT:
                     requiredColumn = 3;
+                    break;
                 case RIGHT:
                     requiredColumn = 2;
+                    break;
                 case CENTER:
                     requiredColumn = 1;
+                    break;
                 case UNKNOWN:
                 default:
                     requiredColumn = 2; // lmao
@@ -177,7 +171,18 @@ public class AutonomousMode extends LinearOpMode {
             }
             hw.horizontalDriveMotor.setPower(0);
 
-            // Now we are at the required column. Turn 180 degrees.
+            // Now we are at the required column. Move forward until ODS reads.
+            hw.leftDriveMotor.setPower(0.1);
+            hw.rightDriveMotor.setPower(0.1);
+            while (hw.ods.getLightDetected() == 0) {
+                sleep();
+            }
+            hw.rightDriveMotor.setPower(0);
+            hw.leftDriveMotor.setPower(0);
+            // Hopefully we've hit the box by now. Release the box!
+            hw.rightGrabberServo.setPosition(Hardware.GRABBER_RELEASED);
+            hw.leftGrabberServo.setPosition(Hardware.GRABBER_RELEASED);
+
         } catch (Exception e) {
             log("Stopping op mode... " + e);
         }

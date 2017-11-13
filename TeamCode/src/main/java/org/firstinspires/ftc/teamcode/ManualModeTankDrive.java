@@ -55,8 +55,8 @@ public class ManualModeTankDrive extends LinearOpMode {
             hw.rightDriveMotor.setPower(gamepad1.right_stick_y * turbo);
             hw.leftDriveMotor.setPower(gamepad1.left_stick_y * turbo);
 
-            hw.leftGrabberServo.setPosition(limit(gamepad2.left_trigger, 0.5, 1.0));
-            hw.rightGrabberServo.setPosition(limit(gamepad2.left_trigger, 0.5, 1.0));
+            hw.leftGrabberServo.setPosition(limit(gamepad2.left_trigger, Hardware.GRABBER_RELEASED, Hardware.GRABBER_GRABBED));
+            hw.rightGrabberServo.setPosition(limit(gamepad2.left_trigger, Hardware.GRABBER_RELEASED, Hardware.GRABBER_GRABBED));
 
             controlLimitedMotor(
                     hw.lifterMotor,
