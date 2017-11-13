@@ -45,9 +45,9 @@ public class ManualModeTankDrive extends LinearOpMode {
             }
 
             if (gamepad1.dpad_left) {
-                hw.horizontalDriveMotor.setPower(-1);
+                hw.horizontalDriveMotor.setPower(Hardware.HORIZONTAL_LEFT);
             } else if (gamepad1.dpad_right) {
-                hw.horizontalDriveMotor.setPower(1);
+                hw.horizontalDriveMotor.setPower(Hardware.HORIZONTAL_RIGHT);
             } else {
                 hw.horizontalDriveMotor.setPower(0);
             }
@@ -60,13 +60,13 @@ public class ManualModeTankDrive extends LinearOpMode {
 
             controlLimitedMotor(
                     hw.lifterMotor,
-                    0, 4 * Hardware.TETRIX_TICKS_PER_REVOLUTION,
+                    0, Hardware.LIFTER_TOP_LIMIT,
                     -gamepad2.left_stick_y, 1);
 
             hw.relicHandServo.setPosition(limit(gamepad2.right_trigger, 0.5, 1.0));
             controlLimitedMotor(
                     hw.relicArmMotor,
-                    0, 0.5 * Hardware.TETRIX_TICKS_PER_REVOLUTION,
+                    0, Hardware.RELIC_ARM_TOP_LIMIT,
                     gamepad2.right_stick_y, 0.1);
             idle();
         }
