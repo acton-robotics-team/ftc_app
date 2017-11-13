@@ -144,18 +144,40 @@ public class AutonomousMode extends LinearOpMode {
             log("Got glyph column " + correctGlyphColumn);
 
             // Turn 90 degrees to the right
+            hw.horizontalDriveMotor.setPower(0.25);
+            sleep(2000);
+            hw.horizontalDriveMotor.setPower(0);
+            hw.leftDriveMotor.setPower(0.25);
+            hw.rightDriveMotor.setPower(0.25);
+            sleep(1000);
+            hw.leftDriveMotor.setPower(0);
+            hw.rightDriveMotor.setPower(0);
 
             // Detect with ODS
-
+            int requiredColumn;
             switch (correctGlyphColumn) {
                 case LEFT:
+                    requiredColumn = 3;
                 case RIGHT:
+                    requiredColumn = 2;
                 case CENTER:
+                    requiredColumn = 1;
                 case UNKNOWN:
-                    break;
+                default:
+                    requiredColumn = 2; // lmao
             }
+            hw.horizontalDriveMotor.setPower(0.25);
+            int atColumn = 0;
+            while (requiredColumn > atColumn) {
+                while (hw.ods.getLightDetected() == 0) {
+                    sleep();
+                }
+                // we have hit a glyph column wall
+                atColumn += 1;
+            }
+            hw.horizontalDriveMotor.setPower(0);
 
-            //
+            // Now we are at the required column. Turn 180 degrees.
         } catch (Exception e) {
             log("Stopping op mode... " + e);
         }
