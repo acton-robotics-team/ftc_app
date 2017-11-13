@@ -63,9 +63,12 @@ final class Hardware
         horizontalDriveMotor = map.dcMotor.get("horizontal_drive_motor");
         lifterMotor = map.dcMotor.get("lifter_motor");
         lifterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        lifterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        lifterMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         lifterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         relicArmMotor = map.dcMotor.get("relic_arm_motor");
+        relicArmMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        relicArmMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        relicArmMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         jewelArmServo = map.servo.get("jewel_arm_servo");
         jewelHandServo = map.servo.get("jewel_hand_servo");
         relicHandServo = map.servo.get("relic_hand_servo");
