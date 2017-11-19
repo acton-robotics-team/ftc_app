@@ -52,11 +52,23 @@ public class AutonomousMode extends LinearOpMode {
         telemetry.update();
     }
 
-    private void sleep() throws OpModeStoppedException {
+    private void sleepSync() throws OpModeStoppedException {
         if (!opModeIsActive())
             throw new OpModeStoppedException();
         else
             idle();
+    }
+
+    private void turn(Hardware hw, int degrees) throws OpModeStoppedException {
+        int encoderTicks = degrees * Hardware.TETRIX_TICKS_PER_TURN_DEGREE;
+        hw.leftDriveMotor.setTargetPosition(encoderTicks);
+        hw.leftDriveMotor.setPower(0.5);
+        hw.rightDriveMotor.setPower(-0.5);
+        while (hw.leftDriveMotor.isBusy()) {
+            sleepSync();
+        }
+        hw.leftDriveMotor.setPower(0);
+        hw.rightDriveMotor.setPower(0);
     }
 
     private RelicRecoveryVuMark detectPictogram() {
@@ -100,7 +112,7 @@ public class AutonomousMode extends LinearOpMode {
 
         try {
             /*while (false) {
-                sleep();
+                sleepSync();
                 log("Waiting for touch");
             }*/
             // 3.25 sec
@@ -137,6 +149,8 @@ public class AutonomousMode extends LinearOpMode {
             }
             log("Got glyph column " + correctGlyphColumn);
 
+            // Turn 90 degrees to the left
+            turn(hw, -90);
             hw.leftDriveMotor.setPower(-0.25);
             hw.rightDriveMotor.setPower(-0.25);
             sleep(1000);
@@ -163,7 +177,7 @@ public class AutonomousMode extends LinearOpMode {
             int atColumn = 0;
             while (requiredColumn > atColumn) {
                 while (hw.ods.getLightDetected() == 0) {
-                    sleep();
+                    sleepSync();
                 }
                 // we have hit a glyph column wall
                 atColumn += 1;
@@ -174,7 +188,7 @@ public class AutonomousMode extends LinearOpMode {
             hw.leftDriveMotor.setPower(0.1);
             hw.rightDriveMotor.setPower(0.1);
             while (hw.ods.getLightDetected() == 0) {
-                sleep();
+                sleepSync();
             }
             hw.rightDriveMotor.setPower(0);
             hw.leftDriveMotor.setPower(0);
