@@ -60,7 +60,7 @@ public class AutonomousMode extends LinearOpMode {
     }
 
     private void turn(Hardware hw, int degrees) throws OpModeStoppedException {
-        int encoderTicks = degrees * Hardware.TETRIX_TICKS_PER_TURN_DEGREE;
+        int encoderTicks = (int)Math.round(degrees * Hardware.TETRIX_TICKS_PER_TURN_DEGREE);
         hw.leftDriveMotor.setTargetPosition(encoderTicks);
         hw.leftDriveMotor.setPower(0.5);
         hw.rightDriveMotor.setPower(-0.5);

@@ -44,8 +44,7 @@ final class Hardware
     static final double GRABBER_RELEASED = 0.5;
     static final double GRABBER_GRABBED = 1;
     static final int TETRIX_TICKS_PER_REVOLUTION = 1440;
-    // ~2681 / 360
-    static final int TETRIX_TICKS_PER_TURN_DEGREE = 9;
+    static final double TETRIX_TICKS_PER_TURN_DEGREE = 2681d / 300d;
     static final double LIFTER_TOP_LIMIT = 4 * TETRIX_TICKS_PER_REVOLUTION;
     static final double RELIC_ARM_TOP_LIMIT = 0.5 * TETRIX_TICKS_PER_REVOLUTION;
     static final int HORIZONTAL_RIGHT = 1;
