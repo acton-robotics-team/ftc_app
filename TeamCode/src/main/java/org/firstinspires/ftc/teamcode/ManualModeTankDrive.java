@@ -37,11 +37,11 @@ public class ManualModeTankDrive extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            double turbo = 0.5;
+            double turbo = 0.25;
             if (gamepad1.left_bumper) {
                 turbo = 1;
             } else if (gamepad1.right_bumper) {
-                turbo = 0.25;
+                turbo = 0.125;
             }
 
             hw.rightDriveMotor.setPower(gamepad1.right_stick_y * turbo);
