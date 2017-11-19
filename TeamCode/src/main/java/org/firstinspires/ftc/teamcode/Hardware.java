@@ -51,7 +51,6 @@ final class Hardware
 
     final DcMotor rightDriveMotor;
     final DcMotor leftDriveMotor;
-    final DcMotor horizontalDriveMotor;
     final DcMotor lifterMotor;
     final DcMotor relicArmMotor;
     final Servo jewelArmServo;
@@ -66,8 +65,6 @@ final class Hardware
         rightDriveMotor = map.dcMotor.get("right_drive_motor");
         leftDriveMotor = map.dcMotor.get("left_drive_motor");
         leftDriveMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        horizontalDriveMotor = map.dcMotor.get("horizontal_drive_motor");
-        horizontalDriveMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         lifterMotor = map.dcMotor.get("lifter_motor");
         lifterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lifterMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);

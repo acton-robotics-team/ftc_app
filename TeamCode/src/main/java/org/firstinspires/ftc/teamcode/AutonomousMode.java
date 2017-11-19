@@ -104,10 +104,12 @@ public class AutonomousMode extends LinearOpMode {
                 log("Waiting for touch");
             }*/
             // 3.25 sec
+
+            //ADD moving back and forth if neither detected
             FutureTask<Void> jewelTask = new FutureTask<>(() -> {
                 hw.jewelArmServo.setPosition(0);
                 sleep(2000);
-                if (hw.jewelColorSensor.blue() > 200) {
+                if (hw.jewelColorSensor.blue() > 0) {
                     hw.jewelHandServo.setPosition(1);
                 } else {
                     hw.jewelHandServo.setPosition(0);
@@ -135,11 +137,8 @@ public class AutonomousMode extends LinearOpMode {
             }
             log("Got glyph column " + correctGlyphColumn);
 
-            hw.horizontalDriveMotor.setPower(0.25);
-            sleep(2000);
-            hw.horizontalDriveMotor.setPower(0);
-            hw.leftDriveMotor.setPower(0.25);
-            hw.rightDriveMotor.setPower(0.25);
+            hw.leftDriveMotor.setPower(-0.25);
+            hw.rightDriveMotor.setPower(-0.25);
             sleep(1000);
             hw.leftDriveMotor.setPower(0);
             hw.rightDriveMotor.setPower(0);
@@ -160,7 +159,7 @@ public class AutonomousMode extends LinearOpMode {
                 default:
                     requiredColumn = 2; // lmao
             }
-            hw.horizontalDriveMotor.setPower(0.25);
+            //hw.horizontalDriveMotor.setPower(0.25);
             int atColumn = 0;
             while (requiredColumn > atColumn) {
                 while (hw.ods.getLightDetected() == 0) {
@@ -169,7 +168,7 @@ public class AutonomousMode extends LinearOpMode {
                 // we have hit a glyph column wall
                 atColumn += 1;
             }
-            hw.horizontalDriveMotor.setPower(0);
+            //hw.horizontalDriveMotor.setPower(0);
 
             // Now we are at the required column. Move forward until ODS reads.
             hw.leftDriveMotor.setPower(0.1);
