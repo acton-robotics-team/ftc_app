@@ -92,10 +92,8 @@ final class Hardware
         slideGateServo = map.servo.get("slide_gate_servo");
         slideLifterServo = map.servo.get("slide_lifter_servo");
         slideExtenderServo = map.servo.get("slide_extender_servo");
-        //jewelColorSensor = map.colorSensor.get("color_sensor");
-        //ods = map.opticalDistanceSensor.get("ods");
-        jewelColorSensor = null;
-        ods = null;
+        jewelColorSensor = map.colorSensor.get("color_sensor");
+        ods = map.opticalDistanceSensor.get("ods");
     }
 }
 
