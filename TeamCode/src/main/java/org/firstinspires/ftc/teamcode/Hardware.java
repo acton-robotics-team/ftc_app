@@ -50,6 +50,8 @@ final class Hardware
     static final double JEWEL_ARM_EXTENDED = 0;
     static final double JEWEL_ARM_HALF_EXTENDED = 0.25;
     static final double JEWEL_ARM_RETRACTED = 0.5;
+    static final double SLIDE_GATE_OPEN = 0.5;
+    static final double SLIDE_GATE_CLOSED = 0;
 
     final DcMotor rightDriveMotor;
     final DcMotor leftDriveMotor;
@@ -59,6 +61,9 @@ final class Hardware
     final Servo relicHandServo;
     final Servo leftGrabberServo;
     final Servo rightGrabberServo;
+    final Servo slideGateServo;
+    final Servo slideLifterServo;
+    final Servo slideExtenderServo;
     final ColorSensor jewelColorSensor;
     final OpticalDistanceSensor ods;
     /* Constructor */
@@ -82,6 +87,9 @@ final class Hardware
         leftGrabberServo = map.servo.get("left_grabber_servo");
         rightGrabberServo = map.servo.get("right_grabber_servo");
         rightGrabberServo.setDirection(Servo.Direction.REVERSE);
+        slideGateServo = map.servo.get("slide_gate_servo");
+        slideLifterServo = map.servo.get("slide_lifter_servo");
+        slideExtenderServo = map.servo.get("slide_extender_servo");
         //jewelColorSensor = map.colorSensor.get("color_sensor");
         //ods = map.opticalDistanceSensor.get("ods");
         jewelColorSensor = null;

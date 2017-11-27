@@ -6,7 +6,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 /**
- * Created by nitro on 10/9/2017.
+ * Created by kevinliu who writes tehe mstdisgusting code ew
+ * on 10/9/2017.
+ * - kuneel sharpedo
  */
 
 @TeleOp(name = "Manual: tank drive")
@@ -51,6 +53,7 @@ public class ManualModeTankDrive extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+            // Gamepad 1
             double turbo = 0.25;
             if (gamepad1.left_bumper) {
                 turbo = 1;
@@ -61,8 +64,27 @@ public class ManualModeTankDrive extends LinearOpMode {
             hw.rightDriveMotor.setPower(gamepad1.right_stick_y * turbo);
             hw.leftDriveMotor.setPower(gamepad1.left_stick_y * turbo);
 
+            // Gamepad 2
             hw.leftGrabberServo.setPosition(limit(gamepad2.left_trigger, Hardware.GRABBER_RELEASED, Hardware.GRABBER_GRABBED));
             hw.rightGrabberServo.setPosition(limit(gamepad2.left_trigger, Hardware.GRABBER_RELEASED, Hardware.GRABBER_GRABBED));
+
+            if (gamepad2.dpad_right) {
+                hw.slideLifterServo.setPosition(hw.slideLifterServo.getPosition() + 0.05);
+            } else if (gamepad2.dpad_left) {
+                hw.slideLifterServo.setPosition(hw.slideLifterServo.getPosition() - 0.05);
+            }
+            if (gamepad2.dpad_up) {
+                hw.slideExtenderServo.setPosition(hw.slideExtenderServo.getPosition() + 0.05);
+            } else if (gamepad2.dpad_down) {
+                hw.slideExtenderServo.setPosition(hw.slideExtenderServo.getPosition() - 0.05);
+            }
+            if (gamepad2.y) {
+                hw.slideGateServo.setPosition(
+                        // is the gate like pretty much closed? open it! otherwise close it
+                        Math.abs(hw.slideGateServo.getPosition() - Hardware.SLIDE_GATE_CLOSED) <= 0.1
+                                ? Hardware.SLIDE_GATE_OPEN
+                                : Hardware.SLIDE_GATE_CLOSED);
+            }
 
             controlLimitedMotor(
                     hw.lifterMotor,
