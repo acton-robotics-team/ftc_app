@@ -57,8 +57,9 @@ final class Hardware
     final DcMotor leftDriveMotor;
     final DcMotor lifterMotor;
     final DcMotor relicArmMotor;
-    final Servo jewelArmServo;
+    final Servo relicElbowServo;
     final Servo relicHandServo;
+    final Servo jewelArmServo;
     final Servo leftGrabberServo;
     final Servo rightGrabberServo;
     final Servo slideGateServo;
@@ -81,9 +82,10 @@ final class Hardware
         relicArmMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         relicArmMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         relicArmMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        jewelArmServo = map.servo.get("jewel_arm_servo");
+        relicElbowServo = map.servo.get("relic_elbow_servo");
         relicHandServo = map.servo.get("relic_hand_servo");
         relicHandServo.setDirection(Servo.Direction.REVERSE);
+        jewelArmServo = map.servo.get("jewel_arm_servo");
         leftGrabberServo = map.servo.get("left_grabber_servo");
         rightGrabberServo = map.servo.get("right_grabber_servo");
         rightGrabberServo.setDirection(Servo.Direction.REVERSE);

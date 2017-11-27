@@ -91,12 +91,26 @@ public class ManualModeTankDrive extends LinearOpMode {
                     0, Hardware.LIFTER_TOP_LIMIT,
                     -gamepad2.left_stick_y, 1);
 
-            hw.relicHandServo.setPosition(limit(gamepad2.right_trigger, 0.5, 1.0));
-            controlLimitedMotor(
-                    hw.relicArmMotor,
-                    0, Hardware.RELIC_ARM_TOP_LIMIT,
-                    gamepad2.right_stick_y, 0.1);
+
+
+            //right stick: motor for arm
+            //a+right stick: servo for elbo
+            //b: relic hand
+            hw.relicHandServo.setPosition(limit(gamepad2.b ? 1 : 0, 0, 0.67));
+
+            if (gamepad2.a){
+                hw.relicArmMotor.setPower(0);
+                hw.relicElbowServo.setPosition(limit(0.05+hw.relicElbowServo.getPosition(), 0, 1);
+            }
+            else {
+                controlLimitedMotor(
+                        hw.relicArmMotor,
+                        0, Hardware.RELIC_ARM_TOP_LIMIT,
+                        gamepad2.right_stick_y, 0.1);
+            }
             telemetry.addData("Left drive encoder value", hw.leftDriveMotor.getCurrentPosition());
+
+
 
             telemetry.update();
             idle();
