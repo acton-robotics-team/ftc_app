@@ -139,7 +139,7 @@ public class AutonomousMode extends LinearOpMode {
             // Max 10 sec
             FutureTask<RelicRecoveryVuMark> detectGlyphTask =
                     new FutureTask<>(this::detectPictogram);
-            hw.lifterMotor.setTargetPosition((int)Math.round(Hardware.LIFTER_TOP_LIMIT / 2));
+            hw.lifterMotor.setTargetPosition(Hardware.LIFTER_TOP_LIMIT / 2);
             jewelTask.run();
             detectGlyphTask.run();
 
