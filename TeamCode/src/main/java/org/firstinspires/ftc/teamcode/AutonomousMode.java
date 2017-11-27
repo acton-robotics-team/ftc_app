@@ -31,6 +31,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -63,6 +64,11 @@ public class AutonomousMode extends LinearOpMode {
 
     private void turnSync(Hardware hw, int degrees) throws OpModeStoppedException {
         int encoderTicks = (int)Math.round(degrees * Hardware.TETRIX_TICKS_PER_TURN_DEGREE);
+        DcMotor.RunMode oldMode = hw.leftDriveMotor.getMode();
+
+        hw.leftDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hw.leftDriveMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
         hw.leftDriveMotor.setTargetPosition(encoderTicks);
         log(String.format(Locale.US,
                 "Turning %d degrees, which is %d ticks", degrees, encoderTicks));
@@ -73,6 +79,7 @@ public class AutonomousMode extends LinearOpMode {
         }
         hw.leftDriveMotor.setPower(0);
         hw.rightDriveMotor.setPower(0);
+        hw.leftDriveMotor.setMode(oldMode);
     }
 
     private RelicRecoveryVuMark detectPictogram() {
