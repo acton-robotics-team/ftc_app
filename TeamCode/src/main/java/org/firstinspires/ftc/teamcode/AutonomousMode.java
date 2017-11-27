@@ -39,6 +39,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
+import java.util.Locale;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -46,9 +47,10 @@ import java.util.concurrent.TimeoutException;
 @Autonomous(name = "Autonomous program")
 public class AutonomousMode extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
-    private void log(String text) {
-        String str = "[" + runtime.time(TimeUnit.SECONDS) + "] " + text;
-        telemetry.addLine(str);
+    private volatile String logStr = "";
+    private synchronized void log(String text) {
+        logStr += "[" + runtime.time(TimeUnit.SECONDS) + "] " + text + "\n";
+        telemetry.addLine(logStr);
         telemetry.update();
     }
 
@@ -62,8 +64,10 @@ public class AutonomousMode extends LinearOpMode {
     private void turn(Hardware hw, int degrees) throws OpModeStoppedException {
         int encoderTicks = (int)Math.round(degrees * Hardware.TETRIX_TICKS_PER_TURN_DEGREE);
         hw.leftDriveMotor.setTargetPosition(encoderTicks);
-        hw.leftDriveMotor.setPower(0.5);
-        hw.rightDriveMotor.setPower(-0.5);
+        log(String.format(Locale.US,
+                "Turning %d degrees, which is %d ticks", degrees, encoderTicks));
+        hw.leftDriveMotor.setPower(degrees >= 0 ? 0.1 : -0.1);
+        hw.rightDriveMotor.setPower(degrees >= 0 ? -0.1 : -0.1);
         while (hw.leftDriveMotor.isBusy()) {
             sleepSync();
         }
@@ -86,7 +90,6 @@ public class AutonomousMode extends LinearOpMode {
             if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
                 return vuMark;
             } else {
-                log("VuMark not visible");
                 idle();
             }
         }
@@ -111,94 +114,83 @@ public class AutonomousMode extends LinearOpMode {
         // ...
 
         try {
-            /*while (false) {
-                sleepSync();
-                log("Waiting for touch");
-            }*/
-            // 3.25 sec
-
-            //ADD moving back and forth if neither detected
+            // TODO: Add moving back and forth if neither detected
             FutureTask<Void> jewelTask = new FutureTask<>(() -> {
-                hw.jewelArmServo.setPosition(0);
+                hw.jewelArmServo.setPosition(Hardware.JEWEL_ARM_EXTENDED);
                 sleep(2000);
-                if (hw.jewelColorSensor.blue() > 0) {
-                    hw.jewelHandServo.setPosition(1);
-                } else {
-                    hw.jewelHandServo.setPosition(0);
-                }
-                sleep(250);
-                hw.jewelHandServo.setPosition(0.5);
-                hw.jewelArmServo.setPosition(0.5);
+
+                //int direction = hw.jewelColorSensor.blue() > 0
+                int direction = true
+                        ? -1  // left
+                        :  1; // right
+                turn(hw, 10 * direction);
+                turn(hw, -10 * direction);
+                hw.jewelArmServo.setPosition(Hardware.JEWEL_ARM_HALF_EXTENDED);
                 sleep(1000);
                 return null;
             });
-            // ?? time
+            // Max 10 sec
             FutureTask<RelicRecoveryVuMark> detectGlyphTask =
                     new FutureTask<>(this::detectPictogram);
+            hw.lifterMotor.setTargetPosition((int)Math.round(Hardware.LIFTER_TOP_LIMIT / 2));
             jewelTask.run();
             detectGlyphTask.run();
 
             // wait for jewel task to finish
             jewelTask.get();
+            log("Jewel task finished");
             // Get (blocking) glyph column
             RelicRecoveryVuMark correctGlyphColumn;
             try {
                 correctGlyphColumn = detectGlyphTask.get(10, TimeUnit.SECONDS);
             } catch (TimeoutException e) {
+                log("Failed to find glyph");
                 correctGlyphColumn = RelicRecoveryVuMark.UNKNOWN;
             }
             log("Got glyph column " + correctGlyphColumn);
 
-            // Turn 90 degrees to the left
-            turn(hw, -90);
-            hw.leftDriveMotor.setPower(-0.25);
-            hw.rightDriveMotor.setPower(-0.25);
-            sleep(1000);
-            hw.leftDriveMotor.setPower(0);
-            hw.rightDriveMotor.setPower(0);
-
-            // Detect with ODS
-            int requiredColumn;
-            switch (correctGlyphColumn) {
-                case LEFT:
-                    requiredColumn = 3;
-                    break;
-                case RIGHT:
-                    requiredColumn = 2;
-                    break;
-                case CENTER:
-                    requiredColumn = 1;
-                    break;
-                case UNKNOWN:
-                default:
-                    requiredColumn = 2; // lmao
-            }
-            //hw.horizontalDriveMotor.setPower(0.25);
-            int atColumn = 0;
-            while (requiredColumn > atColumn) {
-                while (hw.ods.getLightDetected() == 0) {
-                    sleepSync();
-                }
-                // we have hit a glyph column wall
-                atColumn += 1;
-            }
-            //hw.horizontalDriveMotor.setPower(0);
-
-            // Now we are at the required column. Move forward until ODS reads.
-            hw.leftDriveMotor.setPower(0.1);
-            hw.rightDriveMotor.setPower(0.1);
-            while (hw.ods.getLightDetected() == 0) {
-                sleepSync();
-            }
-            hw.rightDriveMotor.setPower(0);
-            hw.leftDriveMotor.setPower(0);
-            // Hopefully we've hit the box by now. Release the box!
-            hw.rightGrabberServo.setPosition(Hardware.GRABBER_RELEASED);
-            hw.leftGrabberServo.setPosition(Hardware.GRABBER_RELEASED);
-
+            // reeeveerse
+            hw.leftDriveMotor.setPower(-0.1);
+            hw.rightDriveMotor.setPower(-0.1);
+//            // Detect with ODS
+//            int columnsToPass;
+//            switch (correctGlyphColumn) {
+//                case LEFT:
+//                    columnsToPass = 3;
+//                    break;
+//                case RIGHT:
+//                    columnsToPass = 2;
+//                    break;
+//                case CENTER:
+//                    columnsToPass = 1;
+//                    break;
+//                case UNKNOWN:
+//                default:
+//                    columnsToPass = 2; // lmao
+//            }
+//            //hw.horizontalDriveMotor.setPower(0.25);
+//            int columnsPassed = 0;
+//            while (columnsToPass > columnsPassed) {
+//                while (hw.ods.getLightDetected() == 0) {
+//                    sleepSync();
+//                }
+//                // we have hit a glyph column wall
+//                columnsPassed += 1;
+//            }
+//
+//            // Now we are at the required column. Turn & move forward until ODS reads
+//            hw.jewelArmServo.setPosition(Hardware.JEWEL_ARM_RETRACTED);
+//            turn(hw, -90);
+//            hw.leftDriveMotor.setPower(0.1);
+//            hw.rightDriveMotor.setPower(0.1);
+//            sleep(500);
+//            hw.rightDriveMotor.setPower(0);
+//            hw.leftDriveMotor.setPower(0);
+//            // Hopefully we've hit the box by now. Release the box!
+//            hw.rightGrabberServo.setPosition(Hardware.GRABBER_RELEASED);
+//            hw.leftGrabberServo.setPosition(Hardware.GRABBER_RELEASED);
         } catch (Exception e) {
             log("Stopping op mode... " + e);
         }
-        log("Stopped op mode");
     }
 }

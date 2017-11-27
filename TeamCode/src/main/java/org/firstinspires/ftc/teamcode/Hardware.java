@@ -47,15 +47,15 @@ final class Hardware
     static final double TETRIX_TICKS_PER_TURN_DEGREE = 2681d / 300d;
     static final double LIFTER_TOP_LIMIT = 4 * TETRIX_TICKS_PER_REVOLUTION;
     static final double RELIC_ARM_TOP_LIMIT = 0.5 * TETRIX_TICKS_PER_REVOLUTION;
-    static final int HORIZONTAL_RIGHT = 1;
-    static final int HORIZONTAL_LEFT = -1;
+    static final double JEWEL_ARM_EXTENDED = 0;
+    static final double JEWEL_ARM_HALF_EXTENDED = 0.25;
+    static final double JEWEL_ARM_RETRACTED = 0.5;
 
     final DcMotor rightDriveMotor;
     final DcMotor leftDriveMotor;
     final DcMotor lifterMotor;
     final DcMotor relicArmMotor;
     final Servo jewelArmServo;
-    final Servo jewelHandServo;
     final Servo relicHandServo;
     final Servo leftGrabberServo;
     final Servo rightGrabberServo;
@@ -77,13 +77,12 @@ final class Hardware
         relicArmMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         relicArmMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         jewelArmServo = map.servo.get("jewel_arm_servo");
-        jewelHandServo = map.servo.get("jewel_hand_servo");
         relicHandServo = map.servo.get("relic_hand_servo");
         relicHandServo.setDirection(Servo.Direction.REVERSE);
         leftGrabberServo = map.servo.get("left_grabber_servo");
         rightGrabberServo = map.servo.get("right_grabber_servo");
         rightGrabberServo.setDirection(Servo.Direction.REVERSE);
-        //jewelColorSensor = map.colorSensor.get("jewel_color_sensor");
+        //jewelColorSensor = map.colorSensor.get("color_sensor");
         //ods = map.opticalDistanceSensor.get("ods");
         jewelColorSensor = null;
         ods = null;
