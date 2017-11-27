@@ -61,7 +61,7 @@ public class AutonomousMode extends LinearOpMode {
             idle();
     }
 
-    private void turn(Hardware hw, int degrees) throws OpModeStoppedException {
+    private void turnSync(Hardware hw, int degrees) throws OpModeStoppedException {
         int encoderTicks = (int)Math.round(degrees * Hardware.TETRIX_TICKS_PER_TURN_DEGREE);
         hw.leftDriveMotor.setTargetPosition(encoderTicks);
         log(String.format(Locale.US,
@@ -123,8 +123,8 @@ public class AutonomousMode extends LinearOpMode {
                 int direction = true
                         ? -1  // left
                         :  1; // right
-                turn(hw, 10 * direction);
-                turn(hw, -10 * direction);
+                turnSync(hw, 10 * direction);
+                turnSync(hw, -10 * direction);
                 hw.jewelArmServo.setPosition(Hardware.JEWEL_ARM_HALF_EXTENDED);
                 sleep(1000);
                 return null;
@@ -180,7 +180,7 @@ public class AutonomousMode extends LinearOpMode {
 //
 //            // Now we are at the required column. Turn & move forward until ODS reads
 //            hw.jewelArmServo.setPosition(Hardware.JEWEL_ARM_RETRACTED);
-//            turn(hw, -90);
+//            turnSync(hw, -90);
 //            hw.leftDriveMotor.setPower(0.1);
 //            hw.rightDriveMotor.setPower(0.1);
 //            sleep(500);
