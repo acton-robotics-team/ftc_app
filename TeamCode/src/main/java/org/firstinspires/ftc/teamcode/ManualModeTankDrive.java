@@ -9,8 +9,22 @@ import com.qualcomm.robotcore.hardware.DcMotor;
  * Created by kevinliu who writes tehe mstdisgusting code ew
  * on 10/9/2017.
  * - kuneel sharpedo
+ *
+ * Controls:
+ *
+ * GAMEPAD 1
+ * - Left bumper: turbo (=1)
+ * - Right bumper: slow (=0.125)
+ * - Right/left analog sticks: drive motors
+ * GAMEPAD 2
+ * - Left trigger: grabber servos
+ * - Right trigger: relic hand servo
+ * - Up/down dpad: extend/retract slide (slide lifter servo)
+ * - Left/right dpad: lift/lower slide (slide extender servo)
+ * - Y: toggle slide gate servo
+ * - Left analog stick: lifter motor
+ * - Right analog stick: relic arm motor
  */
-
 @TeleOp(name = "Manual: tank drive")
 public class ManualModeTankDrive extends LinearOpMode {
     private double limit(double value, double min, double max) {
@@ -31,20 +45,6 @@ public class ManualModeTankDrive extends LinearOpMode {
         }
     }
 
-    /**
-     * GAMEPAD 1
-     * - Left bumper: turbo (=1)
-     * - Right bumper: slow (=0.125)
-     * - Right/left analog sticks: drive motors
-     * GAMEPAD 2
-     * - Left trigger: grabber servos
-     * - Right trigger: relic hand servo
-     * - Up/down dpad: extend/retract slide (slide lifter servo)
-     * - Left/right dpad: lift/lower slide (slide extender servo)
-     * - Y: toggle slide gate servo
-     * - Left analog stick: lifter motor
-     * - Right analog stick: relic arm motor
-     */
     @Override
     public void runOpMode() {
         Hardware hw = new Hardware(hardwareMap);
