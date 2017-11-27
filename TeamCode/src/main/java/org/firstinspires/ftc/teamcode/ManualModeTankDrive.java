@@ -98,7 +98,7 @@ public class ManualModeTankDrive extends LinearOpMode {
             //b: relic hand
             hw.relicHandServo.setPosition(limit(gamepad2.b ? 1 : 0, 0, 0.67));
 
-            if (gamepad2.a){
+            if (gamepad2.a) {
                 hw.relicArmMotor.setPower(0);
                 hw.relicElbowServo.setPosition(limit(0.05+hw.relicElbowServo.getPosition(), 0, 1));
             }
