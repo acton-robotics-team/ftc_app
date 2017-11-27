@@ -68,11 +68,10 @@ public class ManualModeTankDrive extends LinearOpMode {
             hw.leftGrabberServo.setPosition(limit(gamepad2.left_trigger, Hardware.GRABBER_RELEASED, Hardware.GRABBER_GRABBED));
             hw.rightGrabberServo.setPosition(limit(gamepad2.left_trigger, Hardware.GRABBER_RELEASED, Hardware.GRABBER_GRABBED));
 
-            if (gamepad2.dpad_right) {
-                hw.slideLifterServo.setPosition(hw.slideLifterServo.getPosition() + 0.05);
-            } else if (gamepad2.dpad_left) {
-                hw.slideLifterServo.setPosition(hw.slideLifterServo.getPosition() - 0.05);
-            }
+            hw.slideLifterServo.setPosition(limit(
+                    gamepad2.dpad_right
+                            ? hw.slideLifterServo.getPosition() + 0.05
+                            : hw.slideLifterServo.getPosition() - 0.05, 0, 1));
             if (gamepad2.dpad_up) {
                 hw.slideExtenderServo.setPosition(hw.slideExtenderServo.getPosition() + 0.05);
             } else if (gamepad2.dpad_down) {
