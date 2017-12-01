@@ -86,6 +86,7 @@ final class Hardware
         relicHandServo = map.servo.get("relic_hand_servo");
         relicHandServo.setDirection(Servo.Direction.REVERSE);
         jewelArmServo = map.servo.get("jewel_arm_servo");
+        jewelArmServo.setDirection(Servo.Direction.REVERSE);
         leftGrabberServo = map.servo.get("left_grabber_servo");
         rightGrabberServo = map.servo.get("right_grabber_servo");
         rightGrabberServo.setDirection(Servo.Direction.REVERSE);
