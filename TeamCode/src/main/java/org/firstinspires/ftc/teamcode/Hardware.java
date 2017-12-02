@@ -75,9 +75,9 @@ final class Hardware
         leftDriveMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftDriveMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         lifterMotor = map.dcMotor.get("lifter_motor");
+        lifterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         lifterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lifterMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        lifterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         relicArmMotor = map.dcMotor.get("relic_arm_motor");
         relicArmMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         relicArmMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -88,12 +88,11 @@ final class Hardware
         jewelArmServo = map.servo.get("jewel_arm_servo");
         jewelArmServo.setDirection(Servo.Direction.REVERSE);
         leftGrabberServo = map.servo.get("left_grabber_servo");
+        leftGrabberServo.setDirection(Servo.Direction.REVERSE);
         rightGrabberServo = map.servo.get("right_grabber_servo");
-        rightGrabberServo.setDirection(Servo.Direction.REVERSE);
         slideGateServo = map.servo.get("slide_gate_servo");
         slideLifterServo = map.servo.get("slide_lifter_servo");
-        //slideExtenderServo = map.servo.get("slide_extender_servo");
-        slideExtenderServo = null;
+        slideExtenderServo = map.servo.get("slide_extender_servo");
         jewelColorSensor = map.colorSensor.get("color_sensor");
         ods = map.opticalDistanceSensor.get("ods");
     }

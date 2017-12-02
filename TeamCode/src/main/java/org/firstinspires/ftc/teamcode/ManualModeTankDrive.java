@@ -28,6 +28,7 @@ import java.io.StringWriter;
  * - Y: toggle slide gate servo
  * - Left analog stick: lifter motor
  * - Right analog stick: relic arm motor
+ *
  */
 @TeleOp(name = "Manual: tank drive")
 public class ManualModeTankDrive extends LinearOpMode {
@@ -37,14 +38,17 @@ public class ManualModeTankDrive extends LinearOpMode {
 
     private void controlLimitedMotor(DcMotor motor, double bottomLimit, double topLimit, double controlAxis, double power) {
         int position = motor.getCurrentPosition();
-        telemetry.addData(
+        telemetry.addLine(
                 "LIMIT motor " + motor.getDeviceName() + " CTRL " + controlAxis +
-                        " POS " + position + " BOTTOM " + bottomLimit + " TOP " + topLimit, "");
+                        " POS " + position + " BOTTOM " + bottomLimit + " TOP " + topLimit);
         if (controlAxis > 0.1 && position < topLimit) {
+            telemetry.addLine("LIMIT: not moving up because hit top limit");
             motor.setPower(power);
         } else if (controlAxis < -0.1 && position > bottomLimit) {
+            telemetry.addLine("LIMIT: not moving down because hit bottom limit");
             motor.setPower(-power);
         } else {
+            telemetry.addLine("LIMIT: no control input");
             motor.setPower(0);
         }
     }
@@ -87,7 +91,7 @@ public class ManualModeTankDrive extends LinearOpMode {
                 hw.rightGrabberServo.setPosition(limit(gamepad2.left_trigger, Hardware.GRABBER_RELEASED, Hardware.GRABBER_GRABBED));
 
                 controlServo(hw.slideLifterServo, 0, 1, gamepad2.dpad_left, gamepad2.dpad_right);
-                //controlServo(hw.slideExtenderServo, 0, 1, gamepad2.dpad_up, gamepad2.dpad_down);
+                controlServo(hw.slideExtenderServo, 0, 1, gamepad2.dpad_up, gamepad2.dpad_down);
 
                 if (gamepad2.y) {
                     hw.slideGateServo.setPosition(
@@ -109,12 +113,12 @@ public class ManualModeTankDrive extends LinearOpMode {
 
                 if (gamepad2.a) {
                     hw.relicArmMotor.setPower(0);
-                    hw.relicElbowServo.setPosition(limit(0.05 + hw.relicElbowServo.getPosition(), 0, 1));
+                    controlServo(hw.relicElbowServo, 0, 1, gamepad2.right_stick_y > 0, gamepad2.right_stick_y < 0);
                 } else {
                     controlLimitedMotor(
                             hw.relicArmMotor,
                             0, Hardware.RELIC_ARM_TOP_LIMIT,
-                            gamepad2.right_stick_y, 0.1);
+                            gamepad2.right_stick_y, 0.3);
                 }
                 telemetry.addData("Left drive encoder value", hw.leftDriveMotor.getCurrentPosition());
 
@@ -127,7 +131,6 @@ public class ManualModeTankDrive extends LinearOpMode {
                 telemetry.update();
                 idle();
             }
-
         }
     }
 }

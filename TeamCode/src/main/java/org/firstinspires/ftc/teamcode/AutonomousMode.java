@@ -124,10 +124,10 @@ public class AutonomousMode extends LinearOpMode {
             // TODO: Add moving back and forth if neither detected
             FutureTask<Void> jewelTask = new FutureTask<>(() -> {
                 hw.jewelArmServo.setPosition(Hardware.JEWEL_ARM_EXTENDED);
+                log("Starting jewel task");
                 sleep(2000);
 
-                //int direction = hw.jewelColorSensor.blue() > 0
-                int direction = true
+                int direction = hw.jewelColorSensor.blue() > 0
                         ? -1  // left
                         :  1; // right
                 turnSync(hw, 10 * direction);
@@ -140,6 +140,7 @@ public class AutonomousMode extends LinearOpMode {
             FutureTask<RelicRecoveryVuMark> detectGlyphTask =
                     new FutureTask<>(this::detectPictogram);
             hw.lifterMotor.setTargetPosition(Hardware.LIFTER_TOP_LIMIT / 2);
+            hw.lifterMotor.setPower(-0.1);
             jewelTask.run();
             detectGlyphTask.run();
 
@@ -159,43 +160,43 @@ public class AutonomousMode extends LinearOpMode {
             // reeeveerse
             hw.leftDriveMotor.setPower(-0.1);
             hw.rightDriveMotor.setPower(-0.1);
-//            // Detect with ODS
-//            int columnsToPass;
-//            switch (correctGlyphColumn) {
-//                case LEFT:
-//                    columnsToPass = 3;
-//                    break;
-//                case RIGHT:
-//                    columnsToPass = 2;
-//                    break;
-//                case CENTER:
-//                    columnsToPass = 1;
-//                    break;
-//                case UNKNOWN:
-//                default:
-//                    columnsToPass = 2; // lmao
-//            }
-//            //hw.horizontalDriveMotor.setPower(0.25);
-//            int columnsPassed = 0;
-//            while (columnsToPass > columnsPassed) {
-//                while (hw.ods.getLightDetected() == 0) {
-//                    sleepSync();
-//                }
-//                // we have hit a glyph column wall
-//                columnsPassed += 1;
-//            }
-//
-//            // Now we are at the required column. Turn & move forward until ODS reads
-//            hw.jewelArmServo.setPosition(Hardware.JEWEL_ARM_RETRACTED);
-//            turnSync(hw, -90);
-//            hw.leftDriveMotor.setPower(0.1);
-//            hw.rightDriveMotor.setPower(0.1);
-//            sleep(500);
-//            hw.rightDriveMotor.setPower(0);
-//            hw.leftDriveMotor.setPower(0);
-//            // Hopefully we've hit the box by now. Release the box!
-//            hw.rightGrabberServo.setPosition(Hardware.GRABBER_RELEASED);
-//            hw.leftGrabberServo.setPosition(Hardware.GRABBER_RELEASED);
+            // Detect with ODS
+            int columnsToPass;
+            switch (correctGlyphColumn) {
+                case LEFT:
+                    columnsToPass = 3;
+                    break;
+                case RIGHT:
+                    columnsToPass = 2;
+                    break;
+                case CENTER:
+                    columnsToPass = 1;
+                    break;
+                case UNKNOWN:
+                default:
+                    columnsToPass = 2; // lmao
+            }
+            //hw.horizontalDriveMotor.setPower(0.25);
+            int columnsPassed = 0;
+            while (columnsToPass > columnsPassed) {
+                while (hw.ods.getLightDetected() == 0) {
+                    sleepSync();
+                }
+                // we have hit a glyph column wall
+                columnsPassed += 1;
+            }
+
+            // Now we are at the required column. Turn & move forward until ODS reads
+            hw.jewelArmServo.setPosition(Hardware.JEWEL_ARM_RETRACTED);
+            turnSync(hw, -90);
+            hw.leftDriveMotor.setPower(0.1);
+            hw.rightDriveMotor.setPower(0.1);
+            sleep(500);
+            hw.rightDriveMotor.setPower(0);
+            hw.leftDriveMotor.setPower(0);
+            // Hopefully we've hit the box by now. Release the box!
+            hw.rightGrabberServo.setPosition(Hardware.GRABBER_RELEASED);
+            hw.leftGrabberServo.setPosition(Hardware.GRABBER_RELEASED);
         } catch (Exception e) {
             log("Stopping op mode... " + e);
         }
