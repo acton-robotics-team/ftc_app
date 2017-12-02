@@ -63,6 +63,8 @@ public class ManualModeTankDrive extends LinearOpMode {
         // freaking servo api returns NaN when no value known
         double pos = Double.isNaN(servo.getPosition())
                 ? bottomLimit : servo.getPosition();
+        telemetry.addLine(String.format(
+                "SERVO BOTTOM %s TOP %s UP? %s DOWN? %s", bottomLimit, topLimit, isUp, isDown));
         servo.setPosition(limit(
                 pos + delta, bottomLimit, topLimit));
     }
@@ -96,10 +98,11 @@ public class ManualModeTankDrive extends LinearOpMode {
                 if (gamepad2.y) {
                     hw.slideGateServo.setPosition(
                             // is the gate like pretty much closed? open it! otherwise close it
-                            Math.abs(hw.slideGateServo.getPosition() - Hardware.SLIDE_GATE_CLOSED) <= 0.1
+                            Math.abs(hw.slideGateServo.getPosition() - Hardware.SLIDE_GATE_CLOSED) <= 0.03
                                     ? Hardware.SLIDE_GATE_OPEN
                                     : Hardware.SLIDE_GATE_CLOSED);
                 }
+                telemetry.addData("Slide gate servo position", hw.slideGateServo.getPosition());
 
                 controlLimitedMotor(
                         hw.lifterMotor,
