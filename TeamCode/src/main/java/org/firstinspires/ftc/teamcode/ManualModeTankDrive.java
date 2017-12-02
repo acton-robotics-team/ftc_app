@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -48,6 +49,20 @@ public class ManualModeTankDrive extends LinearOpMode {
         }
     }
 
+    private void controlServo(Servo servo, double bottomLimit, double topLimit, boolean isUp, boolean isDown) {
+        double delta = 0;
+        if (isUp) {
+            delta = 0.05;
+        } else if (isDown) {
+            delta = -0.05;
+        }
+        // freaking servo api returns NaN when no value known
+        double pos = Double.isNaN(servo.getPosition())
+                ? bottomLimit : servo.getPosition();
+        servo.setPosition(limit(
+                pos + delta, bottomLimit, topLimit));
+    }
+
     @Override
     public void runOpMode() {
         Hardware hw = new Hardware(hardwareMap);
@@ -71,23 +86,9 @@ public class ManualModeTankDrive extends LinearOpMode {
                 hw.leftGrabberServo.setPosition(limit(gamepad2.left_trigger, Hardware.GRABBER_RELEASED, Hardware.GRABBER_GRABBED));
                 hw.rightGrabberServo.setPosition(limit(gamepad2.left_trigger, Hardware.GRABBER_RELEASED, Hardware.GRABBER_GRABBED));
 
-                double slideLifterDelta = 0;
-                if (gamepad2.dpad_right) {
-                    slideLifterDelta = 0.05;
-                } else if (gamepad2.dpad_left) {
-                    slideLifterDelta = -0.05;
-                }
-                hw.slideLifterServo.setPosition(limit(
-                        hw.slideLifterServo.getPosition() + slideLifterDelta, 0, 1));
+                controlServo(hw.slideLifterServo, 0, 1, gamepad2.dpad_left, gamepad2.dpad_right);
+                //controlServo(hw.slideExtenderServo, 0, 1, gamepad2.dpad_up, gamepad2.dpad_down);
 
-                double slideExtenderDelta = 0;
-                if (gamepad2.dpad_up) {
-                    slideExtenderDelta = 0.05;
-                } else if (gamepad2.dpad_down) {
-                    slideExtenderDelta = -0.05;
-                }
-                hw.slideExtenderServo.setPosition(limit(
-                        hw.slideExtenderServo.getPosition() + slideExtenderDelta, 0, 1));
                 if (gamepad2.y) {
                     hw.slideGateServo.setPosition(
                             // is the gate like pretty much closed? open it! otherwise close it
