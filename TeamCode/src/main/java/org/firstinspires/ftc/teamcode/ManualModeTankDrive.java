@@ -42,10 +42,10 @@ public class ManualModeTankDrive extends LinearOpMode {
                 "LIMIT motor " + motor.getDeviceName() + " CTRL " + controlAxis +
                         " POS " + position + " BOTTOM " + bottomLimit + " TOP " + topLimit);
         if (controlAxis > 0.1 && position < topLimit) {
-            telemetry.addLine("LIMIT: not moving up because hit top limit");
+            telemetry.addLine("LIMIT: moving up");
             motor.setPower(power);
         } else if (controlAxis < -0.1 && position > bottomLimit) {
-            telemetry.addLine("LIMIT: not moving down because hit bottom limit");
+            telemetry.addLine("LIMIT: moving down");
             motor.setPower(-power);
         } else {
             telemetry.addLine("LIMIT: no control input");
@@ -110,6 +110,7 @@ public class ManualModeTankDrive extends LinearOpMode {
                 // a+right stick: servo for elbow
                 // b: relic hand
                 hw.relicHandServo.setPosition(limit(gamepad2.b ? 1 : 0, 0, 0.67));
+                telemetry.addData("Relic hand position", hw.relicHandServo.getPosition());
 
                 if (gamepad2.a) {
                     hw.relicArmMotor.setPower(0);
