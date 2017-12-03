@@ -31,6 +31,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -72,8 +73,27 @@ public class AutonomousMode extends LinearOpMode {
         hw.leftDriveMotor.setTargetPosition(encoderTicks);
         log(String.format(Locale.US,
                 "Turning %d degrees, which is %d ticks", degrees, encoderTicks));
-        hw.leftDriveMotor.setPower(degrees >= 0 ? 0.1 : -0.1);
-        hw.rightDriveMotor.setPower(degrees >= 0 ? -0.1 : -0.1);
+        hw.leftDriveMotor.setPower(degrees >= 0 ? 0.2 : -0.2);
+        hw.rightDriveMotor.setPower(degrees >= 0 ? -0.2 : -0.2);
+        while (hw.leftDriveMotor.isBusy()) {
+            sleepSync();
+        }
+        hw.leftDriveMotor.setPower(0);
+        hw.rightDriveMotor.setPower(0);
+        hw.leftDriveMotor.setMode(oldMode);
+    }
+
+    private void driveSync(Hardware hw, double rotations) throws OpModeStoppedException {
+        int encoderTicks = (int)Math.round(rotations * Hardware.TETRIX_TICKS_PER_REVOLUTION);
+        DcMotor.RunMode oldMode = hw.leftDriveMotor.getMode();
+
+        hw.leftDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hw.leftDriveMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        hw.leftDriveMotor.setTargetPosition(encoderTicks);
+
+        hw.leftDriveMotor.setPower(encoderTicks > 0 ? 0.2 : -0.2);
+        hw.rightDriveMotor.setPower(encoderTicks > 0 ? 0.2 : -0.2);
         while (hw.leftDriveMotor.isBusy()) {
             sleepSync();
         }
@@ -130,8 +150,8 @@ public class AutonomousMode extends LinearOpMode {
                 int direction = hw.jewelColorSensor.blue() > 0
                         ? -1  // left
                         :  1; // right
-                turnSync(hw, 10 * direction);
-                turnSync(hw, -10 * direction);
+                turnSync(hw, 30 * direction);
+                turnSync(hw, -30 * direction);
                 hw.jewelArmServo.setPosition(Hardware.JEWEL_ARM_HALF_EXTENDED);
                 sleep(1000);
                 return null;
@@ -144,9 +164,6 @@ public class AutonomousMode extends LinearOpMode {
             jewelTask.run();
             detectGlyphTask.run();
 
-            // wait for jewel task to finish
-            jewelTask.get();
-            log("Jewel task finished");
             // Get (blocking) glyph column
             RelicRecoveryVuMark correctGlyphColumn;
             try {
@@ -156,6 +173,10 @@ public class AutonomousMode extends LinearOpMode {
                 correctGlyphColumn = RelicRecoveryVuMark.UNKNOWN;
             }
             log("Got glyph column " + correctGlyphColumn);
+
+            // wait for jewel task to finish
+            jewelTask.get();
+            log("Jewel task finished");
 
             // reeeveerse
             hw.leftDriveMotor.setPower(-0.1);
@@ -176,7 +197,7 @@ public class AutonomousMode extends LinearOpMode {
                 default:
                     columnsToPass = 2; // lmao
             }
-            //hw.horizontalDriveMotor.setPower(0.25);
+            log("ODS detect");
             int columnsPassed = 0;
             while (columnsToPass > columnsPassed) {
                 while (hw.ods.getLightDetected() == 0) {
