@@ -209,6 +209,9 @@ public class AutonomousMode extends LinearOpMode {
                 // we have hit a glyph column wall
                 columnsPassed += 1;
                 addLogLine("Reached glyph column");
+                while (hw.ods.getLightDetected() > 0) {
+                    sleepSync();
+                }
             }
 
             // Now we are at the required column. Turn & move forward until ODS reads
