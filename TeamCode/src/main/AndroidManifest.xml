@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="org.modularftc.sample">
+<manifest package="com.github.actonroboticsteam.ftcapp">
 
     <application />
 </manifest>
