@@ -137,7 +137,7 @@ class ManualModeTankDrive : LinearOpMode() {
                 telemetry.addData("Relic hand position", hw.relicHandServo.position)
 
                 if (gamepad2.a) {
-                    hw.relicArmMotor.power = 0.toDouble()
+                    hw.relicArmMotor.power = 0.0
                     fineControlServo(hw.relicElbowServo, 0.0, 1.0, gamepad2.right_stick_y > 0, gamepad2.right_stick_y < 0)
                 } else {
                     controlLimitedMotor(
