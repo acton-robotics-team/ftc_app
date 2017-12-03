@@ -133,7 +133,7 @@ class AutonomousMode : LinearOpMode() {
                 null
             }
             // Max 10 sec
-            val detectGlyphTask = FutureTask<RelicRecoveryVuMark>({ this.detectPictogram() })
+            val detectGlyphTask = FutureTask<RelicRecoveryVuMark> { this.detectPictogram() }
             hw.lifterMotor.targetPosition = RobotConfig.LIFTER_TOP_LIMIT / 2
             hw.lifterMotor.power = -0.1
             jewelTask.run()
@@ -168,7 +168,7 @@ class AutonomousMode : LinearOpMode() {
             //hw.horizontalDriveMotor.setPower(0.25);
             var columnsPassed = 0
             while (columnsToPass > columnsPassed) {
-                while (hw.ods.lightDetected == 0.toDouble()) {
+                while (hw.ods.lightDetected == 0.0) {
                     sleepSync()
                 }
                 // we have hit a glyph column wall
