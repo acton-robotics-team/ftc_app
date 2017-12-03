@@ -68,8 +68,7 @@ class AutonomousMode : LinearOpMode() {
         hw.leftDriveMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
 
         hw.leftDriveMotor.targetPosition = encoderTicks.toInt()
-        log(String.format(Locale.US,
-                "Turning %d degrees, which is %d ticks", degrees, encoderTicks))
+        log("Turning $degrees degrees, which is $encoderTicks ticks")
         hw.leftDriveMotor.power = if (degrees >= 0) 0.1 else -0.1
         hw.rightDriveMotor.power = if (degrees >= 0) -0.1 else -0.1
         while (hw.leftDriveMotor.isBusy) {
