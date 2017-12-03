@@ -38,9 +38,11 @@ public class ManualModeTankDrive extends LinearOpMode {
 
     private void controlLimitedMotor(DcMotor motor, double bottomLimit, double topLimit, double controlAxis, double power) {
         int position = motor.getCurrentPosition();
-        telemetry.addLine(
-                "LIMIT motor " + motor.getDeviceName() + " CTRL " + controlAxis +
-                        " POS " + position + " BOTTOM " + bottomLimit + " TOP " + topLimit);
+        telemetry.addLine("LIMITED MOTOR");
+        telemetry.addData("Control axis", controlAxis);
+        telemetry.addData("Position", position);
+        telemetry.addData("Bottom limit", bottomLimit);
+        telemetry.addData("Top limit", topLimit);
         if (controlAxis > 0.1 && position < topLimit) {
             telemetry.addLine("LIMIT: moving up");
             motor.setPower(power);
@@ -61,12 +63,16 @@ public class ManualModeTankDrive extends LinearOpMode {
             delta = -0.05;
         }
         // freaking servo api returns NaN when no value known
-        double pos = Double.isNaN(servo.getPosition())
-                ? bottomLimit : servo.getPosition();
-        telemetry.addLine(String.format(
-                "SERVO BOTTOM %s TOP %s UP? %s DOWN? %s", bottomLimit, topLimit, isUp, isDown));
+        double position = Double.isNaN(servo.getPosition()) ? bottomLimit : servo.getPosition();
+        telemetry.addLine("CONTROL SERVO");
+        telemetry.addData("Position", position);
+        telemetry.addData("Bottom limit", bottomLimit);
+        telemetry.addData("Top limit", topLimit);
+        telemetry.addData("Is up?", isUp);
+        telemetry.addData("Is down?", isDown);
+        telemetry.addData("Adding delta", delta);
         servo.setPosition(limit(
-                pos + delta, bottomLimit, topLimit));
+                position + delta, bottomLimit, topLimit));
     }
 
     @Override
@@ -96,11 +102,13 @@ public class ManualModeTankDrive extends LinearOpMode {
                 controlServo(hw.slideExtenderServo, 0, 1, gamepad2.dpad_up, gamepad2.dpad_down);
 
                 if (gamepad2.y) {
-                    hw.slideGateServo.setPosition(
-                            // is the gate like pretty much closed? open it! otherwise close it
+                    // is the gate like pretty much closed? open it! otherwise close it
+                    double slideGatePosition =
                             Math.abs(hw.slideGateServo.getPosition() - Hardware.SLIDE_GATE_CLOSED) <= 0.03
                                     ? Hardware.SLIDE_GATE_OPEN
-                                    : Hardware.SLIDE_GATE_CLOSED);
+                                    : Hardware.SLIDE_GATE_CLOSED;
+                    telemetry.addData("Changing slide gate servo position to", slideGatePosition);
+                    hw.slideGateServo.setPosition(slideGatePosition);
                 }
                 telemetry.addData("Slide gate servo position", hw.slideGateServo.getPosition());
 
