@@ -47,6 +47,8 @@ final class Hardware
     static final double TETRIX_TICKS_PER_TURN_DEGREE = 2681d / 300d;
     static final int LIFTER_TOP_LIMIT = 4 * TETRIX_TICKS_PER_REVOLUTION;
     static final double RELIC_ARM_TOP_LIMIT = 0.5 * TETRIX_TICKS_PER_REVOLUTION;
+    static final double RELIC_HAND_CLOSED = 0.7;
+    static final double RELIC_HAND_OPEN = 0;
     static final double JEWEL_ARM_EXTENDED = 0;
     static final double JEWEL_ARM_HALF_EXTENDED = 0.25;
     static final double JEWEL_ARM_RETRACTED = 0.5;

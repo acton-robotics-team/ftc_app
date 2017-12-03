@@ -33,6 +33,35 @@ import java.io.StringWriter;
  */
 @TeleOp(name = "Manual: tank drive")
 public class ManualModeTankDrive extends LinearOpMode {
+    private class ToggleButtonServo {
+        final Servo servo;
+        final double startingPosition;
+        final double pos2;
+        boolean isPreviouslyPressed = false;
+
+        ToggleButtonServo(Servo servo, double startingPosition, double pos2) {
+            this.servo = servo;
+            this.startingPosition = startingPosition;
+            this.pos2 = pos2;
+            servo.setPosition(startingPosition);
+        }
+
+        /**
+         * Run this method on every tick with the new isPressed to update the position of the servo.
+         * @param isPressed Whether or not the controlling button for this servo is pressed now
+         */
+        void updatePosition(boolean isPressed) {
+            if (isPressed && !isPreviouslyPressed) {
+                double newPosition = servo.getPosition() == startingPosition ? pos2 : startingPosition;
+                telemetry.addData("Changing servo position to", newPosition);
+                servo.setPosition(newPosition);
+                isPreviouslyPressed = true;
+            } else if (!isPressed && isPreviouslyPressed) {
+                isPreviouslyPressed = false;
+            }
+        }
+    }
+
     private double limit(double value, double min, double max) {
         return Math.min(Math.max(value, min), max);
     }
@@ -56,7 +85,7 @@ public class ManualModeTankDrive extends LinearOpMode {
         }
     }
 
-    private void controlServo(Servo servo, double bottomLimit, double topLimit, boolean isUp, boolean isDown) {
+    private void fineControlServo(Servo servo, double bottomLimit, double topLimit, boolean isUp, boolean isDown) {
         double delta = 0;
         if (isUp) {
             delta = 0.05;
@@ -79,6 +108,10 @@ public class ManualModeTankDrive extends LinearOpMode {
     @Override
     public void runOpMode() {
         Hardware hw = new Hardware(hardwareMap);
+        ToggleButtonServo slideGateToggle = new ToggleButtonServo(
+                hw.slideGateServo, Hardware.SLIDE_GATE_CLOSED, Hardware.SLIDE_GATE_OPEN);
+        ToggleButtonServo relicHandToggle = new ToggleButtonServo(
+                hw.relicHandServo, Hardware.RELIC_HAND_CLOSED, Hardware.RELIC_HAND_OPEN);
 
         // wait for the start button to be pressed.
         waitForStart();
@@ -100,18 +133,10 @@ public class ManualModeTankDrive extends LinearOpMode {
                 hw.leftGrabberServo.setPosition(limit(gamepad2.left_trigger, Hardware.GRABBER_RELEASED, Hardware.GRABBER_GRABBED));
                 hw.rightGrabberServo.setPosition(limit(gamepad2.left_trigger, Hardware.GRABBER_RELEASED, Hardware.GRABBER_GRABBED));
 
-                controlServo(hw.slideLifterServo, 0, 1, gamepad2.dpad_left, gamepad2.dpad_right);
-                controlServo(hw.slideExtenderServo, 0, 1, gamepad2.dpad_up, gamepad2.dpad_down);
+                fineControlServo(hw.slideLifterServo, 0, 1, gamepad2.dpad_left, gamepad2.dpad_right);
+                fineControlServo(hw.slideExtenderServo, 0, 1, gamepad2.dpad_up, gamepad2.dpad_down);
 
-                if (gamepad2.y) {
-                    // is the gate like pretty much closed? open it! otherwise close it
-                    double slideGatePosition =
-                            Math.abs(hw.slideGateServo.getPosition() - Hardware.SLIDE_GATE_CLOSED) <= 0.03
-                                    ? Hardware.SLIDE_GATE_OPEN
-                                    : Hardware.SLIDE_GATE_CLOSED;
-                    telemetry.addData("Changing slide gate servo position to", slideGatePosition);
-                    hw.slideGateServo.setPosition(slideGatePosition);
-                }
+                slideGateToggle.updatePosition(gamepad2.y);
                 telemetry.addData("Slide gate servo position", hw.slideGateServo.getPosition());
 
                 controlLimitedMotor(
@@ -122,12 +147,12 @@ public class ManualModeTankDrive extends LinearOpMode {
                 // right stick: motor for arm
                 // a+right stick: servo for elbow
                 // b: relic hand
-                hw.relicHandServo.setPosition(limit(gamepad2.b ? 1 : 0, 0, 0.67));
+                relicHandToggle.updatePosition(gamepad2.b);
                 telemetry.addData("Relic hand position", hw.relicHandServo.getPosition());
 
                 if (gamepad2.a) {
                     hw.relicArmMotor.setPower(0);
-                    controlServo(hw.relicElbowServo, 0, 1, gamepad2.right_stick_y > 0, gamepad2.right_stick_y < 0);
+                    fineControlServo(hw.relicElbowServo, 0, 1, gamepad2.right_stick_y > 0, gamepad2.right_stick_y < 0);
                 } else {
                     controlLimitedMotor(
                             hw.relicArmMotor,
@@ -135,8 +160,8 @@ public class ManualModeTankDrive extends LinearOpMode {
                             gamepad2.right_stick_y, 0.3);
                 }
                 telemetry.addData("Left drive encoder value", hw.leftDriveMotor.getCurrentPosition());
-
             } catch (Exception e) {
+                // Global exception handler to get backtrace
                 StringWriter sw = new StringWriter();
                 PrintWriter pw = new PrintWriter(sw);
                 e.printStackTrace(pw);
