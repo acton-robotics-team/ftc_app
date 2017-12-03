@@ -31,7 +31,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -50,7 +49,7 @@ import java.util.concurrent.TimeoutException;
 public class AutonomousMode extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private volatile String logStr = "";
-    private synchronized void log(String text) {
+    private synchronized void addLogLine(String text) {
         logStr += "[" + runtime.time(TimeUnit.SECONDS) + "] " + text + "\n";
         telemetry.addLine(logStr);
         telemetry.update();
@@ -65,7 +64,7 @@ public class AutonomousMode extends LinearOpMode {
 
     private void turnSync(Hardware hw, int degrees) throws OpModeStoppedException {
         int encoderTicks = (int)Math.round(degrees * Hardware.TETRIX_TICKS_PER_TURN_DEGREE);
-        log(String.format(Locale.US,
+        addLogLine(String.format(Locale.US,
                 "Turning %d degrees, which is %d ticks", degrees, encoderTicks));
 
         DcMotor.RunMode oldMode = hw.leftDriveMotor.getMode();
@@ -87,7 +86,7 @@ public class AutonomousMode extends LinearOpMode {
     private void driveSync(Hardware hw, double rotations) throws OpModeStoppedException {
         int encoderTicks = (int)Math.round(rotations * Hardware.TETRIX_TICKS_PER_REVOLUTION);
 
-        log("Driving for " + rotations + " rotations, which is " + encoderTicks + " ticks");
+        addLogLine("Driving for " + rotations + " rotations, which is " + encoderTicks + " ticks");
 
         DcMotor.RunMode oldMode = hw.leftDriveMotor.getMode();
 
@@ -148,7 +147,7 @@ public class AutonomousMode extends LinearOpMode {
             // TODO: Add moving back and forth if neither detected
             FutureTask<Void> jewelTask = new FutureTask<>(() -> {
                 hw.jewelArmServo.setPosition(Hardware.JEWEL_ARM_EXTENDED);
-                log("Starting jewel task");
+                addLogLine("Starting jewel task");
                 sleep(2000);
 
                 int direction = hw.jewelColorSensor.blue() > 0
@@ -173,14 +172,14 @@ public class AutonomousMode extends LinearOpMode {
             try {
                 correctGlyphColumn = detectGlyphTask.get(10, TimeUnit.SECONDS);
             } catch (TimeoutException e) {
-                log("Failed to find glyph");
+                addLogLine("Failed to find glyph");
                 correctGlyphColumn = RelicRecoveryVuMark.UNKNOWN;
             }
-            log("Got glyph column " + correctGlyphColumn);
+            addLogLine("Got glyph column " + correctGlyphColumn);
 
             // wait for jewel task to finish
             jewelTask.get();
-            log("Jewel task finished");
+            addLogLine("Jewel task finished");
 
             // reeeveerse
             hw.leftDriveMotor.setPower(-0.1);
@@ -201,7 +200,7 @@ public class AutonomousMode extends LinearOpMode {
                 default:
                     columnsToPass = 2; // lmao
             }
-            log("Must pass columns: " + columnsToPass);
+            addLogLine("Must pass columns: " + columnsToPass);
             int columnsPassed = 0;
             while (columnsToPass > columnsPassed) {
                 while (hw.ods.getLightDetected() == 0) {
@@ -209,7 +208,7 @@ public class AutonomousMode extends LinearOpMode {
                 }
                 // we have hit a glyph column wall
                 columnsPassed += 1;
-                log("Reached glyph column");
+                addLogLine("Reached glyph column");
             }
 
             // Now we are at the required column. Turn & move forward until ODS reads
@@ -220,7 +219,7 @@ public class AutonomousMode extends LinearOpMode {
             hw.rightGrabberServo.setPosition(Hardware.GRABBER_RELEASED);
             hw.leftGrabberServo.setPosition(Hardware.GRABBER_RELEASED);
         } catch (Exception e) {
-            log("Stopping op mode... " + e);
+            addLogLine("Stopping op mode... " + e);
         }
     }
 }
