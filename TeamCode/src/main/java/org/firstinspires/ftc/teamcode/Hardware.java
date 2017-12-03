@@ -50,8 +50,8 @@ final class Hardware
     static final double RELIC_HAND_CLOSED = 0.7;
     static final double RELIC_HAND_OPEN = 0;
     static final double JEWEL_ARM_EXTENDED = 0;
-    static final double JEWEL_ARM_HALF_EXTENDED = 0.5;
-    static final double JEWEL_ARM_RETRACTED = 0.5;
+    static final double JEWEL_ARM_HALF_EXTENDED = 0.4;
+    static final double JEWEL_ARM_RETRACTED = 0.7;
     static final double SLIDE_GATE_OPEN = 0.5;
     static final double SLIDE_GATE_CLOSED = 0;
 
