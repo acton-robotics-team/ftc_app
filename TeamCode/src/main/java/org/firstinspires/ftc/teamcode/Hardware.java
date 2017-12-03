@@ -46,7 +46,7 @@ final class Hardware
     static final int TETRIX_TICKS_PER_REVOLUTION = 1440;
     static final double TETRIX_TICKS_PER_TURN_DEGREE = 2681d / 300d;
     static final int LIFTER_TOP_LIMIT = 4 * TETRIX_TICKS_PER_REVOLUTION;
-    static final double RELIC_ARM_TOP_LIMIT = 0.5 * TETRIX_TICKS_PER_REVOLUTION;
+    static final double RELIC_ARM_TOP_LIMIT = 0.75 * TETRIX_TICKS_PER_REVOLUTION;
     static final double RELIC_HAND_CLOSED = 0.7;
     static final double RELIC_HAND_OPEN = 0;
     static final double JEWEL_ARM_EXTENDED = 0;
@@ -72,10 +72,10 @@ final class Hardware
     /* Constructor */
     Hardware(HardwareMap map) {
         rightDriveMotor = map.dcMotor.get("right_drive_motor");
+        rightDriveMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         leftDriveMotor = map.dcMotor.get("left_drive_motor");
         leftDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftDriveMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftDriveMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         lifterMotor = map.dcMotor.get("lifter_motor");
         lifterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lifterMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
