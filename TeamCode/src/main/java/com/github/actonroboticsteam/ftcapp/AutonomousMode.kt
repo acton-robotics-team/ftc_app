@@ -61,13 +61,13 @@ class AutonomousMode : LinearOpMode() {
     }
 
     private fun turnSync(hw: Robot, degrees: Int) {
-        val encoderTicks = Math.round(degrees * Robot.TETRIX_TICKS_PER_TURN_DEGREE) as Int
+        val encoderTicks = Math.round(degrees * Robot.TETRIX_TICKS_PER_TURN_DEGREE)
         val oldMode = hw.leftDriveMotor.mode
 
         hw.leftDriveMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         hw.leftDriveMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
 
-        hw.leftDriveMotor.targetPosition = encoderTicks
+        hw.leftDriveMotor.targetPosition = encoderTicks.toInt()
         log(String.format(Locale.US,
                 "Turning %d degrees, which is %d ticks", degrees, encoderTicks))
         hw.leftDriveMotor.power = if (degrees >= 0) 0.1 else -0.1
