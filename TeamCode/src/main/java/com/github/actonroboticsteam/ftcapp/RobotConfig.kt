@@ -39,49 +39,34 @@ import com.qualcomm.robotcore.hardware.Servo
 /**
  * Robot access and abstraction.
  */
-internal class Robot/* Constructor */
-(map: HardwareMap) {
+internal class RobotConfig(map: HardwareMap) {
 
-    val rightDriveMotor: DcMotor
-    val leftDriveMotor: DcMotor
-    val lifterMotor: DcMotor
-    val relicArmMotor: DcMotor
-    val relicElbowServo: Servo
-    val relicHandServo: Servo
-    val jewelArmServo: Servo
-    val leftGrabberServo: Servo
-    val rightGrabberServo: Servo
-    val slideGateServo: Servo
-    val slideLifterServo: Servo
-    val slideExtenderServo: Servo
-    val jewelColorSensor: ColorSensor
-    val ods: OpticalDistanceSensor
+    val rightDriveMotor: DcMotor = map.dcMotor.get("right_drive_motor")
+    val leftDriveMotor: DcMotor = map.dcMotor.get("left_drive_motor")
+    val lifterMotor: DcMotor = map.dcMotor.get("lifter_motor")
+    val relicArmMotor: DcMotor = map.dcMotor.get("relic_arm_motor")
+    val relicElbowServo: Servo = map.servo.get("relic_elbow_servo")
+    val relicHandServo: Servo = map.servo.get("relic_hand_servo")
+    val jewelArmServo: Servo = map.servo.get("jewel_arm_servo")
+    val leftGrabberServo: Servo = map.servo.get("left_grabber_servo")
+    val rightGrabberServo: Servo = map.servo.get("right_grabber_servo")
+    val slideGateServo: Servo = map.servo.get("slide_gate_servo")
+    val slideLifterServo: Servo = map.servo.get("slide_lifter_servo")
+    val slideExtenderServo: Servo = map.servo.get("slide_extender_servo")
+    val jewelColorSensor: ColorSensor = map.colorSensor.get("color_sensor")
+    val ods: OpticalDistanceSensor = map.opticalDistanceSensor.get("ods")
 
     init {
-        rightDriveMotor = map.dcMotor.get("right_drive_motor")
-        leftDriveMotor = map.dcMotor.get("left_drive_motor")
         leftDriveMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         leftDriveMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
         leftDriveMotor.direction = DcMotorSimple.Direction.REVERSE
-        lifterMotor = map.dcMotor.get("lifter_motor")
         lifterMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         lifterMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
-        relicArmMotor = map.dcMotor.get("relic_arm_motor")
         relicArmMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         relicArmMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
-        relicElbowServo = map.servo.get("relic_elbow_servo")
-        relicHandServo = map.servo.get("relic_hand_servo")
         relicHandServo.direction = Servo.Direction.REVERSE
-        jewelArmServo = map.servo.get("jewel_arm_servo")
         jewelArmServo.direction = Servo.Direction.REVERSE
-        leftGrabberServo = map.servo.get("left_grabber_servo")
         leftGrabberServo.direction = Servo.Direction.REVERSE
-        rightGrabberServo = map.servo.get("right_grabber_servo")
-        slideGateServo = map.servo.get("slide_gate_servo")
-        slideLifterServo = map.servo.get("slide_lifter_servo")
-        slideExtenderServo = map.servo.get("slide_extender_servo")
-        jewelColorSensor = map.colorSensor.get("color_sensor")
-        ods = map.opticalDistanceSensor.get("ods")
     }
 
     companion object {

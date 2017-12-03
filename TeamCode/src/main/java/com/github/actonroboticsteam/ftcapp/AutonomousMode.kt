@@ -38,7 +38,6 @@ import org.firstinspires.ftc.robotcore.external.ClassFactory
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer
 
-import java.util.Locale
 import java.util.concurrent.FutureTask
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
@@ -60,8 +59,8 @@ class AutonomousMode : LinearOpMode() {
             idle()
     }
 
-    private fun turnSync(hw: Robot, degrees: Int) {
-        val encoderTicks = Math.round(degrees * Robot.TETRIX_TICKS_PER_TURN_DEGREE)
+    private fun turnSync(hw: RobotConfig, degrees: Int) {
+        val encoderTicks = Math.round(degrees * RobotConfig.TETRIX_TICKS_PER_TURN_DEGREE)
         val oldMode = hw.leftDriveMotor.mode
 
         hw.leftDriveMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
@@ -100,10 +99,10 @@ class AutonomousMode : LinearOpMode() {
     }
 
     override fun runOpMode() {
-        val hw = Robot(hardwareMap)
+        val hw = RobotConfig(hardwareMap)
 
-        hw.leftGrabberServo.position = Robot.GRABBER_GRABBED
-        hw.rightGrabberServo.position = Robot.GRABBER_GRABBED
+        hw.leftGrabberServo.position = RobotConfig.GRABBER_GRABBED
+        hw.rightGrabberServo.position = RobotConfig.GRABBER_GRABBED
 
         // wait for the start button to be pressed.
         waitForStart()
@@ -119,7 +118,7 @@ class AutonomousMode : LinearOpMode() {
         try {
             // TODO: Add moving back and forth if neither detected
             val jewelTask = FutureTask<Void> {
-                hw.jewelArmServo.position = Robot.JEWEL_ARM_EXTENDED
+                hw.jewelArmServo.position = RobotConfig.JEWEL_ARM_EXTENDED
                 log("Starting jewel task")
                 sleep(2000)
 
@@ -129,13 +128,13 @@ class AutonomousMode : LinearOpMode() {
                     1 // right
                 turnSync(hw, 10 * direction)
                 turnSync(hw, -10 * direction)
-                hw.jewelArmServo.position = Robot.JEWEL_ARM_HALF_EXTENDED
+                hw.jewelArmServo.position = RobotConfig.JEWEL_ARM_HALF_EXTENDED
                 sleep(1000)
                 null
             }
             // Max 10 sec
             val detectGlyphTask = FutureTask<RelicRecoveryVuMark>({ this.detectPictogram() })
-            hw.lifterMotor.targetPosition = Robot.LIFTER_TOP_LIMIT / 2
+            hw.lifterMotor.targetPosition = RobotConfig.LIFTER_TOP_LIMIT / 2
             hw.lifterMotor.power = -0.1
             jewelTask.run()
             detectGlyphTask.run()
@@ -177,7 +176,7 @@ class AutonomousMode : LinearOpMode() {
             }
 
             // Now we are at the required column. Turn & move forward until ODS reads
-            hw.jewelArmServo.position = Robot.JEWEL_ARM_RETRACTED
+            hw.jewelArmServo.position = RobotConfig.JEWEL_ARM_RETRACTED
             turnSync(hw, -90)
             hw.leftDriveMotor.power = 0.1
             hw.rightDriveMotor.power = 0.1
@@ -185,8 +184,8 @@ class AutonomousMode : LinearOpMode() {
             hw.rightDriveMotor.power = 0.0
             hw.leftDriveMotor.power = 0.0
             // Hopefully we've hit the box by now. Release the box!
-            hw.rightGrabberServo.position = Robot.GRABBER_RELEASED
-            hw.leftGrabberServo.position = Robot.GRABBER_RELEASED
+            hw.rightGrabberServo.position = RobotConfig.GRABBER_RELEASED
+            hw.leftGrabberServo.position = RobotConfig.GRABBER_RELEASED
         } catch (e: Exception) {
             log("Stopping op mode... " + e)
         }
