@@ -27,8 +27,9 @@ import java.io.StringWriter;
  * - Left/right dpad: lift/lower slide (slide extender servo)
  * - Y: toggle slide gate servo
  * - Left analog stick: lifter motor
- * - Right analog stick: relic arm motor
- *
+ * - NOT A && Right analog stick: relic arm motor
+ * - A && right analog stick: relic elbow servo
+ * - B: relic hand servo
  */
 @TeleOp(name = "Manual: tank drive")
 public class ManualModeTankDrive extends LinearOpMode {
@@ -81,6 +82,7 @@ public class ManualModeTankDrive extends LinearOpMode {
 
         // wait for the start button to be pressed.
         waitForStart();
+
         while (opModeIsActive()) {
             try {
                 // Gamepad 1
