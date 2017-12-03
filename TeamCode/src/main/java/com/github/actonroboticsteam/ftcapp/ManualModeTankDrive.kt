@@ -5,6 +5,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.Servo
+import org.pattonvillerobotics.commoncode.robotclasses.gamepad.GamepadData
+import org.pattonvillerobotics.commoncode.robotclasses.gamepad.ListenableButton
+import org.pattonvillerobotics.commoncode.robotclasses.gamepad.ListenableGamepad
 
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -35,29 +38,6 @@ import java.io.StringWriter
  */
 @TeleOp(name = "Manual: tank drive")
 class ManualModeTankDrive : LinearOpMode() {
-    private inner class ToggleButtonServo internal constructor(internal val servo: Servo, internal val startingPosition: Double, internal val pos2: Double) {
-        internal var isPreviouslyPressed = false
-
-        init {
-            servo.position = startingPosition
-        }
-
-        /**
-         * Run this method on every tick with the new isPressed to update the position of the servo.
-         * @param isPressed Whether or not the controlling button for this servo is pressed now
-         */
-        internal fun updatePosition(isPressed: Boolean) {
-            if (isPressed && !isPreviouslyPressed) {
-                val newPosition = if (servo.position == startingPosition) pos2 else startingPosition
-                telemetry.addData("Changing servo position to", newPosition)
-                servo.position = newPosition
-                isPreviouslyPressed = true
-            } else if (!isPressed && isPreviouslyPressed) {
-                isPreviouslyPressed = false
-            }
-        }
-    }
-
     private fun limit(value: Double, min: Double, max: Double): Double {
         return Math.min(Math.max(value, min), max)
     }
@@ -103,10 +83,21 @@ class ManualModeTankDrive : LinearOpMode() {
 
     override fun runOpMode() {
         val hw = Robot(hardwareMap)
-        val slideGateToggle = ToggleButtonServo(
-                hw.slideGateServo, Robot.SLIDE_GATE_CLOSED, Robot.SLIDE_GATE_OPEN)
-        val relicHandToggle = ToggleButtonServo(
-                hw.relicHandServo, Robot.RELIC_HAND_CLOSED, Robot.RELIC_HAND_OPEN)
+        val gamepad2Listener = ListenableGamepad()
+        gamepad2Listener.addButtonListener(GamepadData.Button.Y, ListenableButton.ButtonState.JUST_PRESSED) {
+            hw.slideGateServo.position = if (hw.slideGateServo.position == Robot.SLIDE_GATE_CLOSED) {
+                Robot.SLIDE_GATE_OPEN
+            } else {
+                Robot.SLIDE_GATE_CLOSED
+            }
+        }
+        gamepad2Listener.addButtonListener(GamepadData.Button.A, ListenableButton.ButtonState.BEING_PRESSED) {
+            hw.relicHandServo.position = if (hw.relicHandServo.position == Robot.RELIC_HAND_CLOSED) {
+                Robot.RELIC_HAND_OPEN
+            } else {
+                Robot.RELIC_HAND_CLOSED
+            }
+        }
 
         // wait for the start button to be pressed.
         waitForStart()
@@ -131,7 +122,8 @@ class ManualModeTankDrive : LinearOpMode() {
                 fineControlServo(hw.slideLifterServo, 0.0, 1.0, gamepad2.dpad_left, gamepad2.dpad_right)
                 fineControlServo(hw.slideExtenderServo, 0.0, 1.0, gamepad2.dpad_up, gamepad2.dpad_down)
 
-                slideGateToggle.updatePosition(gamepad2.y)
+                gamepad2Listener.update(gamepad2)
+
                 telemetry.addData("Slide gate servo position", hw.slideGateServo.position)
 
                 controlLimitedMotor(
@@ -142,7 +134,6 @@ class ManualModeTankDrive : LinearOpMode() {
                 // right stick: motor for arm
                 // a+right stick: servo for elbow
                 // b: relic hand
-                relicHandToggle.updatePosition(gamepad2.b)
                 telemetry.addData("Relic hand position", hw.relicHandServo.position)
 
                 if (gamepad2.a) {
