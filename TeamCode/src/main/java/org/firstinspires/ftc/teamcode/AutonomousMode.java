@@ -65,14 +65,15 @@ public class AutonomousMode extends LinearOpMode {
 
     private void turnSync(Hardware hw, int degrees) throws OpModeStoppedException {
         int encoderTicks = (int)Math.round(degrees * Hardware.TETRIX_TICKS_PER_TURN_DEGREE);
+        log(String.format(Locale.US,
+                "Turning %d degrees, which is %d ticks", degrees, encoderTicks));
+
         DcMotor.RunMode oldMode = hw.leftDriveMotor.getMode();
 
         hw.leftDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         hw.leftDriveMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         hw.leftDriveMotor.setTargetPosition(encoderTicks);
-        log(String.format(Locale.US,
-                "Turning %d degrees, which is %d ticks", degrees, encoderTicks));
         hw.leftDriveMotor.setPower(degrees >= 0 ? 0.2 : -0.2);
         hw.rightDriveMotor.setPower(degrees >= 0 ? -0.2 : -0.2);
         while (hw.leftDriveMotor.isBusy()) {
@@ -85,6 +86,9 @@ public class AutonomousMode extends LinearOpMode {
 
     private void driveSync(Hardware hw, double rotations) throws OpModeStoppedException {
         int encoderTicks = (int)Math.round(rotations * Hardware.TETRIX_TICKS_PER_REVOLUTION);
+
+        log("Driving for " + rotations + " rotations, which is " + encoderTicks + " ticks");
+
         DcMotor.RunMode oldMode = hw.leftDriveMotor.getMode();
 
         hw.leftDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -197,7 +201,7 @@ public class AutonomousMode extends LinearOpMode {
                 default:
                     columnsToPass = 2; // lmao
             }
-            log("ODS detect");
+            log("Must pass columns: " + columnsToPass);
             int columnsPassed = 0;
             while (columnsToPass > columnsPassed) {
                 while (hw.ods.getLightDetected() == 0) {
@@ -205,16 +209,13 @@ public class AutonomousMode extends LinearOpMode {
                 }
                 // we have hit a glyph column wall
                 columnsPassed += 1;
+                log("Reached glyph column");
             }
 
             // Now we are at the required column. Turn & move forward until ODS reads
             hw.jewelArmServo.setPosition(Hardware.JEWEL_ARM_RETRACTED);
             turnSync(hw, -90);
-            hw.leftDriveMotor.setPower(0.1);
-            hw.rightDriveMotor.setPower(0.1);
-            sleep(500);
-            hw.rightDriveMotor.setPower(0);
-            hw.leftDriveMotor.setPower(0);
+            driveSync(hw, 0.2);
             // Hopefully we've hit the box by now. Release the box!
             hw.rightGrabberServo.setPosition(Hardware.GRABBER_RELEASED);
             hw.leftGrabberServo.setPosition(Hardware.GRABBER_RELEASED);
