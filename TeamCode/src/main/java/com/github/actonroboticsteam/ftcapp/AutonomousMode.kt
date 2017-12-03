@@ -134,8 +134,8 @@ class AutonomousMode : LinearOpMode() {
             }
             // Max 10 sec
             val detectGlyphTask = FutureTask<RelicRecoveryVuMark> { this.detectPictogram() }
-            hw.lifterMotor.targetPosition = RobotConfig.LIFTER_TOP_LIMIT / 2
-            hw.lifterMotor.power = -0.1
+           // hw.lifterMotor.targetPosition = RobotConfig.LIFTER_TOP_LIMIT / 2
+           // hw.lifterMotor.power = -0.1
             jewelTask.run()
             detectGlyphTask.run()
 
