@@ -31,46 +31,46 @@ class AutonomousMode : LinearOpMode() {
             idle()
     }
 
-    private fun turnSync(hw: RobotConfig, degrees: Int) {
+    private fun turnSync(robot: RobotConfig, degrees: Int) {
         val encoderTicks = (degrees * RobotConfig.TETRIX_TICKS_PER_TURN_DEGREE).roundToInt()
         addLogLine("Turning $degrees degrees, which is $encoderTicks ticks")
 
-        val oldMode = hw.leftDriveMotor.mode
+        val oldMode = robot.leftDriveMotor.mode
 
-        hw.leftDriveMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        hw.leftDriveMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
+        robot.leftDriveMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        robot.leftDriveMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
 
-        hw.leftDriveMotor.targetPosition = encoderTicks
-        hw.leftDriveMotor.power = if (degrees >= 0) 0.2 else -0.2
-        hw.rightDriveMotor.power = if (degrees >= 0) -0.2 else -0.2
-        while (hw.leftDriveMotor.isBusy) {
+        robot.leftDriveMotor.targetPosition = encoderTicks
+        robot.leftDriveMotor.power = if (degrees >= 0) 0.2 else -0.2
+        robot.rightDriveMotor.power = if (degrees >= 0) -0.2 else -0.2
+        while (robot.leftDriveMotor.isBusy) {
             sleepSync()
         }
-        hw.leftDriveMotor.power = 0.0
-        hw.rightDriveMotor.power = 0.0
-        hw.leftDriveMotor.mode = oldMode
+        robot.leftDriveMotor.power = 0.0
+        robot.rightDriveMotor.power = 0.0
+        robot.leftDriveMotor.mode = oldMode
     }
 
-    private fun driveSync(hw: RobotConfig, rotations: Double) {
+    private fun driveSync(robot: RobotConfig, rotations: Double) {
         val encoderTicks = (rotations * RobotConfig.TETRIX_TICKS_PER_REVOLUTION).roundToInt()
 
         addLogLine("Driving for $rotations rotations, which is $encoderTicks ticks")
 
-        val oldMode = hw.leftDriveMotor.mode
+        val oldMode = robot.leftDriveMotor.mode
 
-        hw.leftDriveMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        hw.leftDriveMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
+        robot.leftDriveMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        robot.leftDriveMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
 
-        hw.leftDriveMotor.targetPosition = encoderTicks
+        robot.leftDriveMotor.targetPosition = encoderTicks
 
-        hw.leftDriveMotor.power = if (encoderTicks > 0) 0.2 else -0.2
-        hw.rightDriveMotor.power = if (encoderTicks > 0) 0.2 else -0.2
-        while (hw.leftDriveMotor.isBusy) {
+        robot.leftDriveMotor.power = if (encoderTicks > 0) 0.2 else -0.2
+        robot.rightDriveMotor.power = if (encoderTicks > 0) 0.2 else -0.2
+        while (robot.leftDriveMotor.isBusy) {
             sleepSync()
         }
-        hw.leftDriveMotor.power = 0.0
-        hw.rightDriveMotor.power = 0.0
-        hw.leftDriveMotor.mode = oldMode
+        robot.leftDriveMotor.power = 0.0
+        robot.rightDriveMotor.power = 0.0
+        robot.leftDriveMotor.mode = oldMode
     }
 
     private fun detectPictogram(): RelicRecoveryVuMark {
@@ -94,10 +94,10 @@ class AutonomousMode : LinearOpMode() {
     }
 
     override fun runOpMode() {
-        val hw = RobotConfig(hardwareMap)
+        val robot = RobotConfig(hardwareMap)
 
-        hw.leftGrabberServo.position = RobotConfig.GRABBER_GRABBED
-        hw.rightGrabberServo.position = RobotConfig.GRABBER_GRABBED
+        robot.leftGrabberServo.position = RobotConfig.GRABBER_GRABBED
+        robot.rightGrabberServo.position = RobotConfig.GRABBER_GRABBED
 
         // wait for the start button to be pressed.
         waitForStart()
@@ -113,24 +113,24 @@ class AutonomousMode : LinearOpMode() {
         try {
             // TODO: Add moving back and forth if neither detected
             val jewelTask = FutureTask<Void> {
-                hw.jewelArmServo.position = RobotConfig.JEWEL_ARM_EXTENDED
+                robot.jewelArmServo.position = RobotConfig.JEWEL_ARM_EXTENDED
                 addLogLine("Starting jewel task")
                 sleep(2000)
 
-                val direction = if (hw.jewelColorSensor.blue() > 0)
+                val direction = if (robot.jewelColorSensor.blue() > 0)
                     -1  // left
                 else
                     1 // right
-                turnSync(hw, 30 * direction)
-                turnSync(hw, -30 * direction)
-                hw.jewelArmServo.position = RobotConfig.JEWEL_ARM_HALF_EXTENDED
+                turnSync(robot, 30 * direction)
+                turnSync(robot, -30 * direction)
+                robot.jewelArmServo.position = RobotConfig.JEWEL_ARM_HALF_EXTENDED
                 sleep(1000)
                 null
             }
             // Max 10 sec
             val detectGlyphTask = FutureTask<RelicRecoveryVuMark> { this.detectPictogram() }
-            //hw.lifterMotor.setTargetPosition(RobotConfig.LIFTER_TOP_LIMIT / 2);
-            //hw.lifterMotor.setPower(-0.2);
+            //robot.lifterMotor.setTargetPosition(RobotConfig.LIFTER_TOP_LIMIT / 2);
+            //robot.lifterMotor.setPower(-0.2);
             jewelTask.run()
             detectGlyphTask.run()
 
@@ -149,8 +149,8 @@ class AutonomousMode : LinearOpMode() {
             addLogLine("Jewel task finished!")
 
             // reeeveerse
-            hw.leftDriveMotor.power = -0.1
-            hw.rightDriveMotor.power = -0.1
+            robot.leftDriveMotor.power = -0.1
+            robot.rightDriveMotor.power = -0.1
             // Detect with ODS
             val columnsToPass = when (correctGlyphColumn) {
                 RelicRecoveryVuMark.LEFT -> 3
@@ -162,24 +162,24 @@ class AutonomousMode : LinearOpMode() {
             addLogLine("Must pass $columnsToPass columns")
             var columnsPassed = 0
             while (columnsToPass > columnsPassed) {
-                while (hw.ods.lightDetected == 0.0) {
+                while (robot.ods.lightDetected == 0.0) {
                     sleepSync()
                 }
                 // we have hit a glyph column wall
                 columnsPassed += 1
                 addLogLine("Reached glyph column")
-                while (hw.ods.lightDetected > 0) {
+                while (robot.ods.lightDetected > 0) {
                     sleepSync()
                 }
             }
 
             // Now we are at the required column. Turn & move forward until ODS reads
-            hw.jewelArmServo.position = RobotConfig.JEWEL_ARM_RETRACTED
-            turnSync(hw, -90)
-            driveSync(hw, 0.2)
+            robot.jewelArmServo.position = RobotConfig.JEWEL_ARM_RETRACTED
+            turnSync(robot, -90)
+            driveSync(robot, 0.2)
             // Hopefully we've hit the box by now. Release the box!
-            hw.rightGrabberServo.position = RobotConfig.GRABBER_RELEASED
-            hw.leftGrabberServo.position = RobotConfig.GRABBER_RELEASED
+            robot.rightGrabberServo.position = RobotConfig.GRABBER_RELEASED
+            robot.leftGrabberServo.position = RobotConfig.GRABBER_RELEASED
         } catch (e: Exception) {
             addLogLine("Stopping op mode... " + e)
         }
