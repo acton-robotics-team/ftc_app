@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.Servo
+import com.qualcomm.robotcore.util.ElapsedTime
 import org.pattonvillerobotics.commoncode.robotclasses.gamepad.GamepadData
 import org.pattonvillerobotics.commoncode.robotclasses.gamepad.ListenableButton
 import org.pattonvillerobotics.commoncode.robotclasses.gamepad.ListenableGamepad
@@ -17,9 +18,7 @@ import java.io.StringWriter
  * on 10/9/2017.
  * - kuneel sharpedo
  *
- *
  * Controls:
- *
  *
  * GAMEPAD 1
  * - Left bumper: turbo (=1)
@@ -38,6 +37,8 @@ import java.io.StringWriter
  */
 @TeleOp(name = "Manual: tank drive")
 class ManualModeTankDrive : LinearOpMode() {
+    private val runtime = ElapsedTime()
+
     private fun limit(value: Double, min: Double, max: Double): Double {
         return Math.min(Math.max(value, min), max)
     }
@@ -101,15 +102,17 @@ class ManualModeTankDrive : LinearOpMode() {
 
         // wait for the start button to be pressed.
         waitForStart()
+        runtime.reset()
 
         while (opModeIsActive()) {
             try {
+                telemetry.addData("Runtime", runtime);
+
                 // Gamepad 1
-                var turbo = 0.25
-                if (gamepad1.left_bumper) {
-                    turbo = 1.0
-                } else if (gamepad1.right_bumper) {
-                    turbo = 0.125
+                val turbo = when {
+                    gamepad1.left_bumper -> 1.0
+                    gamepad1.right_bumper -> 0.125
+                    else -> 0.25
                 }
 
                 hw.rightDriveMotor.power = gamepad1.right_stick_y * turbo
@@ -148,10 +151,8 @@ class ManualModeTankDrive : LinearOpMode() {
                 telemetry.addData("Left drive encoder value", hw.leftDriveMotor.currentPosition)
             } catch (e: Exception) {
                 // Global exception handler to get backtrace
-                val sw = StringWriter()
-                val pw = PrintWriter(sw)
-                e.printStackTrace(pw)
-                telemetry.addLine(sw.toString()) // stack trace as a string
+                telemetry.addLine("EXCEPTION:")
+                telemetry.addLine(e.stackTrace.contentToString())
             } finally {
                 telemetry.update()
                 idle()

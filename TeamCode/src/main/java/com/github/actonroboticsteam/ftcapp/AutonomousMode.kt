@@ -1,36 +1,5 @@
-/* Copyright (c) 2017 FIRST. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted (subject to the limitations in the disclaimer below) provided that
- * the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this list
- * of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice, this
- * list of conditions and the following disclaimer in the documentation and/or
- * other materials provided with the distribution.
- *
- * Neither the name of FIRST nor the names of its contributors may be used to endorse or
- * promote products derived from this software without specific prior written permission.
- *
- * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
- * LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+package com.github.actonroboticsteam.ftcapp
 
-package org.firstinspires.ftc.teamcode
-
-import com.github.actonroboticsteam.ftcapp.OpModeStoppedException
-import com.github.actonroboticsteam.ftcapp.RobotConfig
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
@@ -40,17 +9,17 @@ import org.firstinspires.ftc.robotcore.external.ClassFactory
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer
 
-import java.util.Locale
 import java.util.concurrent.FutureTask
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
+import kotlin.math.roundToInt
 
 @Autonomous(name = "Autonomous program")
 class AutonomousMode : LinearOpMode() {
     private val runtime = ElapsedTime()
     @Volatile private var logStr = ""
     @Synchronized private fun addLogLine(text: String) {
-        logStr += "[" + runtime.time(TimeUnit.SECONDS) + "] " + text + "\n"
+        logStr += "[${runtime.time(TimeUnit.SECONDS)}] $text\n"
         telemetry.addLine(logStr)
         telemetry.update()
     }
@@ -63,9 +32,8 @@ class AutonomousMode : LinearOpMode() {
     }
 
     private fun turnSync(hw: RobotConfig, degrees: Int) {
-        val encoderTicks = Math.round(degrees * RobotConfig.TETRIX_TICKS_PER_TURN_DEGREE).toInt()
-        addLogLine(String.format(Locale.US,
-                "Turning %d degrees, which is %d ticks", degrees, encoderTicks))
+        val encoderTicks = (degrees * RobotConfig.TETRIX_TICKS_PER_TURN_DEGREE).roundToInt()
+        addLogLine("Turning $degrees degrees, which is $encoderTicks ticks")
 
         val oldMode = hw.leftDriveMotor.mode
 
@@ -84,7 +52,7 @@ class AutonomousMode : LinearOpMode() {
     }
 
     private fun driveSync(hw: RobotConfig, rotations: Double) {
-        val encoderTicks = Math.round(rotations * RobotConfig.TETRIX_TICKS_PER_REVOLUTION).toInt()
+        val encoderTicks = (rotations * RobotConfig.TETRIX_TICKS_PER_REVOLUTION).roundToInt()
 
         addLogLine("Driving for $rotations rotations, which is $encoderTicks ticks")
 
@@ -167,19 +135,18 @@ class AutonomousMode : LinearOpMode() {
             detectGlyphTask.run()
 
             // Get (blocking) glyph column
-            var correctGlyphColumn: RelicRecoveryVuMark
-            try {
-                correctGlyphColumn = detectGlyphTask.get(10, TimeUnit.SECONDS)
+            val correctGlyphColumn = try {
+                detectGlyphTask.get(10, TimeUnit.SECONDS)
             } catch (e: TimeoutException) {
                 addLogLine("Failed to find glyph")
-                correctGlyphColumn = RelicRecoveryVuMark.UNKNOWN
+                RelicRecoveryVuMark.UNKNOWN
             }
 
             addLogLine("Got glyph column " + correctGlyphColumn)
 
             // wait for jewel task to finish
             jewelTask.get()
-            addLogLine("Jewel task finished")
+            addLogLine("Jewel task finished!")
 
             // reeeveerse
             hw.leftDriveMotor.power = -0.1
@@ -190,8 +157,9 @@ class AutonomousMode : LinearOpMode() {
                 RelicRecoveryVuMark.RIGHT -> 2
                 RelicRecoveryVuMark.CENTER -> 1
                 RelicRecoveryVuMark.UNKNOWN -> 2
+                else -> 2
             }
-            addLogLine("Must pass columns: " + columnsToPass)
+            addLogLine("Must pass $columnsToPass columns")
             var columnsPassed = 0
             while (columnsToPass > columnsPassed) {
                 while (hw.ods.lightDetected == 0.0) {
@@ -215,6 +183,5 @@ class AutonomousMode : LinearOpMode() {
         } catch (e: Exception) {
             addLogLine("Stopping op mode... " + e)
         }
-
     }
 }
