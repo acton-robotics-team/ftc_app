@@ -181,7 +181,9 @@ class AutonomousMode : LinearOpMode() {
             robot.rightGrabberServo.position = RobotConfig.GRABBER_RELEASED
             robot.leftGrabberServo.position = RobotConfig.GRABBER_RELEASED
         } catch (e: Exception) {
-            addLogLine("Stopping op mode... " + e)
+            addLogLine("HIT EXCEPTION. Stopping op mode.")
+            addLogLine("Exception backtrace:")
+            addLogLine(e.stackTrace.contentToString())
         }
     }
 }
