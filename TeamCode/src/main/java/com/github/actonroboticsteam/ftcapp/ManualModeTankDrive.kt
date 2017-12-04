@@ -64,14 +64,17 @@ class ManualModeTankDrive : LinearOpMode() {
     private fun fineControlServo(
             servo: Servo, bottomLimit: Double, topLimit: Double,
             isUp: Boolean, isDown: Boolean) {
-        var delta = 0.0
-        if (isUp) {
-            delta = 0.05
-        } else if (isDown) {
-            delta = -0.05
+        val delta = when {
+            isUp -> 0.05
+            isDown -> -0.05
+            else -> 0.0
         }
-        // freaking servo api returns NaN when no value known
-        val position = if (java.lang.Double.isNaN(servo.position)) bottomLimit else servo.position
+        val position = if (servo.position.isNaN()) {
+            // freaking servo api returns NaN when no value known
+            bottomLimit
+        } else {
+            servo.position
+        }
         telemetry.addLine("CONTROL SERVO")
         telemetry.addData("Position", position)
         telemetry.addData("Bottom limit", bottomLimit)
