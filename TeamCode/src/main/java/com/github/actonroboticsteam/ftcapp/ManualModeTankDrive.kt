@@ -10,9 +10,6 @@ import org.pattonvillerobotics.commoncode.robotclasses.gamepad.GamepadData
 import org.pattonvillerobotics.commoncode.robotclasses.gamepad.ListenableButton
 import org.pattonvillerobotics.commoncode.robotclasses.gamepad.ListenableGamepad
 
-import java.io.PrintWriter
-import java.io.StringWriter
-
 /**
  * Created by kevinliu who writes tehe mstdisgusting code ew
  * on 10/9/2017.
@@ -106,7 +103,7 @@ class ManualModeTankDrive : LinearOpMode() {
 
         while (opModeIsActive()) {
             try {
-                telemetry.addData("Runtime", runtime);
+                telemetry.addData("Runtime", runtime)
 
                 // Gamepad 1
                 val turbo = when {
