@@ -40,7 +40,9 @@ class ManualModeTankDrive : LinearOpMode() {
         return Math.min(Math.max(value, min), max)
     }
 
-    private fun controlLimitedMotor(motor: DcMotor, bottomLimit: Double, topLimit: Double, controlAxis: Double, power: Double) {
+    private fun controlLimitedMotor(
+            motor: DcMotor, bottomLimit: Double, topLimit: Double,
+            controlAxis: Double, power: Double) {
         val position = motor.currentPosition
         telemetry.addLine("LIMITED MOTOR")
         telemetry.addData("Control axis", controlAxis)
@@ -59,7 +61,9 @@ class ManualModeTankDrive : LinearOpMode() {
         }
     }
 
-    private fun fineControlServo(servo: Servo, bottomLimit: Double, topLimit: Double, isUp: Boolean, isDown: Boolean) {
+    private fun fineControlServo(
+            servo: Servo, bottomLimit: Double, topLimit: Double,
+            isUp: Boolean, isDown: Boolean) {
         var delta = 0.0
         if (isUp) {
             delta = 0.05
@@ -82,15 +86,19 @@ class ManualModeTankDrive : LinearOpMode() {
     override fun runOpMode() {
         val hw = RobotConfig(hardwareMap)
         val gamepad2Listener = ListenableGamepad()
-        gamepad2Listener.addButtonListener(GamepadData.Button.Y, ListenableButton.ButtonState.JUST_PRESSED) {
-            hw.slideGateServo.position = if (hw.slideGateServo.position == RobotConfig.SLIDE_GATE_CLOSED) {
+        gamepad2Listener.addButtonListener(
+                GamepadData.Button.Y, ListenableButton.ButtonState.JUST_PRESSED) {
+            hw.slideGateServo.position =
+                    if (hw.slideGateServo.position == RobotConfig.SLIDE_GATE_CLOSED) {
                 RobotConfig.SLIDE_GATE_OPEN
             } else {
                 RobotConfig.SLIDE_GATE_CLOSED
             }
         }
-        gamepad2Listener.addButtonListener(GamepadData.Button.A, ListenableButton.ButtonState.BEING_PRESSED) {
-            hw.relicHandServo.position = if (hw.relicHandServo.position == RobotConfig.RELIC_HAND_CLOSED) {
+        gamepad2Listener.addButtonListener(
+                GamepadData.Button.A, ListenableButton.ButtonState.BEING_PRESSED) {
+            hw.relicHandServo.position =
+                    if (hw.relicHandServo.position == RobotConfig.RELIC_HAND_CLOSED) {
                 RobotConfig.RELIC_HAND_OPEN
             } else {
                 RobotConfig.RELIC_HAND_CLOSED
@@ -119,8 +127,12 @@ class ManualModeTankDrive : LinearOpMode() {
                 hw.leftGrabberServo.position = limit(gamepad2.left_trigger.toDouble(), RobotConfig.GRABBER_RELEASED, RobotConfig.GRABBER_GRABBED)
                 hw.rightGrabberServo.position = limit(gamepad2.left_trigger.toDouble(), RobotConfig.GRABBER_RELEASED, RobotConfig.GRABBER_GRABBED)
 
-                fineControlServo(hw.slideLifterServo, 0.0, 1.0, gamepad2.dpad_left, gamepad2.dpad_right)
-                fineControlServo(hw.slideExtenderServo, 0.0, 1.0, gamepad2.dpad_up, gamepad2.dpad_down)
+                fineControlServo(hw.slideLifterServo,
+                        0.0, 1.0,
+                        gamepad2.dpad_left, gamepad2.dpad_right)
+                fineControlServo(hw.slideExtenderServo,
+                        0.0, 1.0,
+                        gamepad2.dpad_up, gamepad2.dpad_down)
 
                 gamepad2Listener.update(gamepad2)
 
@@ -138,14 +150,17 @@ class ManualModeTankDrive : LinearOpMode() {
 
                 if (gamepad2.a) {
                     hw.relicArmMotor.power = 0.0
-                    fineControlServo(hw.relicElbowServo, 0.0, 1.0, gamepad2.right_stick_y > 0, gamepad2.right_stick_y < 0)
+                    fineControlServo(hw.relicElbowServo,
+                            0.0, 1.0,
+                            gamepad2.right_stick_y > 0, gamepad2.right_stick_y < 0)
                 } else {
                     controlLimitedMotor(
                             hw.relicArmMotor,
                             0.0, RobotConfig.RELIC_ARM_TOP_LIMIT,
                             gamepad2.right_stick_y.toDouble(), 0.3)
                 }
-                telemetry.addData("Left drive encoder value", hw.leftDriveMotor.currentPosition)
+                telemetry.addData("Left drive encoder value",
+                        hw.leftDriveMotor.currentPosition)
             } catch (e: Exception) {
                 // Global exception handler to get backtrace
                 telemetry.addLine("EXCEPTION:")
