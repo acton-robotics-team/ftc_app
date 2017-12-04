@@ -185,13 +185,11 @@ class AutonomousMode : LinearOpMode() {
             hw.leftDriveMotor.power = -0.1
             hw.rightDriveMotor.power = -0.1
             // Detect with ODS
-            val columnsToPass: Int
-            when (correctGlyphColumn) {
-                RelicRecoveryVuMark.LEFT -> columnsToPass = 3
-                RelicRecoveryVuMark.RIGHT -> columnsToPass = 2
-                RelicRecoveryVuMark.CENTER -> columnsToPass = 1
-                RelicRecoveryVuMark.UNKNOWN -> columnsToPass = 2 // lmao
-                else -> columnsToPass = 2
+            val columnsToPass = when (correctGlyphColumn) {
+                RelicRecoveryVuMark.LEFT -> 3
+                RelicRecoveryVuMark.RIGHT -> 2
+                RelicRecoveryVuMark.CENTER -> 1
+                RelicRecoveryVuMark.UNKNOWN -> 2
             }
             addLogLine("Must pass columns: " + columnsToPass)
             var columnsPassed = 0
