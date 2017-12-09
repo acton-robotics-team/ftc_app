@@ -11,7 +11,6 @@ import com.qualcomm.robotcore.hardware.Servo
  * Robot access and abstraction.
  */
 internal class RobotConfig(map: HardwareMap) {
-
     val rightDriveMotor: DcMotor = map.dcMotor.get("right_drive_motor")
     val leftDriveMotor: DcMotor = map.dcMotor.get("left_drive_motor")
     val lifterMotor: DcMotor = map.dcMotor.get("lifter_motor")
@@ -41,6 +40,7 @@ internal class RobotConfig(map: HardwareMap) {
     }
 
     companion object {
+        // Empirically-determined values
         val GRABBER_RELEASED = 0.5
         val GRABBER_GRABBED = 1.0
         val TETRIX_TICKS_PER_REVOLUTION = 1440

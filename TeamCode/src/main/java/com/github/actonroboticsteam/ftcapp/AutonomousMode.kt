@@ -17,21 +17,20 @@ import kotlin.math.roundToInt
 @Autonomous(name = "Autonomous program")
 class AutonomousMode : LinearOpMode() {
     private val runtime = ElapsedTime()
-    @Volatile private var logStr = ""
+    @Volatile private var logs = ""
     @Synchronized private fun addLogLine(text: String) {
-        logStr += "[${runtime.time(TimeUnit.SECONDS)}] $text\n"
-        telemetry.addLine(logStr)
+        logs += "[${runtime.time(TimeUnit.SECONDS)}] $text\n"
+        telemetry.addLine(logs)
         telemetry.update()
     }
 
-    private fun sleepSync() {
-        if (!opModeIsActive())
-            throw OpModeStoppedException()
-        else
-            idle()
+    private fun sleep() = if (!opModeIsActive()) {
+        throw OpModeStoppedException()
+    } else {
+        idle()
     }
 
-    private fun turnSync(robot: RobotConfig, degrees: Int) {
+    private fun turn(robot: RobotConfig, degrees: Int) {
         val encoderTicks = (degrees * RobotConfig.TETRIX_TICKS_PER_TURN_DEGREE).roundToInt()
         addLogLine("Turning $degrees degrees, which is $encoderTicks ticks")
 
@@ -44,14 +43,14 @@ class AutonomousMode : LinearOpMode() {
         robot.leftDriveMotor.power = if (degrees >= 0) 0.2 else -0.2
         robot.rightDriveMotor.power = if (degrees >= 0) -0.2 else -0.2
         while (robot.leftDriveMotor.isBusy) {
-            sleepSync()
+            sleep()
         }
         robot.leftDriveMotor.power = 0.0
         robot.rightDriveMotor.power = 0.0
         robot.leftDriveMotor.mode = oldMode
     }
 
-    private fun driveSync(robot: RobotConfig, rotations: Double) {
+    private fun drive(robot: RobotConfig, rotations: Double) {
         val encoderTicks = (rotations * RobotConfig.TETRIX_TICKS_PER_REVOLUTION).roundToInt()
 
         addLogLine("Driving for $rotations rotations, which is $encoderTicks ticks")
@@ -66,7 +65,7 @@ class AutonomousMode : LinearOpMode() {
         robot.leftDriveMotor.power = if (encoderTicks > 0) 0.2 else -0.2
         robot.rightDriveMotor.power = if (encoderTicks > 0) 0.2 else -0.2
         while (robot.leftDriveMotor.isBusy) {
-            sleepSync()
+            sleep()
         }
         robot.leftDriveMotor.power = 0.0
         robot.rightDriveMotor.power = 0.0
@@ -88,7 +87,7 @@ class AutonomousMode : LinearOpMode() {
             if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
                 return vuMark
             } else {
-                sleepSync()
+                sleep()
             }
         }
     }
@@ -104,11 +103,10 @@ class AutonomousMode : LinearOpMode() {
 
         runtime.reset()
 
-        // 1. Drive straight into wall
-        // 2. Scan pictogram
-        // 3. Hit jewel
-        // 4. Put block we already have in cryptobox
-        // ...
+        // 1. Hit jewel & scan pictogram simultaneously
+        // 2. Move backward and detect cryptobox columns with ODS
+        // 3. Turn and move forward to put glyph in cryptobox
+        // 4. Release glyph
 
         try {
             // TODO: Add moving back and forth if neither detected
@@ -121,8 +119,8 @@ class AutonomousMode : LinearOpMode() {
                     -1  // left
                 else
                     1 // right
-                turnSync(robot, 30 * direction)
-                turnSync(robot, -30 * direction)
+                turn(robot, 30 * direction)
+                turn(robot, -30 * direction)
                 robot.jewelArmServo.position = RobotConfig.JEWEL_ARM_HALF_EXTENDED
                 sleep(1000)
                 null
@@ -163,21 +161,21 @@ class AutonomousMode : LinearOpMode() {
             var columnsPassed = 0
             while (columnsToPass > columnsPassed) {
                 while (robot.ods.lightDetected == 0.0) {
-                    sleepSync()
+                    sleep()
                 }
                 // we have hit a glyph column wall
                 columnsPassed += 1
                 addLogLine("Reached glyph column")
                 while (robot.ods.lightDetected > 0) {
-                    sleepSync()
+                    sleep()
                 }
             }
 
             // Now we are at the required column. Turn & move forward until ODS reads
             robot.jewelArmServo.position = RobotConfig.JEWEL_ARM_RETRACTED
-            turnSync(robot, -90)
-            driveSync(robot, 0.2)
-            // Hopefully we've hit the box by now. Release the box!
+            turn(robot, -90)
+            drive(robot, 0.2)
+            // Hopefully we've hit the cryptobox by now. Release the glyph!
             robot.rightGrabberServo.position = RobotConfig.GRABBER_RELEASED
             robot.leftGrabberServo.position = RobotConfig.GRABBER_RELEASED
         } catch (e: Exception) {
