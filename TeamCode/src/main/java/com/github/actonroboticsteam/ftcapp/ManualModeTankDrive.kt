@@ -161,7 +161,7 @@ class ManualModeTankDrive : LinearOpMode() {
                     telemetry.addLine("Controlling relic arm motor, encoder @ ${hw.relicArmMotor.currentPosition}")
                     controlLimitedMotor(
                             hw.relicArmMotor,
-                            -100.0, 550.0,
+                            -100.0, 1000.0,
                             gamepad2.right_stick_y.toDouble(), 0.3)
                 }
                 telemetry.addData("Left drive encoder value",
