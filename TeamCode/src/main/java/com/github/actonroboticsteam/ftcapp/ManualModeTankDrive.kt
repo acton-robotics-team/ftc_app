@@ -141,6 +141,7 @@ class ManualModeTankDrive : LinearOpMode() {
 
                 telemetry.addData("Slide gate servo position", hw.slideGateServo.position)
 
+                telemetry.addLine("Controlling lifter motor, encoder @ ${hw.lifterMotor.currentPosition}")
                 controlLimitedMotor(
                         hw.lifterMotor,
                         0.0, RobotConfig.LIFTER_TOP_LIMIT.toDouble(),
@@ -157,9 +158,10 @@ class ManualModeTankDrive : LinearOpMode() {
                             0.0, 1.0,
                             gamepad2.right_stick_y > 0, gamepad2.right_stick_y < 0)
                 } else {
+                    telemetry.addLine("Controlling relic arm motor, encoder @ ${hw.relicArmMotor.currentPosition}")
                     controlLimitedMotor(
                             hw.relicArmMotor,
-                            0.0, RobotConfig.RELIC_ARM_TOP_LIMIT,
+                            -100.0, 550.0,
                             gamepad2.right_stick_y.toDouble(), 0.3)
                 }
                 telemetry.addData("Left drive encoder value",

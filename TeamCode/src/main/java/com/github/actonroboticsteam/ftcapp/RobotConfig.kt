@@ -31,9 +31,10 @@ internal class RobotConfig(map: HardwareMap) {
         leftDriveMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
         leftDriveMotor.direction = DcMotorSimple.Direction.REVERSE
         lifterMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        lifterMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
+        lifterMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
         relicArmMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        relicArmMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
+        relicArmMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        relicArmMotor.direction = DcMotorSimple.Direction.REVERSE
         relicHandServo.direction = Servo.Direction.REVERSE
         jewelArmServo.direction = Servo.Direction.REVERSE
         leftGrabberServo.direction = Servo.Direction.REVERSE

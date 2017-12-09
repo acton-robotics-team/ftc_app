@@ -13,8 +13,10 @@ class TestMode : LinearOpMode() {
         waitForStart()
 
         while (opModeIsActive()) {
-            robot.lifterMotor.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+            robot.lifterMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
             robot.lifterMotor.power = 0.2
+            telemetry.addData("Lifter position", robot.lifterMotor.currentPosition)
+            telemetry.update()
             idle()
         }
     }
