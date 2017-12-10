@@ -2,7 +2,6 @@ package com.github.actonroboticsteam.ftcapp
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
-import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.util.ElapsedTime
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory
@@ -12,13 +11,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer
 import java.util.concurrent.FutureTask
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
-import kotlin.math.roundToInt
 
 @Autonomous(name = "Autonomous program")
 class AutonomousMode : LinearOpMode() {
     private val runtime = ElapsedTime()
     @Volatile private var logs = ""
-    @Synchronized private fun addLogLine(text: String) {
+    @Synchronized private fun log(text: String) {
         logs += "[${runtime.time(TimeUnit.SECONDS)}] $text\n"
         telemetry.addLine(logs)
         telemetry.update()
@@ -69,24 +67,28 @@ class AutonomousMode : LinearOpMode() {
         try {
             // TODO: Add moving back and forth if neither detected
             val jewelTask = FutureTask<Void> {
+                log("jewel task: lowering jewel arm servo")
                 robot.jewelArmServo.position = RobotConfig.JEWEL_ARM_EXTENDED
-                addLogLine("Starting jewel task")
                 sleep(2000)
 
-                val direction = if (robot.jewelColorSensor.blue() > 0)
-                    -1  // left
-                else
-                    1 // right
-                robot.turn(degrees =  30 * direction)
-                robot.turn(degrees = -30 * direction)
+                val blueOutput = robot.jewelColorSensor.blue()
+                log("jewel task: color sensor reports blue value of $blueOutput")
+                val turnDegrees = if (blueOutput > 0) {
+                    -30  // left
+                } else {
+                    30 // right
+                }
+                log("Turning $turnDegrees degrees and back again")
+                robot.turn(turnDegrees)
+                robot.turn(-turnDegrees)
                 robot.jewelArmServo.position = RobotConfig.JEWEL_ARM_HALF_EXTENDED
                 sleep(1000)
                 null
             }
             // Max 10 sec
             val detectGlyphTask = FutureTask<RelicRecoveryVuMark> { this.detectPictogram() }
-            //robot.lifterMotor.setTargetPosition(RobotConfig.LIFTER_TOP_LIMIT / 2);
-            //robot.lifterMotor.setPower(-0.2);
+            robot.lifterMotor.targetPosition = RobotConfig.LIFTER_TOP_LIMIT / 2
+            robot.lifterMotor.power = -0.2
             jewelTask.run()
             detectGlyphTask.run()
 
@@ -94,15 +96,15 @@ class AutonomousMode : LinearOpMode() {
             val correctGlyphColumn = try {
                 detectGlyphTask.get(10, TimeUnit.SECONDS)
             } catch (e: TimeoutException) {
-                addLogLine("Failed to find glyph")
+                log("Failed to find glyph")
                 RelicRecoveryVuMark.UNKNOWN
             }
 
-            addLogLine("Got glyph column " + correctGlyphColumn)
+            log("Got glyph column " + correctGlyphColumn)
 
             // wait for jewel task to finish
             jewelTask.get()
-            addLogLine("Jewel task finished!")
+            log("Jewel task finished!")
 
             // reeeveerse
             robot.leftDriveMotor.power = -0.1
@@ -116,7 +118,7 @@ class AutonomousMode : LinearOpMode() {
                 RelicRecoveryVuMark.UNKNOWN -> 2
                 else -> 2 // lmao
             }
-            addLogLine("Must pass $columnsToPass columns")
+            log("Must pass $columnsToPass columns")
             var columnsPassed = 0
             while (columnsToPass > columnsPassed) {
                 while (robot.ods.lightDetected == 0.0) {
@@ -124,7 +126,7 @@ class AutonomousMode : LinearOpMode() {
                 }
                 // we have hit a glyph column wall
                 columnsPassed += 1
-                addLogLine(
+                log(
                         "Passed $columnsPassed columns, ${columnsToPass - columnsPassed} left")
                 while (robot.ods.lightDetected > 0) {
                     sleep()
@@ -139,9 +141,9 @@ class AutonomousMode : LinearOpMode() {
             robot.rightGrabberServo.position = RobotConfig.GRABBER_RELEASED
             robot.leftGrabberServo.position = RobotConfig.GRABBER_RELEASED
         } catch (e: Exception) {
-            addLogLine("HIT EXCEPTION. Stopping op mode.")
-            addLogLine("Exception backtrace:")
-            addLogLine(e.stackTrace.contentToString())
+            log("HIT EXCEPTION. Stopping op mode.")
+            log("Exception backtrace:")
+            log(e.stackTrace.contentToString())
         }
     }
 }
