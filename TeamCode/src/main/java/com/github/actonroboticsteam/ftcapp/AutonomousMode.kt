@@ -68,7 +68,7 @@ class AutonomousMode : LinearOpMode() {
             // TODO: Add moving back and forth if neither detected
             val jewelTask = FutureTask<Void> {
                 log("jewel task: lowering jewel arm servo")
-                robot.jewelArmServo.position = RobotConfig.JEWEL_ARM_EXTENDED
+                robot.sensorStickServo.position = RobotConfig.JEWEL_ARM_EXTENDED
                 sleep(2000)
 
                 val blueOutput = robot.jewelColorSensor.blue()
@@ -81,7 +81,7 @@ class AutonomousMode : LinearOpMode() {
                 log("Turning $turnDegrees degrees and back again")
                 robot.turn(turnDegrees)
                 robot.turn(-turnDegrees)
-                robot.jewelArmServo.position = RobotConfig.JEWEL_ARM_HALF_EXTENDED
+                robot.sensorStickServo.position = RobotConfig.JEWEL_ARM_HALF_EXTENDED
                 sleep(1000)
                 null
             }
@@ -134,7 +134,7 @@ class AutonomousMode : LinearOpMode() {
             }
 
             // Now we are at the required column. Turn & move forward until ODS reads
-            robot.jewelArmServo.position = RobotConfig.JEWEL_ARM_RETRACTED
+            robot.sensorStickServo.position = RobotConfig.JEWEL_ARM_RETRACTED
             robot.turn(degrees = -90)
             robot.drive(rotations = 0.2)
             // Hopefully we've hit the cryptobox by now. Release the glyph!
