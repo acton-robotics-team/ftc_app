@@ -39,7 +39,6 @@ internal class RobotConfig(map: HardwareMap) {
         relicArmMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
         relicArmMotor.direction = DcMotorSimple.Direction.REVERSE
         relicHandServo.direction = Servo.Direction.REVERSE
-        sensorStickServo.direction = Servo.Direction.REVERSE
         leftGrabberServo.direction = Servo.Direction.REVERSE
     }
 
@@ -53,9 +52,9 @@ internal class RobotConfig(map: HardwareMap) {
         val RELIC_ARM_TOP_LIMIT = 0.8 * TETRIX_TICKS_PER_REVOLUTION
         val RELIC_HAND_CLOSED = 0.7
         val RELIC_HAND_OPEN = 0.0
-        val JEWEL_ARM_EXTENDED = 0.0
-        val JEWEL_ARM_HALF_EXTENDED = 0.25
-        val JEWEL_ARM_RETRACTED = 0.5
+        val JEWEL_ARM_EXTENDED = 0.58
+        val JEWEL_ARM_HALF_EXTENDED = 0.31
+        val JEWEL_ARM_RETRACTED = 0.0
         val SLIDE_GATE_OPEN = 0.5
         val SLIDE_GATE_CLOSED = 0.0
     }

@@ -11,6 +11,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer
 import java.util.concurrent.FutureTask
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
+import kotlin.system.measureTimeMillis
 
 @Autonomous(name = "Autonomous program")
 class AutonomousMode : LinearOpMode() {
@@ -68,19 +69,21 @@ class AutonomousMode : LinearOpMode() {
             // TODO: Add moving back and forth if neither detected
             val jewelTask = FutureTask<Void> {
                 log("jewel task: lowering jewel arm servo")
+                robot.sensorStickServo.position = RobotConfig.JEWEL_ARM_HALF_EXTENDED
+                sleep(1000)
                 robot.sensorStickServo.position = RobotConfig.JEWEL_ARM_EXTENDED
-                sleep(2000)
+                sleep( 500)
 
                 val blueOutput = robot.jewelColorSensor.blue()
                 log("jewel task: color sensor reports blue value of $blueOutput")
-                val turnDegrees = if (blueOutput > 0) {
-                    -30  // left
+                val moveAmount = if (blueOutput > 0) {
+                    0.1 // forward
                 } else {
-                    30 // right
+                    -0.1 // back
                 }
-                log("Turning $turnDegrees degrees and back again")
-                robot.turn(turnDegrees)
-                robot.turn(-turnDegrees)
+                log("Moving $moveAmount and back again")
+                robot.drive(moveAmount)
+                robot.drive(-moveAmount)
                 robot.sensorStickServo.position = RobotConfig.JEWEL_ARM_HALF_EXTENDED
                 sleep(1000)
                 null
@@ -88,7 +91,7 @@ class AutonomousMode : LinearOpMode() {
             // Max 10 sec
             val detectGlyphTask = FutureTask<RelicRecoveryVuMark> { this.detectPictogram() }
             robot.lifterMotor.targetPosition = RobotConfig.LIFTER_TOP_LIMIT / 2
-            robot.lifterMotor.power = -0.2
+            robot.lifterMotor.power = 0.2
             jewelTask.run()
             detectGlyphTask.run()
 
