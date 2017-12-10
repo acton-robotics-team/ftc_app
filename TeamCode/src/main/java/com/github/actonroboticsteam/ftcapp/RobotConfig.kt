@@ -1,5 +1,6 @@
 package com.github.actonroboticsteam.ftcapp
 
+import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.ColorSensor
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
@@ -11,7 +12,7 @@ import kotlin.math.roundToInt
 /**
  * Robot access and abstraction.
  */
-internal class RobotConfig(map: HardwareMap) {
+internal class RobotConfig(map: HardwareMap, val opMode: OpMode) {
     val rightDriveMotor: DcMotor = map.dcMotor.get("right_drive_motor")
     val leftDriveMotor: DcMotor = map.dcMotor.get("left_drive_motor")
     val lifterMotor: DcMotor = map.dcMotor.get("lifter_motor")
@@ -59,45 +60,6 @@ internal class RobotConfig(map: HardwareMap) {
         val SLIDE_GATE_CLOSED = 0.0
     }
 
-    fun turn(degrees: Int) {
-        // Encoder ticks are negative because the left drive motor is reversed, but this doesn't
-        // change the direction that the encoder counts in
-        val encoderTicks = (degrees * RobotConfig.TETRIX_TICKS_PER_TURN_DEGREE * -1).roundToInt()
-        val oldMode = leftDriveMotor.mode
 
-        leftDriveMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        leftDriveMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
-
-        leftDriveMotor.targetPosition = encoderTicks
-        leftDriveMotor.power = if (degrees >= 0) 0.2 else -0.2
-        rightDriveMotor.power = if (degrees >= 0) -0.2 else 0.2
-        while (leftDriveMotor.isBusy) {
-            Thread.sleep(50)
-        }
-        leftDriveMotor.power = 0.0
-        rightDriveMotor.power = 0.0
-        leftDriveMotor.mode = oldMode
-    }
-
-    fun drive(rotations: Double) {
-        // Encoder ticks are negative because the left drive motor is reversed, but this doesn't
-        // change the direction that the encoder counts in
-        val encoderTicks = (rotations * RobotConfig.TETRIX_TICKS_PER_REVOLUTION * -1).roundToInt()
-        val oldMode = leftDriveMotor.mode
-
-        leftDriveMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        leftDriveMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
-
-        leftDriveMotor.targetPosition = encoderTicks
-
-        leftDriveMotor.power = if (rotations > 0) 0.2 else -0.2
-        rightDriveMotor.power = if (rotations > 0) 0.2 else -0.2
-        while (leftDriveMotor.isBusy) {
-            Thread.sleep(50)
-        }
-        leftDriveMotor.power = 0.0
-        rightDriveMotor.power = 0.0
-        leftDriveMotor.mode = oldMode
-    }
 }
 

@@ -2,6 +2,7 @@ package com.github.actonroboticsteam.ftcapp
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.util.ElapsedTime
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory
@@ -11,6 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer
 import java.util.concurrent.FutureTask
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
+import kotlin.math.roundToInt
 import kotlin.system.measureTimeMillis
 
 @Autonomous(name = "Autonomous program")
@@ -50,7 +52,7 @@ class AutonomousMode : LinearOpMode() {
     }
 
     override fun runOpMode() {
-        val robot = RobotConfig(hardwareMap)
+        val robot = RobotConfig(hardwareMap, this)
 
         robot.leftGrabberServo.position = RobotConfig.GRABBER_GRABBED
         robot.rightGrabberServo.position = RobotConfig.GRABBER_GRABBED
@@ -82,8 +84,8 @@ class AutonomousMode : LinearOpMode() {
                     -0.1 // back
                 }
                 log("Moving $moveAmount and back again")
-                robot.drive(moveAmount)
-                robot.drive(-moveAmount)
+                drive(robot, moveAmount)
+                drive(robot, -moveAmount)
                 robot.sensorStickServo.position = RobotConfig.JEWEL_ARM_HALF_EXTENDED
                 sleep(1000)
                 null
@@ -96,8 +98,15 @@ class AutonomousMode : LinearOpMode() {
             detectGlyphTask.run()
 
             // Get (blocking) glyph column
+            while (!detectGlyphTask.isDone) {
+                sleep()
+                if (runtime.seconds() > 10) {
+                    break
+                }
+            }
+
             val correctGlyphColumn = try {
-                detectGlyphTask.get(10, TimeUnit.SECONDS)
+                detectGlyphTask.get(0, TimeUnit.SECONDS)
             } catch (e: TimeoutException) {
                 log("Failed to find glyph")
                 RelicRecoveryVuMark.UNKNOWN
@@ -106,7 +115,9 @@ class AutonomousMode : LinearOpMode() {
             log("Got glyph column " + correctGlyphColumn)
 
             // wait for jewel task to finish
-            jewelTask.get()
+            while (!jewelTask.isDone) {
+                sleep()
+            }
             log("Jewel task finished!")
 
             // reeeveerse
@@ -138,8 +149,8 @@ class AutonomousMode : LinearOpMode() {
 
             // Now we are at the required column. Turn & move forward until ODS reads
             robot.sensorStickServo.position = RobotConfig.JEWEL_ARM_RETRACTED
-            robot.turn(degrees = -90)
-            robot.drive(rotations = 0.2)
+            turn(robot, degrees = -90)
+            drive(robot, rotations = 0.2)
             // Hopefully we've hit the cryptobox by now. Release the glyph!
             robot.rightGrabberServo.position = RobotConfig.GRABBER_RELEASED
             robot.leftGrabberServo.position = RobotConfig.GRABBER_RELEASED
@@ -148,5 +159,46 @@ class AutonomousMode : LinearOpMode() {
             log("Exception backtrace:")
             log(e.stackTrace.contentToString())
         }
+    }
+
+    private fun turn(robot: RobotConfig, degrees: Int) {
+        // Encoder ticks are negative because the left drive motor is reversed, but this doesn't
+        // change the direction that the encoder counts in
+        val encoderTicks = (degrees * RobotConfig.TETRIX_TICKS_PER_TURN_DEGREE * -1).roundToInt()
+        val oldMode = robot.leftDriveMotor.mode
+
+        robot.leftDriveMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        robot.leftDriveMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
+
+        robot.leftDriveMotor.targetPosition = encoderTicks
+        robot.leftDriveMotor.power = if (degrees >= 0) 0.2 else -0.2
+        robot.rightDriveMotor.power = if (degrees >= 0) -0.2 else 0.2
+        while (robot.leftDriveMotor.isBusy) {
+            sleep()
+        }
+        robot.leftDriveMotor.power = 0.0
+        robot.rightDriveMotor.power = 0.0
+        robot.leftDriveMotor.mode = oldMode
+    }
+
+    private fun drive(robot: RobotConfig, rotations: Double) {
+        // Encoder ticks are negative because the left drive motor is reversed, but this doesn't
+        // change the direction that the encoder counts in
+        val encoderTicks = (rotations * RobotConfig.TETRIX_TICKS_PER_REVOLUTION * -1).roundToInt()
+        val oldMode = robot.leftDriveMotor.mode
+
+        robot.leftDriveMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        robot.leftDriveMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
+
+        robot.leftDriveMotor.targetPosition = encoderTicks
+
+        robot.leftDriveMotor.power = if (rotations > 0) 0.2 else -0.2
+        robot.rightDriveMotor.power = if (rotations > 0) 0.2 else -0.2
+        while (robot.leftDriveMotor.isBusy) {
+            sleep()
+        }
+        robot.leftDriveMotor.power = 0.0
+        robot.rightDriveMotor.power = 0.0
+        robot.leftDriveMotor.mode = oldMode
     }
 }
