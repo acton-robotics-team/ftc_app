@@ -59,7 +59,5 @@ internal class RobotConfig(map: HardwareMap) {
         val SLIDE_GATE_OPEN = 0.5
         val SLIDE_GATE_CLOSED = 0.0
     }
-
-
 }
 

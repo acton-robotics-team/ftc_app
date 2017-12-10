@@ -25,7 +25,7 @@ class AutonomousMode : LinearOpMode() {
         telemetry.update()
     }
 
-    private fun sleep() = if (!opModeIsActive()) {
+    @Synchronized private fun sleep() = if (!opModeIsActive()) {
         throw OpModeStoppedException()
     } else {
         idle()
@@ -43,7 +43,7 @@ class AutonomousMode : LinearOpMode() {
         relicTrackables.activate()
         while (true) {
             val vuMark = RelicRecoveryVuMark.from(relicTemplate)
-            if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
+            if (vuMark != RelicRecoveryVuMark.UNKNOWN || runtime.seconds() > 10) {
                 return vuMark
             } else {
                 sleep()
@@ -91,26 +91,11 @@ class AutonomousMode : LinearOpMode() {
                 null
             }
             // Max 10 sec
-            val detectGlyphTask = FutureTask<RelicRecoveryVuMark> { this.detectPictogram() }
             robot.lifterMotor.targetPosition = RobotConfig.LIFTER_TOP_LIMIT / 2
             robot.lifterMotor.power = 0.2
             jewelTask.run()
-            detectGlyphTask.run()
 
-            // Get (blocking) glyph column
-            while (!detectGlyphTask.isDone) {
-                sleep()
-                if (runtime.seconds() > 10) {
-                    break
-                }
-            }
-
-            val correctGlyphColumn = try {
-                detectGlyphTask.get(0, TimeUnit.SECONDS)
-            } catch (e: TimeoutException) {
-                log("Failed to find glyph")
-                RelicRecoveryVuMark.UNKNOWN
-            }
+            val correctGlyphColumn = detectPictogram()
 
             log("Got glyph column " + correctGlyphColumn)
 
