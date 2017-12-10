@@ -30,48 +30,6 @@ class AutonomousMode : LinearOpMode() {
         idle()
     }
 
-    private fun turn(robot: RobotConfig, degrees: Int) {
-        val encoderTicks = (degrees * RobotConfig.TETRIX_TICKS_PER_TURN_DEGREE).roundToInt()
-        addLogLine("Turning $degrees degrees, which is $encoderTicks ticks")
-
-        val oldMode = robot.leftDriveMotor.mode
-
-        robot.leftDriveMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        robot.leftDriveMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
-
-        robot.leftDriveMotor.targetPosition = encoderTicks
-        robot.leftDriveMotor.power = if (degrees >= 0) 0.2 else -0.2
-        robot.rightDriveMotor.power = if (degrees >= 0) -0.2 else -0.2
-        while (robot.leftDriveMotor.isBusy) {
-            sleep()
-        }
-        robot.leftDriveMotor.power = 0.0
-        robot.rightDriveMotor.power = 0.0
-        robot.leftDriveMotor.mode = oldMode
-    }
-
-    private fun drive(robot: RobotConfig, rotations: Double) {
-        val encoderTicks = (rotations * RobotConfig.TETRIX_TICKS_PER_REVOLUTION).roundToInt()
-
-        addLogLine("Driving for $rotations rotations, which is $encoderTicks ticks")
-
-        val oldMode = robot.leftDriveMotor.mode
-
-        robot.leftDriveMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        robot.leftDriveMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
-
-        robot.leftDriveMotor.targetPosition = encoderTicks
-
-        robot.leftDriveMotor.power = if (encoderTicks > 0) 0.2 else -0.2
-        robot.rightDriveMotor.power = if (encoderTicks > 0) 0.2 else -0.2
-        while (robot.leftDriveMotor.isBusy) {
-            sleep()
-        }
-        robot.leftDriveMotor.power = 0.0
-        robot.rightDriveMotor.power = 0.0
-        robot.leftDriveMotor.mode = oldMode
-    }
-
     private fun detectPictogram(): RelicRecoveryVuMark {
         val cameraMonitorViewId = hardwareMap.appContext.resources.getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.packageName)
         val parameters = VuforiaLocalizer.Parameters(cameraMonitorViewId)
@@ -119,8 +77,8 @@ class AutonomousMode : LinearOpMode() {
                     -1  // left
                 else
                     1 // right
-                turn(robot, 30 * direction)
-                turn(robot, -30 * direction)
+                robot.turn(degrees =  30 * direction)
+                robot.turn(degrees = -30 * direction)
                 robot.jewelArmServo.position = RobotConfig.JEWEL_ARM_HALF_EXTENDED
                 sleep(1000)
                 null
@@ -154,8 +112,9 @@ class AutonomousMode : LinearOpMode() {
                 RelicRecoveryVuMark.LEFT -> 3
                 RelicRecoveryVuMark.RIGHT -> 2
                 RelicRecoveryVuMark.CENTER -> 1
+                // lmao just guess 2 columns
                 RelicRecoveryVuMark.UNKNOWN -> 2
-                else -> 2
+                else -> 2 // lmao
             }
             addLogLine("Must pass $columnsToPass columns")
             var columnsPassed = 0
@@ -165,7 +124,8 @@ class AutonomousMode : LinearOpMode() {
                 }
                 // we have hit a glyph column wall
                 columnsPassed += 1
-                addLogLine("Reached glyph column")
+                addLogLine(
+                        "Passed $columnsPassed columns, ${columnsToPass - columnsPassed} left")
                 while (robot.ods.lightDetected > 0) {
                     sleep()
                 }
@@ -173,8 +133,8 @@ class AutonomousMode : LinearOpMode() {
 
             // Now we are at the required column. Turn & move forward until ODS reads
             robot.jewelArmServo.position = RobotConfig.JEWEL_ARM_RETRACTED
-            turn(robot, -90)
-            drive(robot, 0.2)
+            robot.turn(degrees = -90)
+            robot.drive(rotations = 0.2)
             // Hopefully we've hit the cryptobox by now. Release the glyph!
             robot.rightGrabberServo.position = RobotConfig.GRABBER_RELEASED
             robot.leftGrabberServo.position = RobotConfig.GRABBER_RELEASED

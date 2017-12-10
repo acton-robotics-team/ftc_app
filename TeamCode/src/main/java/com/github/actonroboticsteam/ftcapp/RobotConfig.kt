@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor
 import com.qualcomm.robotcore.hardware.Servo
+import kotlin.math.roundToInt
 
 /**
  * Robot access and abstraction.
@@ -33,6 +34,8 @@ internal class RobotConfig(map: HardwareMap) {
         lifterMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         lifterMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
         relicArmMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        // Ideally this would be RUN_TO_POSITION (to hold the relic arm in place when not moving),
+        // but the NeverRest 40s seem to have a problem with it. (It works with the drive motors?)
         relicArmMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
         relicArmMotor.direction = DcMotorSimple.Direction.REVERSE
         relicHandServo.direction = Servo.Direction.REVERSE
@@ -55,6 +58,47 @@ internal class RobotConfig(map: HardwareMap) {
         val JEWEL_ARM_RETRACTED = 0.5
         val SLIDE_GATE_OPEN = 0.5
         val SLIDE_GATE_CLOSED = 0.0
+    }
+
+    fun turn(degrees: Int) {
+        // Encoder ticks are negative because the left drive motor is reversed, but this doesn't
+        // change the direction that the encoder counts in
+        val encoderTicks = (degrees * RobotConfig.TETRIX_TICKS_PER_TURN_DEGREE * -1).roundToInt()
+        val oldMode = leftDriveMotor.mode
+
+        leftDriveMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        leftDriveMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
+
+        leftDriveMotor.targetPosition = encoderTicks
+        leftDriveMotor.power = if (degrees >= 0) 0.2 else -0.2
+        rightDriveMotor.power = if (degrees >= 0) -0.2 else 0.2
+        while (leftDriveMotor.isBusy) {
+            Thread.sleep(50)
+        }
+        leftDriveMotor.power = 0.0
+        rightDriveMotor.power = 0.0
+        leftDriveMotor.mode = oldMode
+    }
+
+    fun drive(rotations: Double) {
+        // Encoder ticks are negative because the left drive motor is reversed, but this doesn't
+        // change the direction that the encoder counts in
+        val encoderTicks = (rotations * RobotConfig.TETRIX_TICKS_PER_REVOLUTION * -1).roundToInt()
+        val oldMode = leftDriveMotor.mode
+
+        leftDriveMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        leftDriveMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
+
+        leftDriveMotor.targetPosition = encoderTicks
+
+        leftDriveMotor.power = if (rotations > 0) 0.2 else -0.2
+        rightDriveMotor.power = if (rotations > 0) 0.2 else -0.2
+        while (leftDriveMotor.isBusy) {
+            Thread.sleep(50)
+        }
+        leftDriveMotor.power = 0.0
+        rightDriveMotor.power = 0.0
+        leftDriveMotor.mode = oldMode
     }
 }
 
