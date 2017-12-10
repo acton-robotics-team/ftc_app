@@ -12,7 +12,7 @@ import kotlin.math.roundToInt
 /**
  * Robot access and abstraction.
  */
-internal class RobotConfig(map: HardwareMap, val opMode: OpMode) {
+internal class RobotConfig(map: HardwareMap) {
     val rightDriveMotor: DcMotor = map.dcMotor.get("right_drive_motor")
     val leftDriveMotor: DcMotor = map.dcMotor.get("left_drive_motor")
     val lifterMotor: DcMotor = map.dcMotor.get("lifter_motor")

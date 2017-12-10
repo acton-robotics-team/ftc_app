@@ -52,7 +52,7 @@ class AutonomousMode : LinearOpMode() {
     }
 
     override fun runOpMode() {
-        val robot = RobotConfig(hardwareMap, this)
+        val robot = RobotConfig(hardwareMap)
 
         robot.leftGrabberServo.position = RobotConfig.GRABBER_GRABBED
         robot.rightGrabberServo.position = RobotConfig.GRABBER_GRABBED
@@ -154,8 +154,11 @@ class AutonomousMode : LinearOpMode() {
             // Hopefully we've hit the cryptobox by now. Release the glyph!
             robot.rightGrabberServo.position = RobotConfig.GRABBER_RELEASED
             robot.leftGrabberServo.position = RobotConfig.GRABBER_RELEASED
+        } catch (e: OpModeStoppedException) {
+            log("Stop.")
         } catch (e: Exception) {
             log("HIT EXCEPTION. Stopping op mode.")
+            log(e.toString())
             log("Exception backtrace:")
             log(e.stackTrace.contentToString())
         }
