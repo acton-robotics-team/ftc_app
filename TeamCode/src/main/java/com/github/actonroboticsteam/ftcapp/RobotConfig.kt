@@ -56,8 +56,11 @@ internal class RobotConfig(map: HardwareMap) {
         val JEWEL_ARM_EXTENDED = 0.58
         val JEWEL_ARM_HALF_EXTENDED = 0.31
         val JEWEL_ARM_RETRACTED = 0.0
-        val SLIDE_GATE_OPEN = 0.5
+        val SLIDE_GATE_OPEN = 1.0
         val SLIDE_GATE_CLOSED = 0.0
+        val SLIDE_LIFTER_UP = 0.0
+        val SLIDE_LIFTER_RETRACTED = 1.0
+        val SLIDE_LIFTER_ANGLED_DOWN = 180.0 / 255.0
     }
 }
 

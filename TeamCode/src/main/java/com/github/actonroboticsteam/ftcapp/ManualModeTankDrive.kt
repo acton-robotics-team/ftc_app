@@ -90,6 +90,14 @@ class ManualModeTankDrive : LinearOpMode() {
         val hw = RobotConfig(hardwareMap)
         val gamepad2Listener = ListenableGamepad()
         gamepad2Listener.addButtonListener(
+                GamepadData.Button.X, ListenableButton.ButtonState.JUST_PRESSED) {
+            hw.slideLifterServo.position = when (hw.slideLifterServo.position) {
+                RobotConfig.SLIDE_LIFTER_RETRACTED -> RobotConfig.SLIDE_LIFTER_UP
+                RobotConfig.SLIDE_LIFTER_UP -> RobotConfig.SLIDE_LIFTER_ANGLED_DOWN
+                else -> RobotConfig.SLIDE_LIFTER_RETRACTED
+            }
+        }
+        gamepad2Listener.addButtonListener(
                 GamepadData.Button.Y, ListenableButton.ButtonState.JUST_PRESSED) {
             hw.slideGateServo.position =
                     if (hw.slideGateServo.position == RobotConfig.SLIDE_GATE_CLOSED) {
