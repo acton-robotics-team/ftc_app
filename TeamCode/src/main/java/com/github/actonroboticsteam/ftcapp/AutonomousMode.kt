@@ -74,7 +74,7 @@ class AutonomousMode : LinearOpMode() {
                 robot.sensorStickServo.position = RobotConfig.JEWEL_ARM_HALF_EXTENDED
                 sleep(1000)
                 robot.sensorStickServo.position = RobotConfig.JEWEL_ARM_EXTENDED
-                sleep( 500)
+                sleep( 1000)
 
                 val blueOutput = robot.jewelColorSensor.blue()
                 log("jewel task: color sensor reports blue value of $blueOutput")
