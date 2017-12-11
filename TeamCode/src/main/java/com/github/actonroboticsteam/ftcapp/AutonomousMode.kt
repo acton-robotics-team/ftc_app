@@ -41,6 +41,8 @@ class AutonomousMode : LinearOpMode() {
         val relicTemplate = relicTrackables[0]
         relicTemplate.name = "relicVuMarkTemplate" // can help in debugging; otherwise not necessary
         relicTrackables.activate()
+        log("Vuforia internals: $cameraMonitorViewId, $parameters, $vuforia, $relicTrackables, $relicTemplate")
+        log("Vuforia initialized - looking for pictogram")
         while (true) {
             val vuMark = RelicRecoveryVuMark.from(relicTemplate)
             if (vuMark != RelicRecoveryVuMark.UNKNOWN || runtime.seconds() > 10) {
@@ -70,7 +72,7 @@ class AutonomousMode : LinearOpMode() {
         try {
             // TODO: Add moving back and forth if neither detected
             val jewelTask = FutureTask<Void> {
-                log("jewel task: lowering jewel arm servo")
+                log("jewel task: lowering jewel arm servo gradually")
                 robot.sensorStickServo.position = RobotConfig.JEWEL_ARM_HALF_EXTENDED
                 sleep(1000)
                 robot.sensorStickServo.position = RobotConfig.JEWEL_ARM_EXTENDED
@@ -94,6 +96,7 @@ class AutonomousMode : LinearOpMode() {
             robot.lifterMotor.targetPosition = RobotConfig.LIFTER_TOP_LIMIT / 2
             robot.lifterMotor.power = 0.2
             jewelTask.run()
+            log("Started jewel task in background")
 
             val correctGlyphColumn = detectPictogram()
 
@@ -155,6 +158,8 @@ class AutonomousMode : LinearOpMode() {
         val encoderTicks = (degrees * RobotConfig.TETRIX_TICKS_PER_TURN_DEGREE * -1).roundToInt()
         val oldMode = robot.leftDriveMotor.mode
 
+        log("Moving $degrees degrees, which is $encoderTicks ticks")
+
         robot.leftDriveMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         robot.leftDriveMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
 
@@ -174,6 +179,8 @@ class AutonomousMode : LinearOpMode() {
         // change the direction that the encoder counts in
         val encoderTicks = (rotations * RobotConfig.TETRIX_TICKS_PER_REVOLUTION * -1).roundToInt()
         val oldMode = robot.leftDriveMotor.mode
+
+        log("Moving for $rotations rotations, which is $encoderTicks ticks")
 
         robot.leftDriveMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         robot.leftDriveMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
