@@ -19,7 +19,7 @@ internal class RobotConfig(map: HardwareMap) {
     val relicArmMotor: DcMotor = map.dcMotor.get("relic_arm_motor")
     val relicElbowServo: Servo = map.servo.get("relic_elbow_servo")
     val relicHandServo: Servo = map.servo.get("relic_hand_servo")
-    val sensorStickServo: Servo = map.servo.get("jewel_arm_servo")
+    val jewelArmServo: Servo = map.servo.get("jewel_arm_servo")
     val leftGrabberServo: Servo = map.servo.get("left_grabber_servo")
     val rightGrabberServo: Servo = map.servo.get("right_grabber_servo")
     val slideGateServo: Servo = map.servo.get("slide_gate_servo")
