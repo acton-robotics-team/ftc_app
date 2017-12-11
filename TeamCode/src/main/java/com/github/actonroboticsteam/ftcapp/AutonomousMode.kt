@@ -1,5 +1,6 @@
 package com.github.actonroboticsteam.ftcapp
 
+import android.util.Log
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
@@ -15,10 +16,15 @@ import kotlin.math.roundToInt
 
 @Autonomous(name = "Autonomous program")
 class AutonomousMode : LinearOpMode() {
+    companion object {
+        val TAG = "AUTONOMOUS"
+    }
     private val runtime = ElapsedTime()
     @Volatile private var logs = ""
     @Synchronized private fun log(text: String) {
-        logs += "[${runtime.time(TimeUnit.SECONDS)}] $text\n"
+        val logLine = "[${runtime.time(TimeUnit.SECONDS)}] $text"
+        logs += "$logLine\n"
+        Log.d(TAG, logLine)
         telemetry.addLine(logs)
         telemetry.update()
     }
@@ -78,14 +84,14 @@ class AutonomousMode : LinearOpMode() {
 
                 val blueOutput = robot.jewelColorSensor.blue()
                 log("jewel task: color sensor reports blue value of $blueOutput")
-                val moveAmount = if (blueOutput > 0) {
+                val rotations = if (blueOutput > 0) {
                     0.1 // forward
                 } else {
                     -0.1 // back
                 }
-                log("Moving $moveAmount and back again")
-                drive(robot, moveAmount)
-                drive(robot, -moveAmount)
+                log("Moving $rotations and back again")
+                drive(robot, rotations)
+                drive(robot, -rotations)
                 robot.jewelArmServo.position = RobotConfig.JEWEL_ARM_HALF_EXTENDED
                 sleep(1000)
                 null
@@ -114,7 +120,6 @@ class AutonomousMode : LinearOpMode() {
                 RelicRecoveryVuMark.LEFT -> 3
                 RelicRecoveryVuMark.RIGHT -> 2
                 RelicRecoveryVuMark.CENTER -> 1
-                // lmao just guess 2 columns
                 RelicRecoveryVuMark.UNKNOWN -> 2
                 else -> 2 // lmao
             }
@@ -126,11 +131,11 @@ class AutonomousMode : LinearOpMode() {
                 }
                 // we have hit a glyph column wall
                 columnsPassed += 1
-                log(
-                        "Passed $columnsPassed columns, ${columnsToPass - columnsPassed} left")
+                log("Passed $columnsPassed columns, ${columnsToPass - columnsPassed} left")
                 while (robot.ods.lightDetected > 0) {
                     sleep()
                 }
+                log("Went past the column!")
             }
 
             // Now we are at the required column. Turn & move forward until ODS reads
