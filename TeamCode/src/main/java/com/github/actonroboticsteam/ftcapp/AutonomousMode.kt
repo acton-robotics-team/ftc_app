@@ -85,9 +85,9 @@ class AutonomousMode : LinearOpMode() {
                 val blueOutput = robot.jewelColorSensor.blue()
                 log("jewel task: color sensor reports blue value of $blueOutput")
                 val rotations = if (blueOutput > 0) {
-                    0.1 // forward
-                } else {
                     -0.1 // back
+                } else {
+                    0.1 // forward
                 }
                 log("Moving $rotations and back again")
                 drive(robot, rotations)
