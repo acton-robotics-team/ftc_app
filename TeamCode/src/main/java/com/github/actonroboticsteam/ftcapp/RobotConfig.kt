@@ -45,22 +45,22 @@ internal class RobotConfig(map: HardwareMap) {
 
     companion object {
         // Empirically-determined values
-        val GRABBER_RELEASED = 0.5
-        val GRABBER_GRABBED = 1.0
-        val TETRIX_TICKS_PER_REVOLUTION = 1440
-        val TETRIX_TICKS_PER_TURN_DEGREE = 2681.0 / 300.0
-        val LIFTER_TOP_LIMIT = 4 * TETRIX_TICKS_PER_REVOLUTION
-        val RELIC_ARM_TOP_LIMIT = 0.8 * TETRIX_TICKS_PER_REVOLUTION
-        val RELIC_HAND_CLOSED = 0.7
-        val RELIC_HAND_OPEN = 0.0
-        val JEWEL_ARM_EXTENDED = 0.58
-        val JEWEL_ARM_HALF_EXTENDED = 0.31
-        val JEWEL_ARM_RETRACTED = 0.0
-        val SLIDE_GATE_OPEN = 1.0
-        val SLIDE_GATE_CLOSED = 0.0
-        val SLIDE_LIFTER_UP = 0.0
-        val SLIDE_LIFTER_RETRACTED = 1.0
-        val SLIDE_LIFTER_ANGLED_DOWN = 180.0 / 255.0
+        const val GRABBER_RELEASED = 0.5
+        const val GRABBER_GRABBED = 1.0
+        const val TETRIX_TICKS_PER_REVOLUTION = 1440
+        const val TETRIX_TICKS_PER_TURN_DEGREE = 2681.0 / 300.0
+        const val LIFTER_TOP_LIMIT = 4 * TETRIX_TICKS_PER_REVOLUTION
+        const val RELIC_ARM_TOP_LIMIT = 0.8 * TETRIX_TICKS_PER_REVOLUTION
+        const val RELIC_HAND_CLOSED = 0.7
+        const val RELIC_HAND_OPEN = 0.0
+        const val JEWEL_ARM_EXTENDED = 0.58
+        const val JEWEL_ARM_HALF_EXTENDED = 0.31
+        const val JEWEL_ARM_RETRACTED = 0.0
+        const val SLIDE_GATE_OPEN = 1.0
+        const val SLIDE_GATE_CLOSED = 0.0
+        const val SLIDE_LIFTER_UP = 0.0
+        const val SLIDE_LIFTER_RETRACTED = 1.0
+        const val SLIDE_LIFTER_ANGLED_DOWN = 180.0 / 255.0
     }
 }
 
