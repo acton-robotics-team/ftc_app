@@ -19,9 +19,11 @@ class AutonomousMode : LinearOpMode() {
     companion object {
         val TAG = "AUTONOMOUS"
     }
+
     private val runtime = ElapsedTime()
-    @Volatile private var logs = ""
-    @Synchronized private fun log(text: String) {
+
+    private var logs = ""
+    private fun log(text: String) = synchronized(this) {
         val logLine = "[${runtime.time(TimeUnit.SECONDS)}] $text"
         logs += "$logLine\n"
         Log.d(TAG, logLine)
