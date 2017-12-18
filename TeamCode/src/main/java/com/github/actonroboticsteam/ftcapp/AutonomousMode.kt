@@ -11,7 +11,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer
 
 import java.util.concurrent.FutureTask
-import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
 @Autonomous(name = "Autonomous program")
@@ -24,22 +23,21 @@ class AutonomousMode : LinearOpMode() {
 
     private var logs = ""
     private fun log(text: String) = synchronized(this) {
-        val logLine = "[${runtime.time(TimeUnit.SECONDS)}] $text"
-        logs += "$logLine\n"
+        val logLine = "[${runtime.seconds()}] $text"
+        logs += logLine + "\n"
         Log.d(TAG, logLine)
         telemetry.addLine(logs)
         telemetry.update()
     }
 
-    @Synchronized private fun sleep() = if (!opModeIsActive()) {
+    private fun sleep() = if (!opModeIsActive()) {
         throw OpModeStoppedException()
     } else {
         idle()
     }
 
     private fun detectPictogram(): RelicRecoveryVuMark {
-        val cameraMonitorViewId = hardwareMap.appContext.resources.getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.packageName)
-        val parameters = VuforiaLocalizer.Parameters(cameraMonitorViewId)
+        val parameters = VuforiaLocalizer.Parameters()
         parameters.vuforiaLicenseKey = "AcdD/rP/////AAAAGQcYKmwTDk0lulf4t6n2JsQiodu68wCwukVguR/SeZyNkVD0OnUmmSWSrpM2jXTVVNorEhJRyV08URkTRak94XQN8/jPzVxzuOLCQ8VR8uYKuP/JoovnJM2MC3Pc1KvLlrLwWrL4185vpVaQMLRmvCkzNH+lyoEusMC7vwT4ayI6I22ceFumQuAubLp8APiT3omF4KG6W/lqNyJukt9YHgBYO/JJRVPfZg04LEhwFMixYOXfh+moWdf8zCMj+V7GUfH7Q7OGM0jobzVrg0uYboA2nrJBRjQS6j2eGoXX4yRwhmeVLVtBuklgw+n3qXgQ+OX9Lp48xNIApOByAlAhU117gDYYwE5NQ8ADKvtgupKd"
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK
         val vuforia = ClassFactory.createVuforiaLocalizer(parameters)
@@ -47,7 +45,7 @@ class AutonomousMode : LinearOpMode() {
         val relicTemplate = relicTrackables[0]
         relicTemplate.name = "relicVuMarkTemplate" // can help in debugging; otherwise not necessary
         relicTrackables.activate()
-        log("Vuforia internals: $cameraMonitorViewId, $parameters, $vuforia, $relicTrackables, $relicTemplate")
+        log("Vuforia internals: $parameters, $vuforia, $relicTrackables, $relicTemplate")
         log("Vuforia initialized - looking for pictogram")
         while (true) {
             val vuMark = RelicRecoveryVuMark.from(relicTemplate)
