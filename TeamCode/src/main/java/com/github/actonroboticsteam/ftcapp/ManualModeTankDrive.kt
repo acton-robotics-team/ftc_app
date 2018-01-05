@@ -88,15 +88,13 @@ class ManualModeTankDrive : LinearOpMode() {
 
     override fun runOpMode() {
         val hw = RobotConfig(hardwareMap)
-        val gamepad2Listener = ListenableGamepad()
+        val gamepad2Listenable = ListenableGamepad()
 
-        gamepad2Listener.addButtonListener(
+        gamepad2Listenable.addButtonListener(
                 GamepadData.Button.B, ListenableButton.ButtonState.JUST_PRESSED) {
-            hw.relicHandServo.position =
-                    if (hw.relicHandServo.position == RobotConfig.RELIC_HAND_CLOSED) {
-                RobotConfig.RELIC_HAND_OPEN
-            } else {
-                RobotConfig.RELIC_HAND_CLOSED
+            hw.relicHandServo.position = when (hw.relicHandServo.position) {
+                RobotConfig.RELIC_HAND_CLOSED -> RobotConfig.RELIC_HAND_OPEN
+                else -> RobotConfig.RELIC_HAND_CLOSED
             }
         }
 
@@ -106,7 +104,7 @@ class ManualModeTankDrive : LinearOpMode() {
 
         while (opModeIsActive()) {
             try {
-                telemetry.addData("Runtime", runtime)
+                telemetry.addData("Elapsed time", runtime)
 
                 // Gamepad 1
                 val turbo = when {
@@ -130,9 +128,11 @@ class ManualModeTankDrive : LinearOpMode() {
                     else -> 0.0
                 }
 
-                gamepad2Listener.update(gamepad2)
+                gamepad2Listenable.update(gamepad2)
 
-                telemetry.addLine("Controlling lifter motor, encoder @ ${hw.lifterMotor.currentPosition}")
+                telemetry.addData(
+                        "Controlling lifter motor, encoder value",
+                        hw.lifterMotor.currentPosition)
                 controlLimitedMotor(
                         hw.lifterMotor,
                         0.0, RobotConfig.LIFTER_TOP_LIMIT.toDouble(),
