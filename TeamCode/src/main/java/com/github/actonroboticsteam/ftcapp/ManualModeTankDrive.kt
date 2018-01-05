@@ -89,23 +89,7 @@ class ManualModeTankDrive : LinearOpMode() {
     override fun runOpMode() {
         val hw = RobotConfig(hardwareMap)
         val gamepad2Listener = ListenableGamepad()
-//        gamepad2Listener.addButtonListener(
-//                GamepadData.Button.X, ListenableButton.ButtonState.JUST_PRESSED) {
-//            hw.slideLifterServo.position = when (hw.slideLifterServo.position) {
-//                RobotConfig.SLIDE_LIFTER_RETRACTED -> RobotConfig.SLIDE_LIFTER_UP
-//                RobotConfig.SLIDE_LIFTER_UP -> RobotConfig.SLIDE_LIFTER_ANGLED_DOWN
-//                else -> RobotConfig.SLIDE_LIFTER_RETRACTED
-//            }
-//        }
-//        gamepad2Listener.addButtonListener(
-//                GamepadData.Button.Y, ListenableButton.ButtonState.JUST_PRESSED) {
-//            hw.slideGateServo.position =
-//                    if (hw.slideGateServo.position == RobotConfig.SLIDE_GATE_CLOSED) {
-//                RobotConfig.SLIDE_GATE_OPEN
-//            } else {
-//                RobotConfig.SLIDE_GATE_CLOSED
-//            }
-//        }
+
         gamepad2Listener.addButtonListener(
                 GamepadData.Button.B, ListenableButton.ButtonState.JUST_PRESSED) {
             hw.relicHandServo.position =
@@ -146,6 +130,9 @@ class ManualModeTankDrive : LinearOpMode() {
                 }
                 else if(gamepad2.dpad_down) {
                     hw.relicExtenderMotor.power = -1.0
+                }
+                else{
+                    hw.relicExtenderMotor.power = 0.0
                 }
 
                 gamepad2Listener.update(gamepad2)
