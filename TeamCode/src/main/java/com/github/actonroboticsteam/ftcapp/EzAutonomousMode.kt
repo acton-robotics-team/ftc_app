@@ -55,10 +55,7 @@ class EzAutonomousMode : LinearOpMode() {
     override fun runOpMode() {
         val robot = RobotConfig(hardwareMap)
 
-        robot.leftTopGrabberServo.position = RobotConfig.GRABBER_GRABBED
-        robot.rightTopGrabberServo.position = RobotConfig.GRABBER_GRABBED
-        robot.leftBottomGrabberServo.position = RobotConfig.GRABBER_GRABBED
-        robot.rightBottomGrabberServo.position = RobotConfig.GRABBER_GRABBED
+        robot.setGrabbers(RobotConfig.GRABBER_GRABBED)
 
         // wait for the start button to be pressed.
         waitForStart()

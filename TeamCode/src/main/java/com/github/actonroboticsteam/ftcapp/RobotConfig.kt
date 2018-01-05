@@ -36,6 +36,13 @@ internal class RobotConfig(map: HardwareMap) {
         leftTopGrabberServo.direction= Servo.Direction.REVERSE
     }
 
+    fun setGrabbers(pos: Double) {
+        this.leftBottomGrabberServo.position = pos
+        this.rightBottomGrabberServo.position = pos
+        this.leftBottomGrabberServo.position = pos
+        this.rightTopGrabberServo.position = pos
+    }
+
     companion object {
         // Empirically-determined values
         const val GRABBER_RELEASED = 0.5

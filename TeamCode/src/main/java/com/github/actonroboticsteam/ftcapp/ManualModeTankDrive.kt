@@ -119,11 +119,10 @@ class ManualModeTankDrive : LinearOpMode() {
                 hw.leftDriveMotor.power = gamepad1.left_stick_y * turbo
 
                 // Gamepad 2
-                val grabberServoPos = limit(gamepad2.left_trigger.toDouble(), RobotConfig.GRABBER_RELEASED, RobotConfig.GRABBER_GRABBED)
-                hw.leftTopGrabberServo.position = grabberServoPos
-                hw.rightTopGrabberServo.position = grabberServoPos
-                hw.leftBottomGrabberServo.position = grabberServoPos
-                hw.rightBottomGrabberServo.position = grabberServoPos
+                hw.setGrabbers(limit(
+                        gamepad2.left_trigger.toDouble(),
+                        RobotConfig.GRABBER_RELEASED,
+                        RobotConfig.GRABBER_GRABBED))
 
                 if(gamepad2.dpad_up) {
                     hw.relicExtenderMotor.power = 1.0
