@@ -135,10 +135,11 @@ class ManualModeTankDrive : LinearOpMode() {
                 hw.leftDriveMotor.power = gamepad1.left_stick_y * turbo
 
                 // Gamepad 2
-                hw.leftTopGrabberServo.position = limit(gamepad2.left_trigger.toDouble(), RobotConfig.GRABBER_RELEASED, RobotConfig.GRABBER_GRABBED)
-                hw.rightTopGrabberServo.position = limit(gamepad2.left_trigger.toDouble(), RobotConfig.GRABBER_RELEASED, RobotConfig.GRABBER_GRABBED)
-                hw.leftBottomGrabberServo.position = limit(gamepad2.left_trigger.toDouble(), RobotConfig.GRABBER_RELEASED, RobotConfig.GRABBER_GRABBED)
-                hw.rightBottomGrabberServo.position = limit(gamepad2.left_trigger.toDouble(), RobotConfig.GRABBER_RELEASED, RobotConfig.GRABBER_GRABBED)
+                val grabberServoPos = limit(gamepad2.left_trigger.toDouble(), RobotConfig.GRABBER_RELEASED, RobotConfig.GRABBER_GRABBED)
+                hw.leftTopGrabberServo.position = grabberServoPos
+                hw.rightTopGrabberServo.position = grabberServoPos
+                hw.leftBottomGrabberServo.position = grabberServoPos
+                hw.rightBottomGrabberServo.position = grabberServoPos
 
                 if(gamepad2.dpad_up) {
                     hw.relicExtenderMotor.power = 1.0
@@ -147,18 +148,7 @@ class ManualModeTankDrive : LinearOpMode() {
                     hw.relicExtenderMotor.power = -1.0
                 }
 
-
-
-//                fineControlServo(hw.slideLifterServo,
-//                        0.0, 1.0,
-//                        gamepad2.dpad_left, gamepad2.dpad_right)
-//                fineControlServo(hw.slideExtenderServo,
-//                        0.0, 1.0,
-//                        gamepad2.dpad_up, gamepad2.dpad_down)
-
                 gamepad2Listener.update(gamepad2)
-
-//                telemetry.addData("Slide gate servo position", hw.slideGateServo.position)
 
                 telemetry.addLine("Controlling lifter motor, encoder @ ${hw.lifterMotor.currentPosition}")
                 controlLimitedMotor(
