@@ -124,14 +124,10 @@ class ManualModeTankDrive : LinearOpMode() {
                         RobotConfig.GRABBER_RELEASED,
                         RobotConfig.GRABBER_GRABBED))
 
-                if(gamepad2.dpad_up) {
-                    hw.relicExtenderMotor.power = 1.0
-                }
-                else if(gamepad2.dpad_down) {
-                    hw.relicExtenderMotor.power = -1.0
-                }
-                else{
-                    hw.relicExtenderMotor.power = 0.0
+                hw.relicExtenderMotor.power = when {
+                    gamepad2.dpad_up -> 0.2
+                    gamepad2.dpad_down -> -0.2
+                    else -> 0.0
                 }
 
                 gamepad2Listener.update(gamepad2)
