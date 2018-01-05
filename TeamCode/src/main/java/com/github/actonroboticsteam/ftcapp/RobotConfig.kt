@@ -23,11 +23,6 @@ internal class RobotConfig(map: HardwareMap) {
     val rightBottomGrabberServo: Servo = map.servo.get("right_bottom_grabber_servo")
     val leftTopGrabberServo: Servo = map.servo.get("left_top_grabber_servo")
     val rightTopGrabberServo: Servo = map.servo.get("right_top_grabber_servo")
-//    val slideGateServo: Servo = map.servo.get("slide_gate_servo")   removed sensor bar
-//    val slideLifterServo: Servo = map.servo.get("slide_lifter_servo")
-//    val slideExtenderServo: Servo = map.servo.get("slide_extender_servo")
-//    val jewelColorSensor: ColorSensor = map.colorSensor.get("color_sensor")
-//    val ods: OpticalDistanceSensor = map.opticalDistanceSensor.get("ods")
 
 
     init {
@@ -46,19 +41,11 @@ internal class RobotConfig(map: HardwareMap) {
         const val GRABBER_RELEASED = 0.5
         const val GRABBER_GRABBED = 1.0
         const val TETRIX_TICKS_PER_REVOLUTION = 1440
-        const val TETRIX_TICKS_PER_TURN_DEGREE = 2681.0 / 300.0
+        const val TETRIX_TICKS_PER_TURN_DEGREE = 2681.0 / 360.0
         const val LIFTER_TOP_LIMIT = 4 * TETRIX_TICKS_PER_REVOLUTION
-        const val RELIC_ARM_TOP_LIMIT = 0.8 * TETRIX_TICKS_PER_REVOLUTION
         const val RELIC_HAND_CLOSED = 0.7
         const val RELIC_HAND_OPEN = 0.0
-        const val JEWEL_ARM_EXTENDED = 0.58
-        const val JEWEL_ARM_HALF_EXTENDED = 0.31
-        const val JEWEL_ARM_RETRACTED = 0.0
-        const val SLIDE_GATE_OPEN = 1.0
-        const val SLIDE_GATE_CLOSED = 0.0
-        const val SLIDE_LIFTER_UP = 0.0
-        const val SLIDE_LIFTER_RETRACTED = 1.0
-        const val SLIDE_LIFTER_ANGLED_DOWN = 180.0 / 255.0
+
     }
 }
 
