@@ -89,23 +89,23 @@ class ManualModeTankDrive : LinearOpMode() {
     override fun runOpMode() {
         val hw = RobotConfig(hardwareMap)
         val gamepad2Listener = ListenableGamepad()
-        gamepad2Listener.addButtonListener(
-                GamepadData.Button.X, ListenableButton.ButtonState.JUST_PRESSED) {
-            hw.slideLifterServo.position = when (hw.slideLifterServo.position) {
-                RobotConfig.SLIDE_LIFTER_RETRACTED -> RobotConfig.SLIDE_LIFTER_UP
-                RobotConfig.SLIDE_LIFTER_UP -> RobotConfig.SLIDE_LIFTER_ANGLED_DOWN
-                else -> RobotConfig.SLIDE_LIFTER_RETRACTED
-            }
-        }
-        gamepad2Listener.addButtonListener(
-                GamepadData.Button.Y, ListenableButton.ButtonState.JUST_PRESSED) {
-            hw.slideGateServo.position =
-                    if (hw.slideGateServo.position == RobotConfig.SLIDE_GATE_CLOSED) {
-                RobotConfig.SLIDE_GATE_OPEN
-            } else {
-                RobotConfig.SLIDE_GATE_CLOSED
-            }
-        }
+//        gamepad2Listener.addButtonListener(
+//                GamepadData.Button.X, ListenableButton.ButtonState.JUST_PRESSED) {
+//            hw.slideLifterServo.position = when (hw.slideLifterServo.position) {
+//                RobotConfig.SLIDE_LIFTER_RETRACTED -> RobotConfig.SLIDE_LIFTER_UP
+//                RobotConfig.SLIDE_LIFTER_UP -> RobotConfig.SLIDE_LIFTER_ANGLED_DOWN
+//                else -> RobotConfig.SLIDE_LIFTER_RETRACTED
+//            }
+//        }
+//        gamepad2Listener.addButtonListener(
+//                GamepadData.Button.Y, ListenableButton.ButtonState.JUST_PRESSED) {
+//            hw.slideGateServo.position =
+//                    if (hw.slideGateServo.position == RobotConfig.SLIDE_GATE_CLOSED) {
+//                RobotConfig.SLIDE_GATE_OPEN
+//            } else {
+//                RobotConfig.SLIDE_GATE_CLOSED
+//            }
+//        }
         gamepad2Listener.addButtonListener(
                 GamepadData.Button.B, ListenableButton.ButtonState.JUST_PRESSED) {
             hw.relicHandServo.position =
@@ -135,19 +135,30 @@ class ManualModeTankDrive : LinearOpMode() {
                 hw.leftDriveMotor.power = gamepad1.left_stick_y * turbo
 
                 // Gamepad 2
-                hw.leftGrabberServo.position = limit(gamepad2.left_trigger.toDouble(), RobotConfig.GRABBER_RELEASED, RobotConfig.GRABBER_GRABBED)
-                hw.rightGrabberServo.position = limit(gamepad2.left_trigger.toDouble(), RobotConfig.GRABBER_RELEASED, RobotConfig.GRABBER_GRABBED)
+                hw.leftTopGrabberServo.position = limit(gamepad2.left_trigger.toDouble(), RobotConfig.GRABBER_RELEASED, RobotConfig.GRABBER_GRABBED)
+                hw.rightTopGrabberServo.position = limit(gamepad2.left_trigger.toDouble(), RobotConfig.GRABBER_RELEASED, RobotConfig.GRABBER_GRABBED)
+                hw.leftBottomGrabberServo.position = limit(gamepad2.left_trigger.toDouble(), RobotConfig.GRABBER_RELEASED, RobotConfig.GRABBER_GRABBED)
+                hw.rightBottomGrabberServo.position = limit(gamepad2.left_trigger.toDouble(), RobotConfig.GRABBER_RELEASED, RobotConfig.GRABBER_GRABBED)
 
-                fineControlServo(hw.slideLifterServo,
-                        0.0, 1.0,
-                        gamepad2.dpad_left, gamepad2.dpad_right)
-                fineControlServo(hw.slideExtenderServo,
-                        0.0, 1.0,
-                        gamepad2.dpad_up, gamepad2.dpad_down)
+                if(gamepad2.dpad_up) {
+                    hw.relicExtenderMotor.power = 1.0
+                }
+                else if(gamepad2.dpad_down) {
+                    hw.relicExtenderMotor.power = -1.0
+                }
+
+
+
+//                fineControlServo(hw.slideLifterServo,
+//                        0.0, 1.0,
+//                        gamepad2.dpad_left, gamepad2.dpad_right)
+//                fineControlServo(hw.slideExtenderServo,
+//                        0.0, 1.0,
+//                        gamepad2.dpad_up, gamepad2.dpad_down)
 
                 gamepad2Listener.update(gamepad2)
 
-                telemetry.addData("Slide gate servo position", hw.slideGateServo.position)
+//                telemetry.addData("Slide gate servo position", hw.slideGateServo.position)
 
                 telemetry.addLine("Controlling lifter motor, encoder @ ${hw.lifterMotor.currentPosition}")
                 controlLimitedMotor(
@@ -160,18 +171,10 @@ class ManualModeTankDrive : LinearOpMode() {
                 // b: relic hand
                 telemetry.addData("Relic hand position", hw.relicHandServo.position)
 
-                if (gamepad2.a) {
-                    hw.relicArmMotor.power = 0.0
-                    fineControlServo(hw.relicElbowServo,
+                fineControlServo(hw.relicElbowServo,
                             0.0, 1.0,
                             gamepad2.right_stick_y > 0, gamepad2.right_stick_y < 0)
-                } else {
-                    telemetry.addLine("Controlling relic arm motor, encoder @ ${hw.relicArmMotor.currentPosition}")
-                    controlLimitedMotor(
-                            hw.relicArmMotor,
-                            -100.0, RobotConfig.RELIC_ARM_TOP_LIMIT,
-                            gamepad2.right_stick_y.toDouble(), 0.3)
-                }
+
                 telemetry.addData("Left drive encoder value",
                         hw.leftDriveMotor.currentPosition)
             } catch (e: Exception) {

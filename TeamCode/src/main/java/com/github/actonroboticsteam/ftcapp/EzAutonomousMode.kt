@@ -55,8 +55,10 @@ class EzAutonomousMode : LinearOpMode() {
     override fun runOpMode() {
         val robot = RobotConfig(hardwareMap)
 
-        robot.leftGrabberServo.position = RobotConfig.GRABBER_GRABBED
-        robot.rightGrabberServo.position = RobotConfig.GRABBER_GRABBED
+        robot.leftTopGrabberServo.position = RobotConfig.GRABBER_GRABBED
+        robot.rightTopGrabberServo.position = RobotConfig.GRABBER_GRABBED
+        robot.leftBottomGrabberServo.position = RobotConfig.GRABBER_GRABBED
+        robot.rightBottomGrabberServo.position = RobotConfig.GRABBER_GRABBED
 
         // wait for the start button to be pressed.
         waitForStart()
@@ -69,7 +71,7 @@ class EzAutonomousMode : LinearOpMode() {
         // 4. Release glyph
 
         try {
-            drive(robot, -2.45) // to safe zone
+            drive(robot, 2.8) // to safe zone
         } catch (e: Exception) {
             addLogLine("HIT EXCEPTION. Stopping op mode.")
             addLogLine("Exception backtrace:")
