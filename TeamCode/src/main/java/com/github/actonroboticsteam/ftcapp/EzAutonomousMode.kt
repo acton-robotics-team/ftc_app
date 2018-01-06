@@ -35,6 +35,7 @@ class EzAutonomousMode : LinearOpMode() {
     }
 
     private fun drive(robot: RobotConfig, rotations: Double) {
+        // encoder ticks and direction reversed
         val encoderTicks = (-rotations * RobotConfig.TETRIX_TICKS_PER_REVOLUTION).roundToInt()
 
         addLogLine("Driving for $rotations rotations, which is $encoderTicks ticks")
@@ -45,7 +46,6 @@ class EzAutonomousMode : LinearOpMode() {
         robot.leftDriveMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
 
         robot.leftDriveMotor.targetPosition = encoderTicks
-
 
         robot.rightDriveMotor.power = if (encoderTicks > 0) 0.5 else -0.5
         robot.leftDriveMotor.power = if (encoderTicks > 0) 0.5 else -0.5
@@ -59,9 +59,10 @@ class EzAutonomousMode : LinearOpMode() {
     }
 
     private fun turn(robot: RobotConfig, degrees: Int) {
+        // SO HACKY DON'T LOOK AT ITTT
         // Encoder ticks are negative because the left drive motor is reversed, but this doesn't
         // change the direction that the encoder counts in
-        val encoderTicks = (degrees * RobotConfig.TETRIX_TICKS_PER_TURN_DEGREE * -1).roundToInt()
+        val encoderTicks = (-degrees * RobotConfig.TETRIX_TICKS_PER_TURN_DEGREE).roundToInt()
         val oldMode = robot.leftDriveMotor.mode
 
         addLogLine("Moving $degrees degrees, which is $encoderTicks ticks")
@@ -69,8 +70,9 @@ class EzAutonomousMode : LinearOpMode() {
         robot.leftDriveMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
 
         robot.leftDriveMotor.targetPosition = encoderTicks
-        robot.leftDriveMotor.power = if (degrees >= 0) 0.2 else -0.2
-        robot.rightDriveMotor.power = if (degrees >= 0) -0.2 else 0.2
+        // don't judge
+        robot.leftDriveMotor.power = if (encoderTicks >= 0) 0.2 else -0.2
+        robot.rightDriveMotor.power = if (encoderTicks >= 0) -0.2 else 0.2
         while (robot.leftDriveMotor.isBusy) {
             addLogLine(robot.leftDriveMotor.currentPosition.toString())
             sleep()
@@ -78,25 +80,6 @@ class EzAutonomousMode : LinearOpMode() {
         robot.leftDriveMotor.power = 0.0
         robot.rightDriveMotor.power = 0.0
         robot.leftDriveMotor.mode = oldMode
-    }
-
-    private fun detectJewel(): JewelColorDetector.Analysis {
-        val params = VuforiaParameters.Builder()
-                .cameraDirection(VuforiaLocalizer.CameraDirection.BACK)
-                .licenseKey("AcdD/rP/////AAAAGQcYKmwTDk0lulf4t6n2JsQiodu68wCwukVguR/SeZyNkVD0OnUmmSWSrpM2jXTVVNorEhJRyV08URkTRak94XQN8/jPzVxzuOLCQ8VR8uYKuP/JoovnJM2MC3Pc1KvLlrLwWrL4185vpVaQMLRmvCkzNH+lyoEusMC7vwT4ayI6I22ceFumQuAubLp8APiT3omF4KG6W/lqNyJukt9YHgBYO/JJRVPfZg04LEhwFMixYOXfh+moWdf8zCMj+V7GUfH7Q7OGM0jobzVrg0uYboA2nrJBRjQS6j2eGoXX4yRwhmeVLVtBuklgw+n3qXgQ+OX9Lp48xNIApOByAlAhU117gDYYwE5NQ8ADKvtgupKd")
-                .build()
-        val vuforia = VuforiaNavigation(params)
-        val colorDetector = JewelColorDetector(PhoneOrientation.LANDSCAPE)
-
-        while (true) {
-            colorDetector.process(vuforia.image)
-            val analysis = colorDetector.analysis
-            if ((analysis.leftJewelColor != null && analysis.rightJewelColor != null) || runtime.seconds() > 10) {
-                return analysis
-            } else {
-                sleep()
-            }
-        }
     }
 
     override fun runOpMode() {
