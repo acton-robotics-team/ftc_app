@@ -52,7 +52,6 @@ internal class RobotConfig(map: HardwareMap) {
         const val LIFTER_TOP_LIMIT = 4 * TETRIX_TICKS_PER_REVOLUTION
         const val RELIC_HAND_CLOSED = 0.7
         const val RELIC_HAND_OPEN = 0.0
-
     }
 }
 

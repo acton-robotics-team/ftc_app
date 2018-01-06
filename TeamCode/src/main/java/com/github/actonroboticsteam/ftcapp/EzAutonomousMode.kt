@@ -48,9 +48,9 @@ class EzAutonomousMode : LinearOpMode() {
 
 
         robot.rightDriveMotor.power = if (encoderTicks > 0) 0.5 else -0.5
-    //    sleep(200)
         robot.leftDriveMotor.power = if (encoderTicks > 0) 0.5 else -0.5
         while (robot.leftDriveMotor.isBusy) {
+            addLogLine(robot.leftDriveMotor.currentPosition.toString())
             sleep()
         }
         robot.leftDriveMotor.power = 0.0
@@ -72,6 +72,7 @@ class EzAutonomousMode : LinearOpMode() {
         robot.leftDriveMotor.power = if (degrees >= 0) 0.2 else -0.2
         robot.rightDriveMotor.power = if (degrees >= 0) -0.2 else 0.2
         while (robot.leftDriveMotor.isBusy) {
+            addLogLine(robot.leftDriveMotor.currentPosition.toString())
             sleep()
         }
         robot.leftDriveMotor.power = 0.0
