@@ -33,7 +33,7 @@ internal class RobotConfig(map: HardwareMap) {
         lifterMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
         relicHandServo.direction = Servo.Direction.REVERSE
         rightBottomGrabberServo.direction = Servo.Direction.REVERSE
-        rightTopGrabberServo.direction= Servo.Direction.REVERSE
+        rightTopGrabberServo.direction = Servo.Direction.REVERSE
     }
 
     fun setGrabbers(pos: Double) {
