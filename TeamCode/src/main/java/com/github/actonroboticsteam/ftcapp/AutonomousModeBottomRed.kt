@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 import kotlin.math.roundToInt
 
-@Autonomous(name = "Autonomous program: bottom red")
+@Autonomous(name = "EZAutonomous program: bottom red")
 class AutonomousModeBottomRed : LinearOpMode() {
     private val runtime = ElapsedTime()
     @Volatile private var logs = ""
