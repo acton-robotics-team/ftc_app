@@ -19,11 +19,10 @@ internal class RobotConfig(map: HardwareMap) {
     val relicExtenderMotor: DcMotor = map.dcMotor.get("relic_extender_motor")
     val relicElbowServo: Servo = map.servo.get("relic_elbow_servo")
     val relicHandServo: Servo = map.servo.get("relic_hand_servo")
-    val leftBottomGrabberServo: Servo = map.servo.get("left_bottom_grabber_servo")
-    val rightBottomGrabberServo: Servo = map.servo.get("right_bottom_grabber_servo")
-    val leftTopGrabberServo: Servo = map.servo.get("left_top_grabber_servo")
-    val rightTopGrabberServo: Servo = map.servo.get("right_top_grabber_servo")
-
+    private val leftBottomGrabberServo: Servo = map.servo.get("left_bottom_grabber_servo")
+    private val rightBottomGrabberServo: Servo = map.servo.get("right_bottom_grabber_servo")
+    private val leftTopGrabberServo: Servo = map.servo.get("left_top_grabber_servo")
+    private val rightTopGrabberServo: Servo = map.servo.get("right_top_grabber_servo")
 
     init {
         leftDriveMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
