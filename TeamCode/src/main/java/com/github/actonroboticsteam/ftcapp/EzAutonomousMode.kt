@@ -35,7 +35,7 @@ class EzAutonomousMode : LinearOpMode() {
     }
 
     private fun drive(robot: RobotConfig, rotations: Double) {
-        val encoderTicks = (rotations * RobotConfig.TETRIX_TICKS_PER_REVOLUTION).roundToInt()
+        val encoderTicks = (-rotations * RobotConfig.TETRIX_TICKS_PER_REVOLUTION).roundToInt()
 
         addLogLine("Driving for $rotations rotations, which is $encoderTicks ticks")
 
