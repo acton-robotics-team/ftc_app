@@ -42,12 +42,35 @@ class EzAutonomousMode : LinearOpMode() {
         val oldMode = robot.leftDriveMotor.mode
 
         robot.leftDriveMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        robot.leftDriveMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
+        robot.leftDriveMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
 
         robot.leftDriveMotor.targetPosition = encoderTicks
 
-        robot.leftDriveMotor.power = if (encoderTicks > 0) 0.2 else -0.2
-        robot.rightDriveMotor.power = if (encoderTicks > 0) 0.2 else -0.2
+
+        robot.rightDriveMotor.power = if (encoderTicks > 0) 0.5 else -0.5
+    //    sleep(200)
+        robot.leftDriveMotor.power = if (encoderTicks > 0) 0.5 else -0.5
+        while (robot.leftDriveMotor.isBusy) {
+            sleep()
+        }
+        robot.leftDriveMotor.power = 0.0
+        robot.rightDriveMotor.power = 0.0
+        robot.leftDriveMotor.mode = oldMode
+    }
+
+    private fun turn(robot: RobotConfig, degrees: Int) {
+        // Encoder ticks are negative because the left drive motor is reversed, but this doesn't
+        // change the direction that the encoder counts in
+        val encoderTicks = (degrees * RobotConfig.TETRIX_TICKS_PER_TURN_DEGREE * -1).roundToInt()
+        val oldMode = robot.leftDriveMotor.mode
+
+        addLogLine("Moving $degrees degrees, which is $encoderTicks ticks")
+        robot.leftDriveMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        robot.leftDriveMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
+
+        robot.leftDriveMotor.targetPosition = encoderTicks
+        robot.leftDriveMotor.power = if (degrees >= 0) 0.2 else -0.2
+        robot.rightDriveMotor.power = if (degrees >= 0) -0.2 else 0.2
         while (robot.leftDriveMotor.isBusy) {
             sleep()
         }
@@ -91,7 +114,10 @@ class EzAutonomousMode : LinearOpMode() {
         // 4. Release glyph
 
         try {
-            drive(robot, 2.8) // to safe zone
+            drive(robot, 2.5) // to safe zone
+            turn(robot, 90) // turn to cryptobox
+            drive(robot, 0.2) // drive into cryptobox
+            robot.setGrabbers(RobotConfig.GRABBER_RELEASED) // releasify
         } catch (e: Exception) {
             addLogLine("HIT EXCEPTION. Stopping op mode.")
             addLogLine("Exception backtrace:")
