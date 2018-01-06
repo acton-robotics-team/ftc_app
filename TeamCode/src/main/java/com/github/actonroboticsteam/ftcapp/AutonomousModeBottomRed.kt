@@ -18,8 +18,8 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 import kotlin.math.roundToInt
 
-@Autonomous(name = "EZAutonomous program")
-class EzAutonomousMode : LinearOpMode() {
+@Autonomous(name = "Autonomous program: bottom red")
+class AutonomousModeBottomRed : LinearOpMode() {
     private val runtime = ElapsedTime()
     @Volatile private var logs = ""
     @Synchronized private fun addLogLine(text: String) {
@@ -91,11 +91,6 @@ class EzAutonomousMode : LinearOpMode() {
         waitForStart()
 
         runtime.reset()
-
-        // 1. Hit jewel & scan pictogram simultaneously
-        // 2. Move backward and detect cryptobox columns with ODS
-        // 3. Turn and move forward to put glyph in cryptobox
-        // 4. Release glyph
 
         try {
             drive(robot, 2.5) // to safe zone
