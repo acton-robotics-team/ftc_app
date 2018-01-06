@@ -49,10 +49,10 @@ class ManualModeTankDrive : LinearOpMode() {
         telemetry.addData("Position", position)
         telemetry.addData("Bottom limit", bottomLimit)
         telemetry.addData("Top limit", topLimit)
-        if (controlAxis > 0.1 && position < topLimit) {
+        if (controlAxis > 0.5 && position < topLimit) {
             telemetry.addLine("LIMIT: moving up")
             motor.power = power
-        } else if (controlAxis < -0.1 && position > bottomLimit) {
+        } else if (controlAxis < -0.5 && position > bottomLimit) {
             telemetry.addLine("LIMIT: moving down")
             motor.power = -power
         } else {
@@ -65,8 +65,8 @@ class ManualModeTankDrive : LinearOpMode() {
             servo: Servo, bottomLimit: Double, topLimit: Double,
             isUp: Boolean, isDown: Boolean) {
         val delta = when {
-            isUp -> 0.05
-            isDown -> -0.05
+            isUp -> 0.002
+            isDown -> -0.002
             else -> 0.0
         }
         val position = if (servo.position.isNaN()) {

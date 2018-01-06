@@ -83,20 +83,22 @@ class AutonomousModeBottomRed : LinearOpMode() {
     }
 
     override fun runOpMode() {
+        // wait for the start button to be pressed.
+
+        waitForStart()
+        runtime.reset()
         val robot = RobotConfig(hardwareMap)
 
         robot.setGrabbers(RobotConfig.GRABBER_GRABBED)
-
-        // wait for the start button to be pressed.
-        waitForStart()
-
-        runtime.reset()
+        robot.lifterMotor.targetPosition = 2 * RobotConfig.TETRIX_TICKS_PER_REVOLUTION
+        robot.lifterMotor.power = 0.3
+        while (robot.lifterMotor.isBusy) {
+            sleep()
+        }
+        robot.lifterMotor.power = 0.0
 
         try {
-            drive(robot, 2.5) // to safe zone
-            turn(robot, 90) // turn to cryptobox
-            drive(robot, 0.2) // drive into cryptobox
-            robot.setGrabbers(RobotConfig.GRABBER_RELEASED) // releasify
+            drive(robot, 1.5) // to safe zone
         } catch (e: Exception) {
             addLogLine("HIT EXCEPTION. Stopping op mode.")
             addLogLine("Exception backtrace:")
