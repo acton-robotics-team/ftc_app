@@ -88,6 +88,7 @@ class AutonomousModeBottomRed : LinearOpMode() {
         waitForStart()
         runtime.reset()
         val robot = RobotConfig(hardwareMap)
+        robot.relicElbowServo.position = 1.0
 
         robot.setGrabbers(RobotConfig.GRABBER_GRABBED)
         robot.lifterMotor.targetPosition = 2 * RobotConfig.TETRIX_TICKS_PER_REVOLUTION
@@ -99,6 +100,13 @@ class AutonomousModeBottomRed : LinearOpMode() {
 
         try {
             drive(robot, 1.5) // to safe zone
+            robot.lifterMotor.targetPosition = 0
+            robot.lifterMotor.power = -0.3
+            while (robot.lifterMotor.isBusy) {
+                sleep()
+            }
+            robot.setGrabbers(RobotConfig.GRABBER_RELEASED)
+            sleep()
         } catch (e: Exception) {
             addLogLine("HIT EXCEPTION. Stopping op mode.")
             addLogLine("Exception backtrace:")
