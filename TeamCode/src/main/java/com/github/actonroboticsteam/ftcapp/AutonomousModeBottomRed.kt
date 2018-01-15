@@ -4,19 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.util.ElapsedTime
-
-import org.firstinspires.ftc.robotcore.external.ClassFactory
-import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer
-import org.pattonvillerobotics.commoncode.robotclasses.opencv.JewelColorDetector
-import org.pattonvillerobotics.commoncode.robotclasses.opencv.util.PhoneOrientation
-import org.pattonvillerobotics.commoncode.robotclasses.vuforia.VuforiaNavigation
-import org.pattonvillerobotics.commoncode.robotclasses.vuforia.VuforiaParameters
-
-import java.util.concurrent.FutureTask
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeoutException
-import kotlin.math.roundToInt
 
 @Autonomous(name = "EZAutonomous program: bottom red")
 class AutonomousModeBottomRed : LinearOpMode() {
@@ -36,7 +24,7 @@ class AutonomousModeBottomRed : LinearOpMode() {
 
     private fun drive(robot: RobotConfig, rotations: Double) {
         // encoder ticks and direction reversed
-        val encoderTicks = (-rotations * RobotConfig.TETRIX_TICKS_PER_REVOLUTION).roundToInt()
+        val encoderTicks = (-rotations * RobotConfig.TETRIX_TICKS_PER_REVOLUTION).toInt()
 
         addLogLine("Driving for $rotations rotations, which is $encoderTicks ticks")
 
@@ -62,7 +50,7 @@ class AutonomousModeBottomRed : LinearOpMode() {
         // SO HACKY DON'T LOOK AT ITTT
         // Encoder ticks are negative because the left drive motor is reversed, but this doesn't
         // change the direction that the encoder counts in
-        val encoderTicks = (-degrees * RobotConfig.TETRIX_TICKS_PER_TURN_DEGREE).roundToInt()
+        val encoderTicks = (-degrees * RobotConfig.TETRIX_TICKS_PER_TURN_DEGREE).toInt()
         val oldMode = robot.leftDriveMotor.mode
 
         addLogLine("Moving $degrees degrees, which is $encoderTicks ticks")
