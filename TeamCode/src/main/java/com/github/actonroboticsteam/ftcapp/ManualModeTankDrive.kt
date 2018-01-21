@@ -6,9 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.Servo
 import com.qualcomm.robotcore.util.ElapsedTime
-import org.pattonvillerobotics.commoncode.robotclasses.gamepad.GamepadData
-import org.pattonvillerobotics.commoncode.robotclasses.gamepad.ListenableButton
-import org.pattonvillerobotics.commoncode.robotclasses.gamepad.ListenableGamepad
 
 /**
  * Created by kevinliu who writes tehe mstdisgusting code ew
@@ -36,7 +33,7 @@ import org.pattonvillerobotics.commoncode.robotclasses.gamepad.ListenableGamepad
 class ManualModeTankDrive : LinearOpMode() {
     private val runtime = ElapsedTime()
 
-    private fun limit(value: Double, min: Double, max: Double): Double {
+    private fun limitBetween(value: Double, min: Double, max: Double): Double {
         return Math.min(Math.max(value, min), max)
     }
 
@@ -82,21 +79,12 @@ class ManualModeTankDrive : LinearOpMode() {
         telemetry.addData("Is up?", isUp)
         telemetry.addData("Is down?", isDown)
         telemetry.addData("Adding delta", delta)
-        servo.position = limit(
+        servo.position = limitBetween(
                 position + delta, bottomLimit, topLimit)
     }
 
     override fun runOpMode() {
         val hw = RobotConfig(hardwareMap)
-        val gamepad2Listenable = ListenableGamepad()
-
-        gamepad2Listenable.addButtonListener(
-                GamepadData.Button.B, ListenableButton.ButtonState.JUST_PRESSED) {
-            hw.relicHandServo.position = when (hw.relicHandServo.position) {
-                RobotConfig.RELIC_HAND_CLOSED -> RobotConfig.RELIC_HAND_OPEN
-                else -> RobotConfig.RELIC_HAND_CLOSED
-            }
-        }
 
         // wait for the start button to be pressed.
         waitForStart()
@@ -117,35 +105,27 @@ class ManualModeTankDrive : LinearOpMode() {
                 hw.leftDriveMotor.power = gamepad1.left_stick_y * turbo
 
                 // Gamepad 2
-                hw.setGrabbers(limit(
+                hw.setGlyphGrabbers(limitBetween(
                         gamepad2.left_trigger.toDouble(),
-                        RobotConfig.GRABBER_RELEASED,
-                        RobotConfig.GRABBER_GRABBED))
-
-                hw.relicExtenderMotor.power = when {
-                    gamepad2.dpad_up -> 0.5
-                    gamepad2.dpad_down -> -0.5
-                    else -> 0.0
-                }
-
-                gamepad2Listenable.update(gamepad2)
+                        RobotConfig.GLYPH_GRABBER_RELEASED,
+                        RobotConfig.GLYPH_GRABBER_GRABBED))
 
                 telemetry.addData(
                         "Controlling lifter motor, encoder value",
                         hw.lifterMotor.currentPosition)
                 controlLimitedMotor(
                         hw.lifterMotor,
-                        0.0, RobotConfig.LIFTER_TOP_LIMIT.toDouble(),
+                        0.0, RobotConfig.LIFTER_TOP_LIMIT,
                         (-gamepad2.left_stick_y).toDouble(), 1.0)
 
-                telemetry.addData("Relic hand position", hw.relicHandServo.position)
-
-                fineControlServo(hw.relicElbowServo,
-                            0.0, 1.0,
-                            gamepad2.right_stick_y > 0, gamepad2.right_stick_y < 0)
-
-                telemetry.addData("Left drive encoder value",
-                        hw.leftDriveMotor.currentPosition)
+                // Relic arm
+                controlLimitedMotor(hw.relicArmMotor,
+                        0.0,
+                        RobotConfig.RELIC_ARM_TOP_LIMIT,
+                        gamepad2.left_stick_y.toDouble(), 0.2)
+                hw.setRelicGrabbers(limitBetween(gamepad2.right_trigger.toDouble(),
+                        RobotConfig.RELIC_GRABBER_RELEASED,
+                        RobotConfig.RELIC_GRABBER_GRABBED))
             } catch (e: Exception) {
                 // Global exception handler to get backtrace
                 telemetry.addLine("EXCEPTION:")
