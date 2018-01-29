@@ -12,22 +12,12 @@ import com.qualcomm.robotcore.util.ElapsedTime
  * on 10/9/2017.
  * - kuneel sharpedo
  *
- * Controls:
- *
- * GAMEPAD 1
- * - Left bumper: turbo (=1)
- * - Right bumper: slow (=0.125)
- * - Right/left analog sticks: drive motors
- * GAMEPAD 2
- * - Left trigger: grabber servos
- * - Right trigger: relic hand servo
- * - Up/down dpad: extend/retract slide (slide lifter servo)
- * - Left/right dpad: lift/lower slide (slide extender servo)
- * - Y: toggle slide gate servo
- * - Left analog stick: lifter motor
- * - NOT A && Right analog stick: relic arm motor
- * - A && right analog stick: relic elbow servo
- * - B: relic hand servo
+ * Gamepad 1:
+ * - Left/right analog sticks: tank drive
+ * Gamepad 2:
+ * - Left trigger: glyph grabbers
+ * - Left stick: lifter motor
+ * - Right trigger: relic grabbers
  */
 @TeleOp(name = "Manual: tank drive")
 class ManualModeTankDrive : LinearOpMode() {
@@ -100,16 +90,18 @@ class ManualModeTankDrive : LinearOpMode() {
                     gamepad1.right_bumper -> 0.125
                     else -> 0.25
                 }
-
+                // Drive motors
                 hw.rightDriveMotor.power = gamepad1.right_stick_y * turbo
                 hw.leftDriveMotor.power = gamepad1.left_stick_y * turbo
 
                 // Gamepad 2
+                // Glyph grabbers
                 hw.setGlyphGrabbers(limitBetween(
                         gamepad2.left_trigger.toDouble(),
                         RobotConfig.GLYPH_GRABBER_RELEASED,
                         RobotConfig.GLYPH_GRABBER_GRABBED))
 
+                // Lifter motor
                 telemetry.addData(
                         "Controlling lifter motor, encoder value",
                         hw.lifterMotor.currentPosition)
