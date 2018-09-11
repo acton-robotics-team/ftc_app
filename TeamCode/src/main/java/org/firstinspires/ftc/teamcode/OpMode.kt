@@ -30,6 +30,7 @@ import kotlin.math.abs
 class DemoOpMode : OpMode() {
     // Declare OpMode members.
     private val runtime = ElapsedTime()
+    private var hardware: Hardware? = null
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -46,6 +47,8 @@ class DemoOpMode : OpMode() {
      * Code to run ONCE when the driver hits PLAY
      */
     override fun start() {
+        hardware = Hardware(hardwareMap)
+
         runtime.reset()
     }
 
@@ -53,19 +56,17 @@ class DemoOpMode : OpMode() {
      * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
      */
     override fun loop() {
-        val hardware = Hardware(hardwareMap)
-
         if (abs(gamepad1.right_stick_x) > 0.1) {
             // turny mode
-            listOf(hardware.topDrive, hardware.rightDrive, hardware.bottomDrive, hardware.leftDrive).forEach {
+            listOf(hardware!!.topDrive, hardware!!.rightDrive, hardware!!.bottomDrive, hardware!!.leftDrive).forEach {
                 it.power = gamepad1.right_stick_x.toDouble()
             }
         } else {
             // movey mode
-            hardware.leftDrive.power = gamepad1.left_stick_y.toDouble()
-            hardware.rightDrive.power = gamepad1.left_stick_y.toDouble()
-            hardware.topDrive.power = gamepad1.left_stick_x.toDouble()
-            hardware.bottomDrive.power = gamepad1.left_stick_x.toDouble()
+            hardware!!.leftDrive.power = gamepad1.left_stick_y.toDouble()
+            hardware!!.rightDrive.power = -gamepad1.left_stick_y.toDouble()
+            hardware!!.topDrive.power = -gamepad1.left_stick_x.toDouble()
+            hardware!!.bottomDrive.power = gamepad1.left_stick_x.toDouble()
         }
     }
 
