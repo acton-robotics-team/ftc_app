@@ -59,7 +59,7 @@ class DemoOpMode : OpMode() {
         if (abs(gamepad1.right_stick_x) > 0.1) {
             // turny mode
             listOf(hardware!!.topDrive, hardware!!.rightDrive, hardware!!.bottomDrive, hardware!!.leftDrive).forEach {
-                it.power = gamepad1.right_stick_x.toDouble()
+                it.power = -gamepad1.right_stick_x.toDouble()
             }
         } else {
             // movey mode
