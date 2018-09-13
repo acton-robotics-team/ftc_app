@@ -67,6 +67,7 @@ class DemoOpMode : OpMode() {
             hardware!!.rightDrive.power = -gamepad1.left_stick_y.toDouble()
             hardware!!.topDrive.power = -gamepad1.left_stick_x.toDouble()
             hardware!!.bottomDrive.power = gamepad1.left_stick_x.toDouble()
+            hardware = null
         }
     }
 
