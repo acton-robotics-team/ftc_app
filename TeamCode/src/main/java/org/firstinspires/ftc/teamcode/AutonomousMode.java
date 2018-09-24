@@ -31,6 +31,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
@@ -51,6 +52,14 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class AutonomousMode extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
+    private void wait() throws OpModeEndedException {
+        if (opModeIsActive()) {
+            idle();
+        } else {
+            throw new OpModeEndedException();
+        }
+    }
+
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
@@ -60,5 +69,13 @@ public class AutonomousMode extends LinearOpMode {
 
         waitForStart();
         runtime.reset();
+
+        try {
+            while (true) {
+                wait();
+            }
+        } catch (OpModeEndedException) {
+            // done!
+        }
     }
 }
