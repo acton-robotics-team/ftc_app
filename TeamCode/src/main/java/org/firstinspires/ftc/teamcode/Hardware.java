@@ -16,6 +16,7 @@ public class Hardware {
         rightMotor = hwMap.dcMotor.get("right_motor");
         leftMotor = hwMap.dcMotor.get("left_motor");
         lifter = hwMap.dcMotor.get("lifter");
-        leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        lifter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 }

@@ -30,7 +30,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
@@ -47,27 +47,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Basic: Linear OpMode", group="Linear Opmode")
-public class TankDrive extends LinearOpMode {
+@Autonomous(name="Autonomous mode")
+public class AutonomousMode extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
-
-    private void runTankDrive(Hardware hw) {
-        if (Math.abs(gamepad1.left_stick_y) > 0.1 || Math.abs(gamepad1.right_stick_y) > 0.1) {
-            // First gamepad control overrides right's
-            double powerModifier = gamepad1.a ? Hardware.SLOW_SPEED : Hardware.FULL_SPEED;
-
-            hw.leftMotor.setPower(gamepad1.left_stick_y * powerModifier);
-            hw.rightMotor.setPower(gamepad1.right_stick_y * powerModifier);
-        } else {
-            // Second gamepad is always slow
-            hw.leftMotor.setPower(gamepad2.left_stick_y * Hardware.SLOW_SPEED);
-            hw.rightMotor.setPower(gamepad2.right_stick_y * Hardware.SLOW_SPEED);
-        }
-    }
-
-    private void runLifter(Hardware hw) {
-        hw.lifter.setPower(gamepad1.dpad_up ? 1 : -1);
-    }
 
     @Override
     public void runOpMode() {
@@ -76,19 +58,7 @@ public class TankDrive extends LinearOpMode {
 
         Hardware hw = new Hardware(hardwareMap);
 
-        // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
-
-        // run until the end of the match (driver presses STOP)
-        while (opModeIsActive()) {
-            runTankDrive(hw);
-            runLifter(hw);
-
-            // Show the elapsed game time
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Lifter encoder value", hw.lifter.getCurrentPosition());
-            telemetry.update();
-        }
     }
 }
