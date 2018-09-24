@@ -61,5 +61,10 @@ public class AutonomousMode extends LinearOpMode {
 
         waitForStart();
         runtime.reset();
+
+        hw.rightMotor.setPower(-Hardware.SLOW_SPEED);
+        hw.leftMotor.setPower(Hardware.SLOW_SPEED);
+
+        sleep(1000);
     }
 }

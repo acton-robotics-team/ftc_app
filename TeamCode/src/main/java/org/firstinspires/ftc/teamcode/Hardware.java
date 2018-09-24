@@ -8,6 +8,8 @@ public class Hardware {
     public static final double SLOW_SPEED = 0.2;
     public static final double FULL_SPEED = 1.0;
 
+    public static final int LIFTER_TOP_POSITION = 3915;
+
     public DcMotor rightMotor;
     public DcMotor leftMotor;
     public DcMotor lifter;
@@ -16,7 +18,6 @@ public class Hardware {
         rightMotor = hwMap.dcMotor.get("right_motor");
         leftMotor = hwMap.dcMotor.get("left_motor");
         lifter = hwMap.dcMotor.get("lifter");
-        lifter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 }
