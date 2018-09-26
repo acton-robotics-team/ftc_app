@@ -31,7 +31,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
@@ -62,9 +62,23 @@ public class AutonomousMode extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
+        hw.lifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hw.lifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        // goes from 0 (starting value) down to extend lifter
+        hw.lifter.setTargetPosition(-Hardware.LIFTER_TOP_POSITION);
+        hw.lifter.setPower(0.5);
+        while (hw.lifter.isBusy() && opModeIsActive()) {
+            idle();
+        }
+        hw.lifter.setPower(0);
+        hw.lifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // set bottom value to 0 value
+
+        // Turn to get out of cage
         hw.rightMotor.setPower(-Hardware.SLOW_SPEED);
         hw.leftMotor.setPower(Hardware.SLOW_SPEED);
-
         sleep(1000);
+
+        hw.rightMotor.setPower(0);
+        hw.leftMotor.setPower(0);
     }
 }

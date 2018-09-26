@@ -66,15 +66,13 @@ public class TankDrive extends LinearOpMode {
     }
 
     private void runLifter(Hardware hw) {
-        int power;
         if (gamepad1.dpad_up) {
-            power = 1;
+            hw.lifter.setPower(1);
+            hw.lifter.setTargetPosition(Hardware.LIFTER_TOP_POSITION);
         } else if (gamepad1.dpad_down) {
-            power = -1;
-        } else {
-            power = 0;
+            hw.lifter.setPower(-1);
+            hw.lifter.setTargetPosition(Hardware.LIFTER_BOTTOM_POSITION);
         }
-        hw.lifter.setPower(power);
     }
 
     @Override
