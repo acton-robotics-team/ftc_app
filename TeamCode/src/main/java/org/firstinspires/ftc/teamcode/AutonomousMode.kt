@@ -29,6 +29,9 @@
 
 package org.firstinspires.ftc.teamcode
 
+import com.disnodeteam.dogecv.CameraViewDisplay
+import com.disnodeteam.dogecv.DogeCV
+import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.hardware.DcMotor
@@ -79,6 +82,37 @@ class AutonomousMode : LinearOpMode() {
         hw.rightMotor.power = 0.0
         hw.leftMotor.power = 0.0
 
+        val detector = GoldAlignDetector()
+        detector.apply {
+            // Config as taken from https://github.com/MechanicalMemes/DogeCV/blob/master/Examples/GoldAlignExample.java
+            init(hardwareMap.appContext, CameraViewDisplay.getInstance())
+            useDefaults()
+            alignSize = 100.0
+            alignPosOffset = 0.0
+            downscale = 0.4
+            areaScoringMethod = DogeCV.AreaScoringMethod.MAX_AREA
+            maxAreaScorer.weight = 0.005
+            ratioScorer.weight = 5.0
+            ratioScorer.perfectRatio = 1.0
+            enable()
+        }
 
+        // Turn until reaching the detector
+        hw.leftMotor.power = -0.5
+        hw.rightMotor.power = 0.5
+        while (!detector.aligned && opModeIsActive()) {
+            telemetry.addLine("Gold Detector Phase")
+            telemetry.addData("X pos", detector.xPosition)
+            telemetry.update()
+
+            idle()
+        }
+        hw.leftMotor.power = 0.5
+        hw.rightMotor.power = 0.5
+
+        sleep(100)
+
+        hw.leftMotor.power = 0.0
+        hw.rightMotor.power = 0.0
     }
 }
