@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
+import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.util.ElapsedTime
 
 
@@ -27,16 +28,15 @@ class TankDrive : LinearOpMode() {
             // First gamepad control overrides right's
             val powerModifier = if (gamepad1.a) Hardware.SLOW_SPEED else Hardware.FULL_SPEED
 
-            hw.leftMotor.power = gamepad1.left_stick_y * powerModifier
-            hw.rightMotor.power = gamepad1.right_stick_y * powerModifier
+            hw.leftDrive.power = gamepad1.left_stick_y * powerModifier
+            hw.rightDrive.power = gamepad1.right_stick_y * powerModifier
         } else {
             // Second gamepad is always slow
-            hw.leftMotor.power = gamepad2.left_stick_y * Hardware.SLOW_SPEED
-            hw.rightMotor.power = gamepad2.right_stick_y * Hardware.SLOW_SPEED
+            hw.leftDrive.power = gamepad2.left_stick_y * Hardware.SLOW_SPEED
+            hw.rightDrive.power = gamepad2.right_stick_y * Hardware.SLOW_SPEED
         }
     }
 
-    //something
     private fun runLifter(hw: Hardware) {
         if (gamepad1.dpad_up) {
             hw.lifter.power = 1.0
@@ -44,6 +44,16 @@ class TankDrive : LinearOpMode() {
         } else if (gamepad1.dpad_down) {
             hw.lifter.power = -1.0
             hw.lifter.targetPosition = Hardware.LIFTER_BOTTOM_POSITION
+        }
+    }
+
+    private fun runArm(hw: Hardware) {
+        if (gamepad1.a) {
+            hw.arm.apply {
+                mode = DcMotor.RunMode.RUN_TO_POSITION
+                power = 0.5
+                targetPosition = Hardware.ARM_DOWN_POSITION
+            }
         }
     }
 

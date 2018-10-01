@@ -6,24 +6,24 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 
 class Hardware(hwMap: HardwareMap) {
 
-    var rightMotor: DcMotor
-    var leftMotor: DcMotor
-    var lifter: DcMotor
+    val rightDrive: DcMotor = hwMap.dcMotor.get("right_motor")
+    val leftDrive: DcMotor = hwMap.dcMotor.get("left_motor")
+    val lifter: DcMotor = hwMap.dcMotor.get("lifter")
+    val arm: DcMotor = hwMap.dcMotor.get("arm")
+    val armExtender: DcMotor = hwMap.dcMotor.get("arm_extender")
 
     init {
-        rightMotor = hwMap.dcMotor.get("right_motor")
-        leftMotor = hwMap.dcMotor.get("left_motor")
-        lifter = hwMap.dcMotor.get("lifter")
-
-        rightMotor.direction = DcMotorSimple.Direction.REVERSE
+        rightDrive.direction = DcMotorSimple.Direction.REVERSE
         lifter.mode = DcMotor.RunMode.RUN_TO_POSITION
     }
 
     companion object {
-        val SLOW_SPEED = 0.2
-        val FULL_SPEED = 1.0
+        const val SLOW_SPEED = 0.2
+        const val FULL_SPEED = 1.0
 
-        val LIFTER_BOTTOM_POSITION = 0
-        val LIFTER_TOP_POSITION = 3915
+        const val LIFTER_BOTTOM_POSITION = 0
+        const val LIFTER_TOP_POSITION = 3915
+
+        const val ARM_DOWN_POSITION = 0 // placeholder
     }
 }

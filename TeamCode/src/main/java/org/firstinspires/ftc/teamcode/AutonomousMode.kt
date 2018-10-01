@@ -75,12 +75,12 @@ class AutonomousMode : LinearOpMode() {
         hw.lifter.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER // set bottom value to 0 value
 
         // Turn to get out of cage
-        hw.rightMotor.power = -Hardware.SLOW_SPEED
-        hw.leftMotor.power = Hardware.SLOW_SPEED
+        hw.rightDrive.power = -Hardware.SLOW_SPEED
+        hw.leftDrive.power = Hardware.SLOW_SPEED
         sleep(1000)
 
-        hw.rightMotor.power = 0.0
-        hw.leftMotor.power = 0.0
+        hw.rightDrive.power = 0.0
+        hw.leftDrive.power = 0.0
 
         val detector = GoldAlignDetector()
         detector.apply {
@@ -98,8 +98,8 @@ class AutonomousMode : LinearOpMode() {
         }
 
         // Turn until reaching the detector
-        hw.leftMotor.power = -0.5
-        hw.rightMotor.power = 0.5
+        hw.leftDrive.power = -0.5
+        hw.rightDrive.power = 0.5
         while (!detector.aligned && opModeIsActive()) {
             telemetry.addLine("Gold Detector Phase")
             telemetry.addData("X pos", detector.xPosition)
@@ -107,12 +107,12 @@ class AutonomousMode : LinearOpMode() {
 
             idle()
         }
-        hw.leftMotor.power = 0.5
-        hw.rightMotor.power = 0.5
+        hw.leftDrive.power = 0.5
+        hw.rightDrive.power = 0.5
 
         sleep(100)
 
-        hw.leftMotor.power = 0.0
-        hw.rightMotor.power = 0.0
+        hw.leftDrive.power = 0.0
+        hw.rightDrive.power = 0.0
     }
 }
