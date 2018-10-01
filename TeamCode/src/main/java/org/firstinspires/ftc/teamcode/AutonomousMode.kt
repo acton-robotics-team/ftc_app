@@ -27,12 +27,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.util.ElapsedTime
 
 
 /**
@@ -48,37 +48,36 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Autonomous mode")
-public class AutonomousMode extends LinearOpMode {
-    private ElapsedTime runtime = new ElapsedTime();
+@Autonomous(name = "Autonomous mode")
+class AutonomousMode : LinearOpMode() {
+    private val runtime = ElapsedTime()
 
-    @Override
-    public void runOpMode() {
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
+    override fun runOpMode() {
+        telemetry.addData("Status", "Initialized")
+        telemetry.update()
 
-        Hardware hw = new Hardware(hardwareMap);
+        val hw = Hardware(hardwareMap)
 
-        waitForStart();
-        runtime.reset();
+        waitForStart()
+        runtime.reset()
 
-        hw.lifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        hw.lifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        hw.lifter.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        hw.lifter.mode = DcMotor.RunMode.RUN_TO_POSITION
         // goes from 0 (starting value) down to extend lifter
-        hw.lifter.setTargetPosition(-Hardware.LIFTER_TOP_POSITION);
-        hw.lifter.setPower(0.5);
-        while (hw.lifter.isBusy() && opModeIsActive()) {
-            idle();
+        hw.lifter.targetPosition = -Hardware.LIFTER_TOP_POSITION
+        hw.lifter.power = 0.5
+        while (hw.lifter.isBusy && opModeIsActive()) {
+            idle()
         }
-        hw.lifter.setPower(0);
-        hw.lifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // set bottom value to 0 value
+        hw.lifter.power = 0.0
+        hw.lifter.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER // set bottom value to 0 value
 
         // Turn to get out of cage
-        hw.rightMotor.setPower(-Hardware.SLOW_SPEED);
-        hw.leftMotor.setPower(Hardware.SLOW_SPEED);
-        sleep(1000);
+        hw.rightMotor.power = -Hardware.SLOW_SPEED
+        hw.leftMotor.power = Hardware.SLOW_SPEED
+        sleep(1000)
 
-        hw.rightMotor.setPower(0);
-        hw.leftMotor.setPower(0);
+        hw.rightMotor.power = 0.0
+        hw.leftMotor.power = 0.0
     }
 }

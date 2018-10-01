@@ -27,11 +27,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp
+import com.qualcomm.robotcore.util.ElapsedTime
 
 
 /**
@@ -47,54 +47,54 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Basic: Linear OpMode", group="Linear Opmode")
-public class TankDrive extends LinearOpMode {
-    private ElapsedTime runtime = new ElapsedTime();
+@TeleOp(name = "Basic: Linear OpMode", group = "Linear Opmode")
+class TankDrive : LinearOpMode() {
+    private val runtime = ElapsedTime()
 
-    private void runTankDrive(Hardware hw) {
+    private fun runTankDrive(hw: Hardware) {
         if (Math.abs(gamepad1.left_stick_y) > 0.1 || Math.abs(gamepad1.right_stick_y) > 0.1) {
             // First gamepad control overrides right's
-            double powerModifier = gamepad1.a ? Hardware.SLOW_SPEED : Hardware.FULL_SPEED;
+            val powerModifier = if (gamepad1.a) Hardware.SLOW_SPEED else Hardware.FULL_SPEED
 
-            hw.leftMotor.setPower(gamepad1.left_stick_y * powerModifier);
-            hw.rightMotor.setPower(gamepad1.right_stick_y * powerModifier);
+            hw.leftMotor.power = gamepad1.left_stick_y * powerModifier
+            hw.rightMotor.power = gamepad1.right_stick_y * powerModifier
         } else {
             // Second gamepad is always slow
-            hw.leftMotor.setPower(gamepad2.left_stick_y * Hardware.SLOW_SPEED);
-            hw.rightMotor.setPower(gamepad2.right_stick_y * Hardware.SLOW_SPEED);
+            hw.leftMotor.power = gamepad2.left_stick_y * Hardware.SLOW_SPEED
+            hw.rightMotor.power = gamepad2.right_stick_y * Hardware.SLOW_SPEED
         }
     }
+
     //something
-    private void runLifter(Hardware hw) {
+    private fun runLifter(hw: Hardware) {
         if (gamepad1.dpad_up) {
-            hw.lifter.setPower(1);
-            hw.lifter.setTargetPosition(Hardware.LIFTER_TOP_POSITION);
+            hw.lifter.power = 1.0
+            hw.lifter.targetPosition = Hardware.LIFTER_TOP_POSITION
         } else if (gamepad1.dpad_down) {
-            hw.lifter.setPower(-1);
-            hw.lifter.setTargetPosition(Hardware.LIFTER_BOTTOM_POSITION);
+            hw.lifter.power = -1.0
+            hw.lifter.targetPosition = Hardware.LIFTER_BOTTOM_POSITION
         }
     }
 
-    @Override
-    public void runOpMode() {
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
+    override fun runOpMode() {
+        telemetry.addData("Status", "Initialized")
+        telemetry.update()
 
-        Hardware hw = new Hardware(hardwareMap);
+        val hw = Hardware(hardwareMap)
 
         // Wait for the game to start (driver presses PLAY)
-        waitForStart();
-        runtime.reset();
+        waitForStart()
+        runtime.reset()
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            runTankDrive(hw);
-            runLifter(hw);
+            runTankDrive(hw)
+            runLifter(hw)
 
             // Show the elapsed game time
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Lifter encoder value", hw.lifter.getCurrentPosition());
-            telemetry.update();
+            telemetry.addData("Status", "Run Time: " + runtime.toString())
+            telemetry.addData("Lifter encoder value", hw.lifter.currentPosition)
+            telemetry.update()
         }
     }
 }
