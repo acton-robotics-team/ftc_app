@@ -9,7 +9,7 @@ class Hardware(hwMap: HardwareMap) {
     val rightDrive: DcMotor = hwMap.dcMotor.get("right_motor")
     val leftDrive: DcMotor = hwMap.dcMotor.get("left_motor")
     val lifter: DcMotor = hwMap.dcMotor.get("lifter")
-    val arm: DcMotor = hwMap.dcMotor.get("arm")
+//    val arm: DcMotor = hwMap.dcMotor.get("arm")
     val armExtender: DcMotor = hwMap.dcMotor.get("arm_extender")
 
     init {
@@ -22,7 +22,7 @@ class Hardware(hwMap: HardwareMap) {
         const val FULL_SPEED = 1.0
 
         const val LIFTER_BOTTOM_POSITION = 0
-        const val LIFTER_TOP_POSITION = 3915
+        const val LIFTER_TOP_POSITION = 6915
 
         const val ARM_DOWN_POSITION = 0 // placeholder
     }

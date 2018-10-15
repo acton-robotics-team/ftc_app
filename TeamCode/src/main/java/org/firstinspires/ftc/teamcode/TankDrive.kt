@@ -49,11 +49,17 @@ class TankDrive : LinearOpMode() {
 
     private fun runArm(hw: Hardware) {
         if (gamepad1.a) {
-            hw.arm.apply {
-                mode = DcMotor.RunMode.RUN_TO_POSITION
-                power = 0.5
-                targetPosition = Hardware.ARM_DOWN_POSITION
-            }
+//            hw.arm.apply {
+//                mode = DcMotor.RunMode.RUN_TO_POSITION
+//                power = 0.5
+//                targetPosition = Hardware.ARM_DOWN_POSITION
+//            }
+        }
+
+        hw.armExtender.power = when {
+            gamepad1.x -> 0.5
+            gamepad1.y -> -0.5
+            else -> 0.0
         }
     }
 

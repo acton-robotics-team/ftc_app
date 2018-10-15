@@ -31,11 +31,16 @@ package org.firstinspires.ftc.teamcode
 
 import com.disnodeteam.dogecv.CameraViewDisplay
 import com.disnodeteam.dogecv.DogeCV
+import com.disnodeteam.dogecv.Dogeforia
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.util.ElapsedTime
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix
+import org.firstinspires.ftc.robotcore.external.navigation.*
+import java.util.Collections.addAll
+
 
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -49,10 +54,84 @@ import com.qualcomm.robotcore.util.ElapsedTime
  * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
-
 @Autonomous(name = "Autonomous mode")
 class AutonomousMode : LinearOpMode() {
     private val runtime = ElapsedTime()
+
+    fun initializeVuforia(): List<VuforiaTrackable> {
+        val cameraMonitorViewId = hardwareMap.appContext.resources.getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.packageName)
+        val params = VuforiaLocalizer.Parameters()
+        params.apply {
+            vuforiaLicenseKey = "AWbfTmn/////AAABmY0xuIe3C0RHvL3XuzRxyEmOT2OekXBSbqN2jot1si3OGBObwWadfitJR/D6Vk8VEBiW0HG2Q8UAEd0//OliF9aWCRmyDJ1mMqKCJZxpZemfT5ELFuWnJIZWUkKyjQfDNe2RIaAh0ermSxF4Bq77IDFirgggdYJoRIyi2Ys7Gl9lD/tSonV8OnldIN/Ove4/MtEBJTKHqjUEjC5U2khV+26AqkeqbxhFTNiIMl0LcmSSfugGhmWFGFtuPtp/+flPBRGoBO+tSl9P2sV4mSUBE/WrpHqB0Jd/tAmeNvbtgQXtZEGYc/9NszwRLVNl9k13vrBcgsiNxs2UY5xAvA4Wb6LN7Yu+tChwc+qBiVKAQe09\n"
+            fillCameraMonitorViewParent = true
+        }
+        val vuforia = Dogeforia(params)
+        var allTrackables: List<VuforiaTrackable>? = null
+        vuforia.apply {
+            enableConvertFrameToBitmap()
+            val targetsRoverRuckus = loadTrackablesFromAsset("RoverRuckus")
+            val blueRover = targetsRoverRuckus[0]
+            blueRover.name = "Blue-Rover"
+            val redFootprint = targetsRoverRuckus[1]
+            redFootprint.name = "Red-Footprint"
+            val frontCraters = targetsRoverRuckus[2]
+            frontCraters.name = "Front-Craters"
+            val backSpace = targetsRoverRuckus[3]
+            backSpace.name = "Back-Space"
+
+            val mmPerInch = 25.4f
+            val mmFTCFieldWidth = 12 * 6 * mmPerInch
+            val mmTargetHeight = 6 * mmPerInch
+
+            // For convenience, gather together all the trackable objects in one easily-iterable collection */
+
+            allTrackables = targetsRoverRuckus.toList()
+
+            val blueRoverLocationOnField = OpenGLMatrix
+                    .translation(0f, mmFTCFieldWidth, mmTargetHeight)
+                    .multiplied(Orientation.getRotationMatrix(
+                            AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES,
+                            90.0f, 0.0f, 0.0f))
+            blueRover.location = blueRoverLocationOnField
+
+            val redFootprintLocationOnField = OpenGLMatrix
+                    .translation(0f, -mmFTCFieldWidth, mmTargetHeight)
+                    .multiplied(Orientation.getRotationMatrix(
+                            AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES,
+                            90.0f, 0.0f, 180.0f))
+            redFootprint.location = redFootprintLocationOnField
+
+            val frontCratersLocationOnField = OpenGLMatrix
+                    .translation(-mmFTCFieldWidth, 0f, mmTargetHeight)
+                    .multiplied(Orientation.getRotationMatrix(
+                            AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES,
+                            90.0f, 0.0f, 90.0f))
+            frontCraters.location = frontCratersLocationOnField
+
+            val backSpaceLocationOnField = OpenGLMatrix
+                    .translation(mmFTCFieldWidth, 0f, mmTargetHeight)
+                    .multiplied(Orientation.getRotationMatrix(
+                            AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES,
+                            90.0f, 0.0f, -90.0f))
+            backSpace.location = backSpaceLocationOnField
+
+            val CAMERA_FORWARD_DISPLACEMENT = 110   // eg: Camera is 110 mm in front of robot center
+            val CAMERA_VERTICAL_DISPLACEMENT = 200   // eg: Camera is 200 mm above ground
+            val CAMERA_LEFT_DISPLACEMENT = 0     // eg: Camera is ON the robot's center line
+            val CAMERA_CHOICE = VuforiaLocalizer.CameraDirection.BACK
+
+            val phoneLocationOnRobot = OpenGLMatrix
+                    .translation(CAMERA_FORWARD_DISPLACEMENT.toFloat(), CAMERA_LEFT_DISPLACEMENT.toFloat(), CAMERA_VERTICAL_DISPLACEMENT.toFloat())
+                    .multiplied(Orientation.getRotationMatrix(
+                            AxesReference.EXTRINSIC, AxesOrder.YZX, AngleUnit.DEGREES,
+                            if (CAMERA_CHOICE === VuforiaLocalizer.CameraDirection.FRONT) 90.0f else -90.0f, 0.0f, 0.0f))
+
+            for (trackable in allTrackables!!) {
+                (trackable.listener as VuforiaTrackableDefaultListener).setPhoneInformation(phoneLocationOnRobot, params.cameraDirection)
+            }
+        }
+        return allTrackables!!
+    }
 
     override fun runOpMode() {
         telemetry.addData("Status", "Initialized")
@@ -114,5 +193,21 @@ class AutonomousMode : LinearOpMode() {
 
         hw.leftDrive.power = 0.0
         hw.rightDrive.power = 0.0
+
+        // Initialize Vuforia tracking phase, then turn to go to depot
+        val trackables = initializeVuforia()
+        var lastLocation: OpenGLMatrix? = null
+        while (opModeIsActive()) {
+            for (trackable in trackables) {
+                val listener = trackable.listener as VuforiaTrackableDefaultListener
+                if (listener.isVisible) {
+                    telemetry.addData("Visible target", trackable.name)
+                    lastLocation = listener.updatedRobotLocation
+                }
+            }
+
+            if (lastLocation != null) {
+            }
+        }
     }
 }
