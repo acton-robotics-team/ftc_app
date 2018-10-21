@@ -19,7 +19,7 @@ import com.qualcomm.robotcore.util.ElapsedTime
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name = "Basic: Linear OpMode", group = "Linear Opmode")
+@TeleOp(name = "Tank Drive", group = "Linear Opmode")
 class TankDrive : LinearOpMode() {
     private val runtime = ElapsedTime()
 
@@ -38,12 +38,15 @@ class TankDrive : LinearOpMode() {
     }
 
     private fun runLifter(hw: Hardware) {
+        hw.lifter.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
         if (gamepad1.dpad_up) {
             hw.lifter.power = 1.0
-            hw.lifter.targetPosition = Hardware.LIFTER_TOP_POSITION
+//            hw.lifter.targetPosition = Hardware.LIFTER_TOP_POSITION
         } else if (gamepad1.dpad_down) {
             hw.lifter.power = -1.0
-            hw.lifter.targetPosition = Hardware.LIFTER_BOTTOM_POSITION
+//            hw.lifter.targetPosition = Hardware.LIFTER_BOTTOM_POSITION
+        } else {
+            hw.lifter.power = 0.0
         }
     }
 
@@ -77,6 +80,7 @@ class TankDrive : LinearOpMode() {
         while (opModeIsActive()) {
             runTankDrive(hw)
             runLifter(hw)
+            runArm(hw)
 
             // Show the elapsed game time
             telemetry.addData("Status", "Run Time: " + runtime.toString())

@@ -13,6 +13,8 @@ class Hardware(hwMap: HardwareMap) {
     val armExtender: DcMotor = hwMap.dcMotor.get("arm_extender")
 
     init {
+        rightDrive.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        leftDrive.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         rightDrive.direction = DcMotorSimple.Direction.REVERSE
         lifter.mode = DcMotor.RunMode.RUN_TO_POSITION
     }
