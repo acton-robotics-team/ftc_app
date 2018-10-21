@@ -26,14 +26,14 @@ class TankDrive : LinearOpMode() {
     private fun runTankDrive(hw: Hardware) {
         if (Math.abs(gamepad1.left_stick_y) > 0.1 || Math.abs(gamepad1.right_stick_y) > 0.1) {
             // First gamepad control overrides right's
-            val powerModifier = if (gamepad1.a) Hardware.SLOW_SPEED else Hardware.FULL_SPEED
+            val powerModifier = if (gamepad1.a) Hardware.DRIVE_SLOW else Hardware.DRIVE_FAST
 
             hw.leftDrive.power = gamepad1.left_stick_y * powerModifier
             hw.rightDrive.power = gamepad1.right_stick_y * powerModifier
         } else {
             // Second gamepad is always slow
-            hw.leftDrive.power = gamepad2.left_stick_y * Hardware.SLOW_SPEED
-            hw.rightDrive.power = gamepad2.right_stick_y * Hardware.SLOW_SPEED
+            hw.leftDrive.power = gamepad2.left_stick_y * Hardware.DRIVE_SLOW
+            hw.rightDrive.power = gamepad2.right_stick_y * Hardware.DRIVE_SLOW
         }
     }
 
@@ -61,9 +61,11 @@ class TankDrive : LinearOpMode() {
                 }
             }
         }
+        telemetry.addData("Lifter encoder value", hw.lifter.currentPosition)
     }
 
     private fun runArm(hw: Hardware) {
+        hw.armExtender.mode = DcMotor.RunMode.RUN_USING_ENCODER
         if (gamepad1.a) {
 //            hw.arm.apply {
 //                mode = DcMotor.RunMode.RUN_TO_POSITION
@@ -77,6 +79,7 @@ class TankDrive : LinearOpMode() {
             gamepad1.y -> -0.5
             else -> 0.0
         }
+        telemetry.addData("Extender encoder value", hw.armExtender.currentPosition)
     }
 
     override fun runOpMode() {
@@ -97,7 +100,6 @@ class TankDrive : LinearOpMode() {
 
             // Show the elapsed game time
             telemetry.addData("Status", "Run Time: " + runtime.toString())
-            telemetry.addData("Lifter encoder value", hw.lifter.currentPosition)
             telemetry.update()
         }
     }

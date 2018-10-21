@@ -23,8 +23,8 @@ class Hardware(hwMap: HardwareMap) {
     }
 
     companion object {
-        const val SLOW_SPEED = 0.2
-        const val FULL_SPEED = 1.0
+        const val DRIVE_SLOW = 0.5
+        const val DRIVE_FAST = 1.0
 
         const val LIFTER_BOTTOM_POSITION = 0
         const val LIFTER_TOP_POSITION = 5200

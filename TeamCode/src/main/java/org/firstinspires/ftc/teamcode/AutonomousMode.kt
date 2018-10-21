@@ -39,7 +39,6 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix
 import org.firstinspires.ftc.robotcore.external.navigation.*
-import java.util.Collections.addAll
 
 
 /**
@@ -139,28 +138,6 @@ class AutonomousMode : LinearOpMode() {
 
         val hw = Hardware(hardwareMap)
 
-        waitForStart()
-        runtime.reset()
-
-        hw.lifter.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        hw.lifter.mode = DcMotor.RunMode.RUN_TO_POSITION
-        // goes from 0 (starting value) down to extend lifter
-        hw.lifter.targetPosition = -Hardware.LIFTER_TOP_POSITION
-        hw.lifter.power = 0.5
-        while (hw.lifter.isBusy && opModeIsActive()) {
-            idle()
-        }
-        hw.lifter.power = 0.0
-        hw.lifter.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER // set bottom value to 0 value
-
-        // Turn to get out of cage
-        hw.rightDrive.power = -Hardware.SLOW_SPEED
-        hw.leftDrive.power = Hardware.SLOW_SPEED
-        sleep(1000)
-
-        hw.rightDrive.power = 0.0
-        hw.leftDrive.power = 0.0
-
         val detector = GoldAlignDetector()
         detector.apply {
             // Config as taken from https://github.com/MechanicalMemes/DogeCV/blob/master/Examples/GoldAlignExample.java
@@ -176,9 +153,30 @@ class AutonomousMode : LinearOpMode() {
             enable()
         }
 
+        waitForStart()
+        runtime.reset()
+
+        hw.lifter.mode = DcMotor.RunMode.RUN_TO_POSITION
+        // goes from 0 (starting value) down to extend lifter
+        hw.lifter.targetPosition = Hardware.LIFTER_TOP_POSITION
+        hw.lifter.power = 0.5
+        while (hw.lifter.isBusy && opModeIsActive()) {
+            idle()
+        }
+        hw.lifter.power = 0.0
+
+        // Turn to get out of cage
+        hw.rightDrive.power = Hardware.DRIVE_SLOW
+        hw.leftDrive.power = -Hardware.DRIVE_SLOW
+        sleep(1000)
+
+        hw.rightDrive.power = 0.0
+        hw.leftDrive.power = 0.0
+
         // Turn until reaching the detector
-        hw.leftDrive.power = -0.5
-        hw.rightDrive.power = 0.5
+        hw.rightDrive.power = -0.3
+        hw.leftDrive.power = 0.3
+
         while (!detector.aligned && opModeIsActive()) {
             telemetry.addLine("Gold Detector Phase")
             telemetry.addData("X pos", detector.xPosition)
@@ -186,28 +184,39 @@ class AutonomousMode : LinearOpMode() {
 
             idle()
         }
-        hw.leftDrive.power = 0.5
-        hw.rightDrive.power = 0.5
-
-        sleep(100)
-
+        // Reached alignment.
+        detector.disable()
         hw.leftDrive.power = 0.0
         hw.rightDrive.power = 0.0
 
-        // Initialize Vuforia tracking phase, then turn to go to depot
-        val trackables = initializeVuforia()
-        var lastLocation: OpenGLMatrix? = null
-        while (opModeIsActive()) {
-            for (trackable in trackables) {
-                val listener = trackable.listener as VuforiaTrackableDefaultListener
-                if (listener.isVisible) {
-                    telemetry.addData("Visible target", trackable.name)
-                    lastLocation = listener.updatedRobotLocation
-                }
-            }
-
-            if (lastLocation != null) {
-            }
+        hw.lifter.targetPosition = Hardware.LIFTER_BOTTOM_POSITION
+        hw.lifter.power = -0.5
+        while (hw.lifter.isBusy && opModeIsActive()) {
+            idle()
         }
+
+//        hw.leftDrive.power = -0.5
+//        hw.rightDrive.power = -0.5
+//
+//        sleep(100)
+//
+//        hw.leftDrive.power = 0.0
+//        hw.rightDrive.power = 0.0
+//
+//        // Initialize Vuforia tracking phase, then turn to go to depot
+//        val trackables = initializeVuforia()
+//        var lastLocation: OpenGLMatrix? = null
+//        while (opModeIsActive()) {
+//            for (trackable in trackables) {
+//                val listener = trackable.listener as VuforiaTrackableDefaultListener
+//                if (listener.isVisible) {
+//                    telemetry.addData("Visible target", trackable.name)
+//                    lastLocation = listener.updatedRobotLocation
+//                }
+//            }
+//
+//            if (lastLocation != null) {
+//            }
+//        }
     }
 }
