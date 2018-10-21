@@ -15,7 +15,7 @@ class Hardware(hwMap: HardwareMap) {
     init {
         rightDrive.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         leftDrive.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        rightDrive.direction = DcMotorSimple.Direction.REVERSE
+        leftDrive.direction = DcMotorSimple.Direction.REVERSE
 
         // Zero encoders
         lifter.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER

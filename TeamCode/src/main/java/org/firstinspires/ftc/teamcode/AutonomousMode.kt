@@ -166,16 +166,18 @@ class AutonomousMode : LinearOpMode() {
         hw.lifter.power = 0.0
 
         // Turn to get out of cage
-        hw.rightDrive.power = Hardware.DRIVE_SLOW
-        hw.leftDrive.power = -Hardware.DRIVE_SLOW
+        hw.rightDrive.power = -Hardware.DRIVE_SLOW
+        hw.leftDrive.power = Hardware.DRIVE_SLOW
         sleep(1000)
 
-        hw.rightDrive.power = 0.0
-        hw.leftDrive.power = 0.0
+        hw.rightDrive.power = -0.3
+        hw.leftDrive.power = -0.3
+
+        sleep(500)
 
         // Turn until reaching the detector
-        hw.rightDrive.power = -0.3
-        hw.leftDrive.power = 0.3
+        hw.rightDrive.power = 0.3
+        hw.leftDrive.power = -0.3
 
         while (!detector.aligned && opModeIsActive()) {
             telemetry.addLine("Gold Detector Phase")

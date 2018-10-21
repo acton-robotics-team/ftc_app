@@ -28,12 +28,12 @@ class TankDrive : LinearOpMode() {
             // First gamepad control overrides right's
             val powerModifier = if (gamepad1.a) Hardware.DRIVE_SLOW else Hardware.DRIVE_FAST
 
-            hw.leftDrive.power = gamepad1.left_stick_y * powerModifier
-            hw.rightDrive.power = gamepad1.right_stick_y * powerModifier
+            hw.leftDrive.power = -gamepad1.left_stick_y * powerModifier
+            hw.rightDrive.power = -gamepad1.right_stick_y * powerModifier
         } else {
             // Second gamepad is always slow
-            hw.leftDrive.power = gamepad2.left_stick_y * Hardware.DRIVE_SLOW
-            hw.rightDrive.power = gamepad2.right_stick_y * Hardware.DRIVE_SLOW
+            hw.leftDrive.power = -gamepad2.left_stick_y * Hardware.DRIVE_SLOW
+            hw.rightDrive.power = -gamepad2.right_stick_y * Hardware.DRIVE_SLOW
         }
     }
 
