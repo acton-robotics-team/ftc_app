@@ -133,6 +133,7 @@ class AutonomousMode : LinearOpMode() {
     }
 
     override fun runOpMode() {
+        telemetry.isAutoClear = false
         telemetry.addData("Status", "Initialized")
         telemetry.update()
 
@@ -152,6 +153,9 @@ class AutonomousMode : LinearOpMode() {
             ratioScorer.perfectRatio = 1.0
             enable()
         }
+
+        telemetry.addLine("Initialized DogeCV.")
+        telemetry.update()
 
         waitForStart()
         runtime.reset()
@@ -176,11 +180,11 @@ class AutonomousMode : LinearOpMode() {
         sleep(500)
 
         // Turn until reaching the detector
-        hw.rightDrive.power = 0.3
-        hw.leftDrive.power = -0.3
+        hw.rightDrive.power = 0.35
+        hw.leftDrive.power = -0.35
 
+        telemetry.addLine("Gold Detector Phase")
         while (!detector.aligned && opModeIsActive()) {
-            telemetry.addLine("Gold Detector Phase")
             telemetry.addData("X pos", detector.xPosition)
             telemetry.update()
 
@@ -188,8 +192,19 @@ class AutonomousMode : LinearOpMode() {
         }
         // Reached alignment.
         detector.disable()
+        telemetry.addLine("Gold Driving Phase")
+        telemetry.update()
+
+        hw.leftDrive.power = -0.3
+        hw.rightDrive.power = -0.3
+
+        sleep(2000)
+
         hw.leftDrive.power = 0.0
         hw.rightDrive.power = 0.0
+
+        telemetry.addLine("Done, retracting lifter. Good luck on manual!")
+        telemetry.update()
 
         hw.lifter.targetPosition = Hardware.LIFTER_BOTTOM_POSITION
         hw.lifter.power = -0.5
