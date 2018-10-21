@@ -16,7 +16,10 @@ class Hardware(hwMap: HardwareMap) {
         rightDrive.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         leftDrive.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         rightDrive.direction = DcMotorSimple.Direction.REVERSE
-        lifter.mode = DcMotor.RunMode.RUN_TO_POSITION
+
+        // Zero encoders
+        lifter.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        lifter.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
     }
 
     companion object {
@@ -24,7 +27,7 @@ class Hardware(hwMap: HardwareMap) {
         const val FULL_SPEED = 1.0
 
         const val LIFTER_BOTTOM_POSITION = 0
-        const val LIFTER_TOP_POSITION = 6915
+        const val LIFTER_TOP_POSITION = 5200
 
         const val ARM_DOWN_POSITION = 0 // placeholder
     }

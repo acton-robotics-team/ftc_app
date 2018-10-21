@@ -37,16 +37,29 @@ class TankDrive : LinearOpMode() {
         }
     }
 
+    /**
+     * Left bumper = manual control, you're on your own
+     */
     private fun runLifter(hw: Hardware) {
-        hw.lifter.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
-        if (gamepad1.dpad_up) {
-            hw.lifter.power = 1.0
-//            hw.lifter.targetPosition = Hardware.LIFTER_TOP_POSITION
-        } else if (gamepad1.dpad_down) {
-            hw.lifter.power = -1.0
-//            hw.lifter.targetPosition = Hardware.LIFTER_BOTTOM_POSITION
+        if (gamepad1.left_bumper) {
+            hw.lifter.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+            hw.lifter.power = when {
+                gamepad1.dpad_up -> 0.5
+                gamepad1.dpad_down -> -0.5
+                else -> 0.0
+            }
         } else {
-            hw.lifter.power = 0.0
+            hw.lifter.mode = DcMotor.RunMode.RUN_TO_POSITION
+            when {
+                gamepad1.dpad_up -> {
+                    hw.lifter.power = 1.0
+                    hw.lifter.targetPosition = Hardware.LIFTER_TOP_POSITION
+                }
+                gamepad1.dpad_down -> {
+                    hw.lifter.power = -1.0
+                    hw.lifter.targetPosition = Hardware.LIFTER_BOTTOM_POSITION
+                }
+            }
         }
     }
 
