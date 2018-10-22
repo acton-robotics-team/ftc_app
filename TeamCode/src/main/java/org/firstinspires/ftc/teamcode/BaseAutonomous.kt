@@ -34,12 +34,19 @@ import com.disnodeteam.dogecv.DogeCV
 import com.disnodeteam.dogecv.Dogeforia
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix
 import org.firstinspires.ftc.robotcore.external.navigation.*
 
+const val MM_PER_INCH = 25.4f
+const val MM_FTC_FIELD_WIDTH = 12 * 6 * MM_PER_INCH
+const val MM_TARGET_HEIGHT = 6 * MM_PER_INCH
+
+const val CAMERA_FORWARD_DISPLACEMENT = 110   // eg: Camera is 110 mm in front of robot center
+const val CAMERA_VERTICAL_DISPLACEMENT = 200   // eg: Camera is 200 mm above ground
+const val CAMERA_LEFT_DISPLACEMENT = 0     // eg: Camera is ON the robot's center line
+val CAMERA_CHOICE = VuforiaLocalizer.CameraDirection.BACK
 
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -53,19 +60,19 @@ import org.firstinspires.ftc.robotcore.external.navigation.*
  * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
-@Autonomous(name = "Autonomous mode")
-class AutonomousMode : LinearOpMode() {
+abstract class BaseAutonomous : LinearOpMode() {
+    protected abstract val START_LOCATION: AutonomousStartLocation
     private val runtime = ElapsedTime()
 
-    fun initializeVuforia(): List<VuforiaTrackable> {
+    private fun initializeVuforia(): Map<VuforiaTrackables, VuforiaTrackable> {
         val cameraMonitorViewId = hardwareMap.appContext.resources.getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.packageName)
-        val params = VuforiaLocalizer.Parameters()
+        val params = VuforiaLocalizer.Parameters(cameraMonitorViewId)
         params.apply {
             vuforiaLicenseKey = "AWbfTmn/////AAABmY0xuIe3C0RHvL3XuzRxyEmOT2OekXBSbqN2jot1si3OGBObwWadfitJR/D6Vk8VEBiW0HG2Q8UAEd0//OliF9aWCRmyDJ1mMqKCJZxpZemfT5ELFuWnJIZWUkKyjQfDNe2RIaAh0ermSxF4Bq77IDFirgggdYJoRIyi2Ys7Gl9lD/tSonV8OnldIN/Ove4/MtEBJTKHqjUEjC5U2khV+26AqkeqbxhFTNiIMl0LcmSSfugGhmWFGFtuPtp/+flPBRGoBO+tSl9P2sV4mSUBE/WrpHqB0Jd/tAmeNvbtgQXtZEGYc/9NszwRLVNl9k13vrBcgsiNxs2UY5xAvA4Wb6LN7Yu+tChwc+qBiVKAQe09\n"
-            fillCameraMonitorViewParent = true
+            cameraDirection = CAMERA_CHOICE
         }
         val vuforia = Dogeforia(params)
-        var allTrackables: List<VuforiaTrackable>? = null
+        var allTrackables: Map<VuforiaTrackables, VuforiaTrackable>? = null
         vuforia.apply {
             enableConvertFrameToBitmap()
             val targetsRoverRuckus = loadTrackablesFromAsset("RoverRuckus")
@@ -78,46 +85,41 @@ class AutonomousMode : LinearOpMode() {
             val backSpace = targetsRoverRuckus[3]
             backSpace.name = "Back-Space"
 
-            val mmPerInch = 25.4f
-            val mmFTCFieldWidth = 12 * 6 * mmPerInch
-            val mmTargetHeight = 6 * mmPerInch
-
             // For convenience, gather together all the trackable objects in one easily-iterable collection */
 
-            allTrackables = targetsRoverRuckus.toList()
+            allTrackables = mapOf(
+                    VuforiaTrackables.FRONT_CRATERS to frontCraters,
+                    VuforiaTrackables.BACK_SPACE to backSpace,
+                    VuforiaTrackables.RED_FOOTPRINT to redFootprint,
+                    VuforiaTrackables.BLUE_ROVER to blueRover)
 
             val blueRoverLocationOnField = OpenGLMatrix
-                    .translation(0f, mmFTCFieldWidth, mmTargetHeight)
+                    .translation(0f, MM_FTC_FIELD_WIDTH, MM_TARGET_HEIGHT)
                     .multiplied(Orientation.getRotationMatrix(
                             AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES,
                             90.0f, 0.0f, 0.0f))
             blueRover.location = blueRoverLocationOnField
 
             val redFootprintLocationOnField = OpenGLMatrix
-                    .translation(0f, -mmFTCFieldWidth, mmTargetHeight)
+                    .translation(0f, -MM_FTC_FIELD_WIDTH, MM_TARGET_HEIGHT)
                     .multiplied(Orientation.getRotationMatrix(
                             AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES,
                             90.0f, 0.0f, 180.0f))
             redFootprint.location = redFootprintLocationOnField
 
             val frontCratersLocationOnField = OpenGLMatrix
-                    .translation(-mmFTCFieldWidth, 0f, mmTargetHeight)
+                    .translation(-MM_FTC_FIELD_WIDTH, 0f, MM_TARGET_HEIGHT)
                     .multiplied(Orientation.getRotationMatrix(
                             AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES,
                             90.0f, 0.0f, 90.0f))
             frontCraters.location = frontCratersLocationOnField
 
             val backSpaceLocationOnField = OpenGLMatrix
-                    .translation(mmFTCFieldWidth, 0f, mmTargetHeight)
+                    .translation(MM_FTC_FIELD_WIDTH, 0f, MM_TARGET_HEIGHT)
                     .multiplied(Orientation.getRotationMatrix(
                             AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES,
                             90.0f, 0.0f, -90.0f))
             backSpace.location = backSpaceLocationOnField
-
-            val CAMERA_FORWARD_DISPLACEMENT = 110   // eg: Camera is 110 mm in front of robot center
-            val CAMERA_VERTICAL_DISPLACEMENT = 200   // eg: Camera is 200 mm above ground
-            val CAMERA_LEFT_DISPLACEMENT = 0     // eg: Camera is ON the robot's center line
-            val CAMERA_CHOICE = VuforiaLocalizer.CameraDirection.BACK
 
             val phoneLocationOnRobot = OpenGLMatrix
                     .translation(CAMERA_FORWARD_DISPLACEMENT.toFloat(), CAMERA_LEFT_DISPLACEMENT.toFloat(), CAMERA_VERTICAL_DISPLACEMENT.toFloat())
@@ -125,16 +127,84 @@ class AutonomousMode : LinearOpMode() {
                             AxesReference.EXTRINSIC, AxesOrder.YZX, AngleUnit.DEGREES,
                             if (CAMERA_CHOICE === VuforiaLocalizer.CameraDirection.FRONT) 90.0f else -90.0f, 0.0f, 0.0f))
 
-            for (trackable in allTrackables!!) {
+            for ((_, trackable) in allTrackables!!) {
                 (trackable.listener as VuforiaTrackableDefaultListener).setPhoneInformation(phoneLocationOnRobot, params.cameraDirection)
             }
+            targetsRoverRuckus.activate()
         }
         return allTrackables!!
     }
 
+    private fun navigateToPoint(hw: Hardware, trackables: Map<VuforiaTrackables, VuforiaTrackable>, targetXIn: Float, targetYIn: Float) {
+        var lastLocation: OpenGLMatrix? = null
+        while (opModeIsActive()) {
+            telemetry.clearAll()
+            for ((name, trackable) in trackables) {
+                /**
+                 * getUpdatedRobotLocation() will return null if no new information is available since
+                 * the last time that call was made, or if the trackable is not currently visible.
+                 * getRobotLocation() will return null if the trackable is not currently visible.
+                 */
+                telemetry.addData(
+                        name.toString(),
+                        if ((trackable.listener as VuforiaTrackableDefaultListener).isVisible) {
+                            "Visible"
+                        } else {
+                            "Not Visible"
+                        })
+
+                val robotLocationTransform =
+                        (trackable.listener as VuforiaTrackableDefaultListener).updatedRobotLocation
+                if (robotLocationTransform != null) {
+                    lastLocation = robotLocationTransform
+                }
+            }
+
+            // Parse any such detected location.
+            if (lastLocation == null) {
+                telemetry.addLine("Current position: !!unknown!!")
+            } else {
+                telemetry.addData("Current position: ", lastLocation.formatAsTransform())
+                // express position (translation) of robot in inches.
+                val translation = lastLocation.translation
+                val xIn = translation[0] / MM_PER_INCH
+                val yIn = translation[1] / MM_PER_INCH
+                val zIn = translation[2] / MM_PER_INCH
+                telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f",
+                        xIn, yIn, zIn)
+
+                // express the rotation of the robot in degrees.
+                val rotation = Orientation.getOrientation(lastLocation, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES)
+                val roll = rotation.firstAngle
+                val pitch = rotation.secondAngle
+                val headingDeg = rotation.thirdAngle
+                telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", roll, pitch, headingDeg)
+
+                val dX = targetXIn - xIn
+                val dY = targetYIn - yIn
+                // opposite over adjacent
+                val desiredHeadingDeg = Math.toDegrees(Math.tan((dY / dX).toDouble()))
+                if (headingDeg - desiredHeadingDeg > 30) {
+                    // Must turn counterclockwise
+                    hw.leftDrive.power = -0.3
+                    hw.rightDrive.power = 0.3
+                } else if (headingDeg - desiredHeadingDeg < -30) {
+                    hw.leftDrive.power = 0.3
+                    hw.rightDrive.power = -0.3
+                } else {
+                    // Hit the target degree location
+                    hw.leftDrive.power = 0.0
+                    hw.rightDrive.power = 0.0
+                }
+            }
+            telemetry.update()
+            idle()
+        }
+    }
+
     override fun runOpMode() {
         telemetry.isAutoClear = false
-        telemetry.addData("Status", "Initialized")
+        telemetry.addLine("Wait for initialization! Do not start!")
         telemetry.update()
 
         val hw = Hardware(hardwareMap)
@@ -155,6 +225,11 @@ class AutonomousMode : LinearOpMode() {
         }
 
         telemetry.addLine("Initialized DogeCV.")
+        telemetry.update()
+
+        val trackables = initializeVuforia()
+        telemetry.addLine("Initialized Dogeforia.")
+        telemetry.addData("Status", "Initialized and ready to start!")
         telemetry.update()
 
         waitForStart()
@@ -183,8 +258,9 @@ class AutonomousMode : LinearOpMode() {
         hw.rightDrive.power = 0.35
         hw.leftDrive.power = -0.35
 
-        telemetry.addLine("Gold Detector Phase")
         while (!detector.aligned && opModeIsActive()) {
+            telemetry.clearAll()
+            telemetry.addLine("Gold detector phase")
             telemetry.addData("X pos", detector.xPosition)
             telemetry.update()
 
@@ -194,24 +270,71 @@ class AutonomousMode : LinearOpMode() {
         detector.disable()
         telemetry.addLine("Gold Driving Phase")
         telemetry.update()
+//
+//        hw.leftDrive.power = -0.3
+//        hw.rightDrive.power = -0.3
+//
+//        sleep(2000)
+//
+//        hw.leftDrive.power = 0.0
+//        hw.rightDrive.power = 0.0
 
-        hw.leftDrive.power = -0.3
-        hw.rightDrive.power = -0.3
+//
+//        telemetry.addLine("Done, retracting lifter. Good luck on manual!")
+//        telemetry.update()
+//
+//        hw.lifter.targetPosition = Hardware.LIFTER_BOTTOM_POSITION
+//        hw.lifter.power = -0.5
+//        while (hw.lifter.isBusy && opModeIsActive()) {
+//            idle()
+//        }
 
-        sleep(2000)
+        // Start up Vuforia navigation.
+        var lastLocation: OpenGLMatrix? = null
 
-        hw.leftDrive.power = 0.0
-        hw.rightDrive.power = 0.0
+        while (opModeIsActive()) {
+            telemetry.clearAll()
+            for ((name, trackable) in trackables) {
+                /**
+                 * getUpdatedRobotLocation() will return null if no new information is available since
+                 * the last time that call was made, or if the trackable is not currently visible.
+                 * getRobotLocation() will return null if the trackable is not currently visible.
+                 */
+                telemetry.addData(
+                        name.toString(),
+                        if ((trackable.listener as VuforiaTrackableDefaultListener).isVisible) {
+                            "Visible"
+                        } else {
+                            "Not Visible"
+                        })
 
-        telemetry.addLine("Done, retracting lifter. Good luck on manual!")
-        telemetry.update()
+                val robotLocationTransform =
+                        (trackable.listener as VuforiaTrackableDefaultListener).updatedRobotLocation
+                if (robotLocationTransform != null) {
+                    lastLocation = robotLocationTransform
+                }
+            }
 
-        hw.lifter.targetPosition = Hardware.LIFTER_BOTTOM_POSITION
-        hw.lifter.power = -0.5
-        while (hw.lifter.isBusy && opModeIsActive()) {
+            // Parse any such detected location.
+            if (lastLocation == null) {
+                telemetry.addLine("Current position: !!unknown!!")
+            } else {
+                telemetry.addData("Current position: ", lastLocation.formatAsTransform())
+                // express position (translation) of robot in inches.
+                val translation = lastLocation.translation
+                val xIn = translation[0] / MM_PER_INCH
+                val yIn = translation[1] / MM_PER_INCH
+                val zIn = translation[2] / MM_PER_INCH
+                telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f",
+                        xIn, yIn, zIn)
+
+                // express the rotation of the robot in degrees.
+                val rotation = Orientation.getOrientation(lastLocation, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES)
+                telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle)
+            }
+            telemetry.update()
             idle()
         }
-
 //        hw.leftDrive.power = -0.5
 //        hw.rightDrive.power = -0.5
 //
