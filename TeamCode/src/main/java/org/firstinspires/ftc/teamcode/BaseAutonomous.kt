@@ -139,6 +139,9 @@ abstract class BaseAutonomous : LinearOpMode() {
         var lastLocation: OpenGLMatrix? = null
         while (opModeIsActive()) {
             telemetry.clearAll()
+
+            telemetry.addLine("Target point: ($targetXIn in, $targetYIn in)")
+
             for ((name, trackable) in trackables) {
                 /**
                  * getUpdatedRobotLocation() will return null if no new information is available since
@@ -163,38 +166,52 @@ abstract class BaseAutonomous : LinearOpMode() {
             // Parse any such detected location.
             if (lastLocation == null) {
                 telemetry.addLine("Current position: !!unknown!!")
-            } else {
-                telemetry.addData("Current position: ", lastLocation.formatAsTransform())
-                // express position (translation) of robot in inches.
-                val translation = lastLocation.translation
-                val xIn = translation[0] / MM_PER_INCH
-                val yIn = translation[1] / MM_PER_INCH
-                val zIn = translation[2] / MM_PER_INCH
-                telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f",
-                        xIn, yIn, zIn)
+                continue
+            }
 
-                // express the rotation of the robot in degrees.
-                val rotation = Orientation.getOrientation(lastLocation, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES)
-                val roll = rotation.firstAngle
-                val pitch = rotation.secondAngle
-                val headingDeg = rotation.thirdAngle
-                telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", roll, pitch, headingDeg)
+            telemetry.addData("Current position: ", lastLocation.formatAsTransform())
+            // express position (translation) of robot in inches.
+            val translation = lastLocation.translation
+            val xIn = translation[0] / MM_PER_INCH
+            val yIn = translation[1] / MM_PER_INCH
+            val zIn = translation[2] / MM_PER_INCH
 
-                val dX = targetXIn - xIn
-                val dY = targetYIn - yIn
-                // opposite over adjacent
-                val desiredHeadingDeg = Math.toDegrees(Math.tan((dY / dX).toDouble()))
-                if (headingDeg - desiredHeadingDeg > 30) {
-                    // Must turn counterclockwise
+            telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f",
+                    xIn, yIn, zIn)
+
+            // express the rotation of the robot in degrees.
+            val rotation = Orientation.getOrientation(lastLocation, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES)
+            val roll = rotation.firstAngle
+            val pitch = rotation.secondAngle
+            val headingDeg = rotation.thirdAngle
+            telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", roll, pitch, headingDeg)
+
+            val desiredHeadingDeg = calculateHeading(xIn, yIn, targetXIn, targetYIn)
+            telemetry.addData("Desired heading (deg)", desiredHeadingDeg)
+            when {
+                headingDeg - desiredHeadingDeg > 30 -> {
+                    telemetry.addLine("Turning counterclockwise to point toward target point")
                     hw.leftDrive.power = -0.3
                     hw.rightDrive.power = 0.3
-                } else if (headingDeg - desiredHeadingDeg < -30) {
+                }
+                headingDeg - desiredHeadingDeg < -30 -> {
+                    telemetry.addLine("Turning clockwise to point toward target point")
                     hw.leftDrive.power = 0.3
                     hw.rightDrive.power = -0.3
-                } else {
+                }
+                else -> {
                     // Hit the target degree location
-                    hw.leftDrive.power = 0.0
-                    hw.rightDrive.power = 0.0
+                    // Start driving toward the location
+                    if (distanceTo(xIn, yIn, targetXIn, targetYIn) > 5) {
+                        telemetry.addLine("Driving toward target point")
+                        hw.leftDrive.power = 0.3
+                        hw.rightDrive.power = 0.3
+                    } else {
+                        telemetry.addLine("Reached target point")
+                        hw.leftDrive.power = 0.0
+                        hw.rightDrive.power = 0.0
+                        return // we're done! woot
+                    }
                 }
             }
             telemetry.update()
