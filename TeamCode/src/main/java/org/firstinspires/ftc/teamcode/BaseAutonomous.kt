@@ -369,6 +369,9 @@ abstract class BaseAutonomous : LinearOpMode() {
             telemetry.update()
             idle()
         }
+
+        vuforia.stop()
+
 //        hw.leftDrive.power = -0.5
 //        hw.rightDrive.power = -0.5
 //
