@@ -64,7 +64,7 @@ abstract class BaseAutonomous : LinearOpMode() {
     protected abstract val START_LOCATION: AutonomousStartLocation
     private val runtime = ElapsedTime()
 
-    private fun initializeVuforia(): Map<VuforiaTrackables, VuforiaTrackable> {
+    private fun createVuforia(): Dogeforia {
         val cameraMonitorViewId = hardwareMap.appContext.resources.getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.packageName)
         val params = VuforiaLocalizer.Parameters(cameraMonitorViewId)
         params.apply {
@@ -72,9 +72,13 @@ abstract class BaseAutonomous : LinearOpMode() {
             cameraDirection = CAMERA_CHOICE
         }
         val vuforia = Dogeforia(params)
+        vuforia.enableConvertFrameToBitmap()
+        return vuforia
+    }
+
+    private fun configureVuforiaTrackables(vuforia: Dogeforia): Map<VuforiaTrackables, VuforiaTrackable> {
         var allTrackables: Map<VuforiaTrackables, VuforiaTrackable>? = null
         vuforia.apply {
-            enableConvertFrameToBitmap()
             val targetsRoverRuckus = loadTrackablesFromAsset("RoverRuckus")
             val blueRover = targetsRoverRuckus[0]
             blueRover.name = "Blue-Rover"
@@ -128,7 +132,7 @@ abstract class BaseAutonomous : LinearOpMode() {
                             if (CAMERA_CHOICE === VuforiaLocalizer.CameraDirection.FRONT) 90.0f else -90.0f, 0.0f, 0.0f))
 
             for ((_, trackable) in allTrackables!!) {
-                (trackable.listener as VuforiaTrackableDefaultListener).setPhoneInformation(phoneLocationOnRobot, params.cameraDirection)
+                (trackable.listener as VuforiaTrackableDefaultListener).setPhoneInformation(phoneLocationOnRobot, CAMERA_CHOICE)
             }
             targetsRoverRuckus.activate()
         }
@@ -229,7 +233,7 @@ abstract class BaseAutonomous : LinearOpMode() {
         val detector = GoldAlignDetector()
         detector.apply {
             // Config as taken from https://github.com/MechanicalMemes/DogeCV/blob/master/Examples/GoldAlignExample.java
-            init(hardwareMap.appContext, CameraViewDisplay.getInstance())
+            init(hardwareMap.appContext, CameraViewDisplay.getInstance(), 0, true)
             useDefaults()
             alignSize = 100.0
             alignPosOffset = 0.0
@@ -244,11 +248,24 @@ abstract class BaseAutonomous : LinearOpMode() {
         telemetry.addLine("Initialized DogeCV.")
         telemetry.update()
 
-        val trackables = initializeVuforia()
-        telemetry.addLine("Initialized Dogeforia.")
-        telemetry.addData("Status", "Initialized and ready to start!")
+        val vuforia = createVuforia()
+        telemetry.addLine("Created Vuforia.")
         telemetry.update()
 
+        val trackables = configureVuforiaTrackables(vuforia)
+        telemetry.addLine("Initialized Vuforia trackables.")
+        telemetry.update()
+
+        vuforia.apply {
+            setDogeCVDetector(detector)
+            enableDogeCV()
+            showDebug()
+            start()
+        }
+        telemetry.addLine("Started Vuforia with DogeCV integration.")
+
+        telemetry.addData("Status", "Initialized and ready to start!")
+        telemetry.update()
         waitForStart()
         runtime.reset()
 
@@ -361,7 +378,7 @@ abstract class BaseAutonomous : LinearOpMode() {
 //        hw.rightDrive.power = 0.0
 //
 //        // Initialize Vuforia tracking phase, then turn to go to depot
-//        val trackables = initializeVuforia()
+//        val trackables = configureVuforiaTrackables()
 //        var lastLocation: OpenGLMatrix? = null
 //        while (opModeIsActive()) {
 //            for (trackable in trackables) {
