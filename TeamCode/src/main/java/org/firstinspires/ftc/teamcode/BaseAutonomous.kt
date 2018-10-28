@@ -61,7 +61,7 @@ val CAMERA_CHOICE = VuforiaLocalizer.CameraDirection.BACK
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 abstract class BaseAutonomous : LinearOpMode() {
-    protected abstract val START_LOCATION: AutonomousStartLocation
+    protected abstract val startLocation: AutonomousStartLocation
     private val runtime = ElapsedTime()
 
     private fun createVuforia(): Dogeforia {

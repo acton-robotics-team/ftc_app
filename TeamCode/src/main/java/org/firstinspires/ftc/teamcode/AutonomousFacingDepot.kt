@@ -4,5 +4,5 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 
 @Autonomous(name = "Autonomous: facing depot")
 class AutonomousFacingDepot : BaseAutonomous(){
-    override val START_LOCATION: AutonomousStartLocation = AutonomousStartLocation.DEPOT
+    override val startLocation: AutonomousStartLocation = AutonomousStartLocation.DEPOT
 }
