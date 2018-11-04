@@ -36,6 +36,8 @@ import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.util.ElapsedTime
+import com.vuforia.Vuforia
+import org.firstinspires.ftc.robotcore.external.ClassFactory
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix
 import org.firstinspires.ftc.robotcore.external.navigation.*
 
@@ -43,10 +45,9 @@ const val MM_PER_INCH = 25.4f
 const val MM_FTC_FIELD_WIDTH = 12 * 6 * MM_PER_INCH
 const val MM_TARGET_HEIGHT = 6 * MM_PER_INCH
 
-const val CAMERA_FORWARD_DISPLACEMENT = 110   // eg: Camera is 110 mm in front of robot center
-const val CAMERA_VERTICAL_DISPLACEMENT = 200   // eg: Camera is 200 mm above ground
-const val CAMERA_LEFT_DISPLACEMENT = 0     // eg: Camera is ON the robot's center line
-val CAMERA_CHOICE = VuforiaLocalizer.CameraDirection.BACK
+const val CAMERA_FORWARD_DISPLACEMENT = 1180   // eg: Camera is 110 mm in front of robot center
+const val CAMERA_VERTICAL_DISPLACEMENT = 218   // eg: Camera is 200 mm above ground
+const val CAMERA_LEFT_DISPLACEMENT = -30     // eg: Camera is ON the robot's center line
 
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -64,19 +65,20 @@ abstract class BaseAutonomous : LinearOpMode() {
     protected abstract val startLocation: AutonomousStartLocation
     private val runtime = ElapsedTime()
 
-    private fun createVuforia(): Dogeforia {
+    private fun createVuforia(hw: Hardware): VuforiaLocalizer {
         val cameraMonitorViewId = hardwareMap.appContext.resources.getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.packageName)
         val params = VuforiaLocalizer.Parameters(cameraMonitorViewId)
         params.apply {
             vuforiaLicenseKey = "AWbfTmn/////AAABmY0xuIe3C0RHvL3XuzRxyEmOT2OekXBSbqN2jot1si3OGBObwWadfitJR/D6Vk8VEBiW0HG2Q8UAEd0//OliF9aWCRmyDJ1mMqKCJZxpZemfT5ELFuWnJIZWUkKyjQfDNe2RIaAh0ermSxF4Bq77IDFirgggdYJoRIyi2Ys7Gl9lD/tSonV8OnldIN/Ove4/MtEBJTKHqjUEjC5U2khV+26AqkeqbxhFTNiIMl0LcmSSfugGhmWFGFtuPtp/+flPBRGoBO+tSl9P2sV4mSUBE/WrpHqB0Jd/tAmeNvbtgQXtZEGYc/9NszwRLVNl9k13vrBcgsiNxs2UY5xAvA4Wb6LN7Yu+tChwc+qBiVKAQe09\n"
-            cameraDirection = CAMERA_CHOICE
+            cameraName = hw.camera
         }
-        val vuforia = Dogeforia(params)
+        val vuforia = ClassFactory.getInstance().createVuforia(params)
         vuforia.enableConvertFrameToBitmap()
+
         return vuforia
     }
 
-    private fun configureVuforiaTrackables(vuforia: Dogeforia): Map<VuforiaTrackables, VuforiaTrackable> {
+    private fun configureVuforiaTrackables(hw: Hardware, vuforia: VuforiaLocalizer): Map<VuforiaTrackables, VuforiaTrackable> {
         var allTrackables: Map<VuforiaTrackables, VuforiaTrackable>? = null
         vuforia.apply {
             val targetsRoverRuckus = loadTrackablesFromAsset("RoverRuckus")
@@ -129,10 +131,10 @@ abstract class BaseAutonomous : LinearOpMode() {
                     .translation(CAMERA_FORWARD_DISPLACEMENT.toFloat(), CAMERA_LEFT_DISPLACEMENT.toFloat(), CAMERA_VERTICAL_DISPLACEMENT.toFloat())
                     .multiplied(Orientation.getRotationMatrix(
                             AxesReference.EXTRINSIC, AxesOrder.YZX, AngleUnit.DEGREES,
-                            if (CAMERA_CHOICE === VuforiaLocalizer.CameraDirection.FRONT) 90.0f else -90.0f, 0.0f, 0.0f))
+                            -90.0f, 0.0f, 0.0f))
 
             for ((_, trackable) in allTrackables!!) {
-                (trackable.listener as VuforiaTrackableDefaultListener).setPhoneInformation(phoneLocationOnRobot, CAMERA_CHOICE)
+                (trackable.listener as VuforiaTrackableDefaultListener).setCameraLocationOnRobot(hw.camera, phoneLocationOnRobot)
             }
             targetsRoverRuckus.activate()
         }
@@ -230,10 +232,13 @@ abstract class BaseAutonomous : LinearOpMode() {
 
         val hw = Hardware(hardwareMap)
 
+        telemetry.addLine("Initialized all hardware.")
+        telemetry.update()
+
         val detector = GoldAlignDetector()
         detector.apply {
             // Config as taken from https://github.com/MechanicalMemes/DogeCV/blob/master/Examples/GoldAlignExample.java
-            init(hardwareMap.appContext, CameraViewDisplay.getInstance(), 0, true)
+            init(hardwareMap.appContext, CameraViewDisplay.getInstance())
             useDefaults()
             alignSize = 100.0
             alignPosOffset = 0.0
@@ -248,20 +253,14 @@ abstract class BaseAutonomous : LinearOpMode() {
         telemetry.addLine("Initialized DogeCV.")
         telemetry.update()
 
-        val vuforia = createVuforia()
+        val vuforia = createVuforia(hw)
         telemetry.addLine("Created Vuforia.")
         telemetry.update()
 
-        val trackables = configureVuforiaTrackables(vuforia)
+        val trackables = configureVuforiaTrackables(hw, vuforia)
         telemetry.addLine("Initialized Vuforia trackables.")
         telemetry.update()
 
-        vuforia.apply {
-            setDogeCVDetector(detector)
-            enableDogeCV()
-            showDebug()
-            start()
-        }
         telemetry.addLine("Started Vuforia with DogeCV integration.")
 
         telemetry.addData("Status", "Initialized and ready to start!")
@@ -269,41 +268,41 @@ abstract class BaseAutonomous : LinearOpMode() {
         waitForStart()
         runtime.reset()
 
-        hw.lifter.mode = DcMotor.RunMode.RUN_TO_POSITION
-        // goes from 0 (starting value) down to extend lifter
-        hw.lifter.targetPosition = Hardware.LIFTER_TOP_POSITION
-        hw.lifter.power = 0.5
-        while (hw.lifter.isBusy && opModeIsActive()) {
-            idle()
-        }
-        hw.lifter.power = 0.0
-
-        // Turn to get out of cage
-        hw.rightDrive.power = -Hardware.DRIVE_SLOW
-        hw.leftDrive.power = Hardware.DRIVE_SLOW
-        sleep(1000)
-
-        hw.rightDrive.power = -0.3
-        hw.leftDrive.power = -0.3
-
-        sleep(500)
-
-        // Turn until reaching the detector
-        hw.rightDrive.power = 0.35
-        hw.leftDrive.power = -0.35
-
-        while (!detector.aligned && opModeIsActive()) {
-            telemetry.clearAll()
-            telemetry.addLine("Gold detector phase")
-            telemetry.addData("X pos", detector.xPosition)
-            telemetry.update()
-
-            idle()
-        }
-        // Reached alignment.
-        detector.disable()
-        telemetry.addLine("Gold Driving Phase")
-        telemetry.update()
+//        hw.lifter.mode = DcMotor.RunMode.RUN_TO_POSITION
+//        // goes from 0 (starting value) down to extend lifter
+//        hw.lifter.targetPosition = Hardware.LIFTER_TOP_POSITION
+//        hw.lifter.power = 0.5
+//        while (hw.lifter.isBusy && opModeIsActive()) {
+//            idle()
+//        }
+//        hw.lifter.power = 0.0
+//
+//        // Turn to get out of cage
+//        hw.rightDrive.power = -Hardware.DRIVE_SLOW
+//        hw.leftDrive.power = Hardware.DRIVE_SLOW
+//        sleep(1000)
+//
+//        hw.rightDrive.power = -0.3
+//        hw.leftDrive.power = -0.3
+//
+//        sleep(500)
+//
+//        // Turn until reaching the detector
+//        hw.rightDrive.power = 0.35
+//        hw.leftDrive.power = -0.35
+//
+//        while (!detector.aligned && opModeIsActive()) {
+//            telemetry.clearAll()
+//            telemetry.addLine("Gold detector phase")
+//            telemetry.addData("X pos", detector.xPosition)
+//            telemetry.update()
+//
+//            idle()
+//        }
+//        // Reached alignment.
+//        detector.disable()
+//        telemetry.addLine("Gold Driving Phase")
+//        telemetry.update()
 //
 //        hw.leftDrive.power = -0.3
 //        hw.rightDrive.power = -0.3
@@ -312,7 +311,7 @@ abstract class BaseAutonomous : LinearOpMode() {
 //
 //        hw.leftDrive.power = 0.0
 //        hw.rightDrive.power = 0.0
-
+//
 //
 //        telemetry.addLine("Done, retracting lifter. Good luck on manual!")
 //        telemetry.update()
@@ -369,8 +368,6 @@ abstract class BaseAutonomous : LinearOpMode() {
             telemetry.update()
             idle()
         }
-
-        vuforia.stop()
 
 //        hw.leftDrive.power = -0.5
 //        hw.rightDrive.power = -0.5

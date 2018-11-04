@@ -65,7 +65,7 @@ class TankDrive : LinearOpMode() {
     }
 
     private fun runArm(hw: Hardware) {
-        hw.armExtender.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        hw.arm.mode = DcMotor.RunMode.RUN_USING_ENCODER
         if (gamepad1.a) {
 //            hw.arm.apply {
 //                mode = DcMotor.RunMode.RUN_TO_POSITION
@@ -74,12 +74,17 @@ class TankDrive : LinearOpMode() {
 //            }
         }
 
-        hw.armExtender.power = when {
-            gamepad1.x -> 0.5
-            gamepad1.y -> -0.5
+        hw.arm.power = when {
+            gamepad1.x -> 1.0
+            gamepad1.y -> -1.0
             else -> 0.0
         }
-        telemetry.addData("Extender encoder value", hw.armExtender.currentPosition)
+        telemetry.addData("Extender encoder value", hw.arm.currentPosition)
+    }
+
+    private fun runArmGrabber(hw: Hardware) {
+        hw.leftGrabber.position = gamepad1.left_trigger.toDouble()
+        hw.rightGrabber.position = gamepad1.right_trigger.toDouble()
     }
 
     override fun runOpMode() {
@@ -97,6 +102,7 @@ class TankDrive : LinearOpMode() {
             runTankDrive(hw)
             runLifter(hw)
             runArm(hw)
+            runArmGrabber(hw)
 
             // Show the elapsed game time
             telemetry.addData("Status", "Run Time: " + runtime.toString())
