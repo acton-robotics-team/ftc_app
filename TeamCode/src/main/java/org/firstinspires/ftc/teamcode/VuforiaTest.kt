@@ -55,11 +55,11 @@ import java.util.ArrayList
  * positioning and orientation of robot on the FTC field.
  * The code is structured as a LinearOpMode
  *
- * Vuforia uses the phone's camera to inspect it's surroundings, and attempt to locate target images.
+ * Vuforia uses the phone's webcam to inspect it's surroundings, and attempt to locate target images.
  *
  * When images are located, Vuforia is able to determine the position and orientation of the
- * image relative to the camera.  This sample code than combines that information with a
- * knowledge of where the target images are on the field, to determine the location of the camera.
+ * image relative to the webcam.  This sample code than combines that information with a
+ * knowledge of where the target images are on the field, to determine the location of the webcam.
  *
  * This example assumes a "square" field configuration where the red and blue alliance stations
  * are on opposite walls of each other.
@@ -74,7 +74,7 @@ import java.util.ArrayList
  * - FrontCraters is the Lunar Craters image target on the wall closest to the audience
  * - BackSpace is the Deep Space image target on the wall farthest from the audience
  *
- * A final calculation then uses the location of the camera on the robot to determine the
+ * A final calculation then uses the location of the webcam on the robot to determine the
  * robot's location and orientation on the field.
  *
  * @see VuforiaLocalizer
@@ -104,8 +104,8 @@ class ConceptVuforiaNavRoverRuckus : LinearOpMode() {
     override fun runOpMode() {
         /*
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
-         * We can pass Vuforia the handle to a camera preview resource (on the RC phone);
-         * If no camera monitor is desired, use the parameterless constructor instead (commented out below).
+         * We can pass Vuforia the handle to a webcam preview resource (on the RC phone);
+         * If no webcam monitor is desired, use the parameterless constructor instead (commented out below).
          */
         val cameraMonitorViewId = hardwareMap.appContext.resources.getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.packageName)
         val parameters = VuforiaLocalizer.Parameters(cameraMonitorViewId)
@@ -209,17 +209,17 @@ class ConceptVuforiaNavRoverRuckus : LinearOpMode() {
          *
          * The phone starts out lying flat, with the screen facing Up and with the physical top of the phone
          * pointing to the LEFT side of the Robot.  It's very important when you test this code that the top of the
-         * camera is pointing to the left side of the  robot.  The rotation angles don't work if you flip the phone.
+         * webcam is pointing to the left side of the  robot.  The rotation angles don't work if you flip the phone.
          *
-         * If using the rear (High Res) camera:
-         * We need to rotate the camera around it's long axis to bring the rear camera forward.
+         * If using the rear (High Res) webcam:
+         * We need to rotate the webcam around it's long axis to bring the rear webcam forward.
          * This requires a negative 90 degree rotation on the Y axis
          *
-         * If using the Front (Low Res) camera
-         * We need to rotate the camera around it's long axis to bring the FRONT camera forward.
+         * If using the Front (Low Res) webcam
+         * We need to rotate the webcam around it's long axis to bring the FRONT webcam forward.
          * This requires a Positive 90 degree rotation on the Y axis
          *
-         * Next, translate the camera lens to where it is on the robot.
+         * Next, translate the webcam lens to where it is on the robot.
          * In this example, it is centered (left to right), but 110 mm forward of the middle of the robot, and 200 mm above ground level.
          */
 
@@ -302,7 +302,7 @@ class ConceptVuforiaNavRoverRuckus : LinearOpMode() {
         private val mmFTCFieldWidth = 12 * 6 * mmPerInch       // the width of the FTC field (from the center point to the outer panels)
         private val mmTargetHeight = 6 * mmPerInch          // the height of the center of the target image above the floor
 
-        // Select which camera you want use.  The FRONT camera is the one on the same side as the screen.
+        // Select which webcam you want use.  The FRONT webcam is the one on the same side as the screen.
         // Valid choices are:  BACK or FRONT
         private val CAMERA_CHOICE = BACK
     }

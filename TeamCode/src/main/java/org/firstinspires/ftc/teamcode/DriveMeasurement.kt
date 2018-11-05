@@ -42,8 +42,8 @@ class DriveMeasurement : LinearOpMode() {
 
         hw.rightDrive.targetPosition = (30 * Hardware.DRIVE_ENCODER_TICKS_PER_CM).roundToInt()
         hw.leftDrive.targetPosition = (30 * Hardware.DRIVE_ENCODER_TICKS_PER_CM).roundToInt()
-        hw.rightDrive.power = 0.35
-        hw.leftDrive.power = 0.35
+        hw.rightDrive.power = Hardware.DRIVE_SLOWEST
+        hw.leftDrive.power = Hardware.DRIVE_SLOWEST
 
         while (opModeIsActive() && (hw.leftDrive.isBusy || hw.rightDrive.isBusy)) {
             telemetry.addData("Left", hw.leftDrive.currentPosition)

@@ -31,23 +31,20 @@ package org.firstinspires.ftc.teamcode
 
 import com.disnodeteam.dogecv.CameraViewDisplay
 import com.disnodeteam.dogecv.DogeCV
-import com.disnodeteam.dogecv.Dogeforia
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
-import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.util.ElapsedTime
-import com.vuforia.Vuforia
 import org.firstinspires.ftc.robotcore.external.ClassFactory
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix
 import org.firstinspires.ftc.robotcore.external.navigation.*
 
 const val MM_PER_INCH = 25.4f
-const val MM_FTC_FIELD_WIDTH = 12 * 6 * MM_PER_INCH
-const val MM_TARGET_HEIGHT = 6 * MM_PER_INCH
+const val FTC_FIELD_WIDTH_MM = 12 * 6 * MM_PER_INCH
+const val TARGET_HEIGHT_MM = 6 * MM_PER_INCH
 
-const val CAMERA_FORWARD_DISPLACEMENT = 1180   // eg: Camera is 110 mm in front of robot center
-const val CAMERA_VERTICAL_DISPLACEMENT = 218   // eg: Camera is 200 mm above ground
-const val CAMERA_LEFT_DISPLACEMENT = -30     // eg: Camera is ON the robot's center line
+const val CAMERA_FORWARD_DISPLACEMENT_MM = 1180   // eg: Camera is 110 mm in front of robot center
+const val CAMERA_VERTICAL_DISPLACEMENT_MM = 218   // eg: Camera is 200 mm above ground
+const val CAMERA_LEFT_DISPLACEMENT_MM = -30     // eg: Camera is ON the robot's center line
 
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -70,7 +67,7 @@ abstract class BaseAutonomous : LinearOpMode() {
         val params = VuforiaLocalizer.Parameters(cameraMonitorViewId)
         params.apply {
             vuforiaLicenseKey = "AWbfTmn/////AAABmY0xuIe3C0RHvL3XuzRxyEmOT2OekXBSbqN2jot1si3OGBObwWadfitJR/D6Vk8VEBiW0HG2Q8UAEd0//OliF9aWCRmyDJ1mMqKCJZxpZemfT5ELFuWnJIZWUkKyjQfDNe2RIaAh0ermSxF4Bq77IDFirgggdYJoRIyi2Ys7Gl9lD/tSonV8OnldIN/Ove4/MtEBJTKHqjUEjC5U2khV+26AqkeqbxhFTNiIMl0LcmSSfugGhmWFGFtuPtp/+flPBRGoBO+tSl9P2sV4mSUBE/WrpHqB0Jd/tAmeNvbtgQXtZEGYc/9NszwRLVNl9k13vrBcgsiNxs2UY5xAvA4Wb6LN7Yu+tChwc+qBiVKAQe09\n"
-            cameraName = hw.camera
+            cameraName = hw.webcam
         }
         val vuforia = ClassFactory.getInstance().createVuforia(params)
         vuforia.enableConvertFrameToBitmap()
@@ -100,41 +97,43 @@ abstract class BaseAutonomous : LinearOpMode() {
                     VuforiaTrackables.BLUE_ROVER to blueRover)
 
             val blueRoverLocationOnField = OpenGLMatrix
-                    .translation(0f, MM_FTC_FIELD_WIDTH, MM_TARGET_HEIGHT)
+                    .translation(0f, FTC_FIELD_WIDTH_MM, TARGET_HEIGHT_MM)
                     .multiplied(Orientation.getRotationMatrix(
                             AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES,
                             90.0f, 0.0f, 0.0f))
             blueRover.location = blueRoverLocationOnField
 
             val redFootprintLocationOnField = OpenGLMatrix
-                    .translation(0f, -MM_FTC_FIELD_WIDTH, MM_TARGET_HEIGHT)
+                    .translation(0f, -FTC_FIELD_WIDTH_MM, TARGET_HEIGHT_MM)
                     .multiplied(Orientation.getRotationMatrix(
                             AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES,
                             90.0f, 0.0f, 180.0f))
             redFootprint.location = redFootprintLocationOnField
 
             val frontCratersLocationOnField = OpenGLMatrix
-                    .translation(-MM_FTC_FIELD_WIDTH, 0f, MM_TARGET_HEIGHT)
+                    .translation(-FTC_FIELD_WIDTH_MM, 0f, TARGET_HEIGHT_MM)
                     .multiplied(Orientation.getRotationMatrix(
                             AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES,
                             90.0f, 0.0f, 90.0f))
             frontCraters.location = frontCratersLocationOnField
 
             val backSpaceLocationOnField = OpenGLMatrix
-                    .translation(MM_FTC_FIELD_WIDTH, 0f, MM_TARGET_HEIGHT)
+                    .translation(FTC_FIELD_WIDTH_MM, 0f, TARGET_HEIGHT_MM)
                     .multiplied(Orientation.getRotationMatrix(
                             AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES,
                             90.0f, 0.0f, -90.0f))
             backSpace.location = backSpaceLocationOnField
 
-            val phoneLocationOnRobot = OpenGLMatrix
-                    .translation(CAMERA_FORWARD_DISPLACEMENT.toFloat(), CAMERA_LEFT_DISPLACEMENT.toFloat(), CAMERA_VERTICAL_DISPLACEMENT.toFloat())
+            val webcamLocation = OpenGLMatrix
+                    .translation(CAMERA_FORWARD_DISPLACEMENT_MM.toFloat(),
+                            CAMERA_LEFT_DISPLACEMENT_MM.toFloat(),
+                            CAMERA_VERTICAL_DISPLACEMENT_MM.toFloat())
                     .multiplied(Orientation.getRotationMatrix(
                             AxesReference.EXTRINSIC, AxesOrder.YZX, AngleUnit.DEGREES,
                             -90.0f, 0.0f, 0.0f))
 
             for ((_, trackable) in allTrackables!!) {
-                (trackable.listener as VuforiaTrackableDefaultListener).setCameraLocationOnRobot(hw.camera, phoneLocationOnRobot)
+                (trackable.listener as VuforiaTrackableDefaultListener).setCameraLocationOnRobot(hw.webcam, webcamLocation)
             }
             targetsRoverRuckus.activate()
         }
