@@ -14,7 +14,16 @@ fun calculateHeading(x1: Float, y1: Float, x2: Float, y2: Float): Float {
     return brng.toFloat()
 }
 
+/**
+ * Calculates the IMU heading that the robot should be at to turn turnBy degrees
+ * from a current heading.
+ */
+fun calculateImuHeading(current: Float, turnBy: Float): Float {
+    return (current + turnBy + 360) % 360
+}
+
 fun distanceTo(x1: Float, y1: Float, x2: Float, y2: Float): Float {
     return Math.sqrt(Math.pow((x1 - x2).toDouble(), 2.0) +
             Math.pow((y1 - y2).toDouble(), 2.0)).toFloat()
 }
+

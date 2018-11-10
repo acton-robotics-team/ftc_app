@@ -37,6 +37,7 @@ import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.robotcore.external.ClassFactory
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix
 import org.firstinspires.ftc.robotcore.external.navigation.*
+import kotlin.math.roundToInt
 
 const val MM_PER_INCH = 25.4f
 const val FTC_FIELD_WIDTH_MM = 12 * 6 * MM_PER_INCH
@@ -140,13 +141,10 @@ abstract class BaseAutonomous : LinearOpMode() {
         return allTrackables!!
     }
 
-    private fun navigateToPoint(hw: Hardware, trackables: Map<VuforiaTrackables, VuforiaTrackable>, targetXIn: Float, targetYIn: Float) {
-        var lastLocation: OpenGLMatrix? = null
+    private fun getCurrentLocation(trackables: Map<VuforiaTrackables, VuforiaTrackable>): OpenGLMatrix? {
+        telemetry.clearAll()
+        telemetry.addLine("Looking for current location...")
         while (opModeIsActive()) {
-            telemetry.clearAll()
-
-            telemetry.addLine("Target point: ($targetXIn in, $targetYIn in)")
-
             for ((name, trackable) in trackables) {
                 /**
                  * getUpdatedRobotLocation() will return null if no new information is available since
@@ -164,64 +162,110 @@ abstract class BaseAutonomous : LinearOpMode() {
                 val robotLocationTransform =
                         (trackable.listener as VuforiaTrackableDefaultListener).updatedRobotLocation
                 if (robotLocationTransform != null) {
-                    lastLocation = robotLocationTransform
-                }
-            }
-
-            // Parse any such detected location.
-            if (lastLocation == null) {
-                telemetry.addLine("Current position: !!unknown!!")
-                continue
-            }
-
-            telemetry.addData("Current position: ", lastLocation.formatAsTransform())
-            // express position (translation) of robot in inches.
-            val translation = lastLocation.translation
-            val xIn = translation[0] / MM_PER_INCH
-            val yIn = translation[1] / MM_PER_INCH
-            val zIn = translation[2] / MM_PER_INCH
-
-            telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f",
-                    xIn, yIn, zIn)
-
-            // express the rotation of the robot in degrees.
-            val rotation = Orientation.getOrientation(lastLocation, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES)
-            val roll = rotation.firstAngle
-            val pitch = rotation.secondAngle
-            val headingDeg = rotation.thirdAngle
-            telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", roll, pitch, headingDeg)
-
-            val desiredHeadingDeg = calculateHeading(xIn, yIn, targetXIn, targetYIn)
-            telemetry.addData("Desired heading (deg)", desiredHeadingDeg)
-            when {
-                headingDeg - desiredHeadingDeg > 30 -> {
-                    telemetry.addLine("Turning counterclockwise to point toward target point")
-                    hw.leftDrive.power = -0.3
-                    hw.rightDrive.power = 0.3
-                }
-                headingDeg - desiredHeadingDeg < -30 -> {
-                    telemetry.addLine("Turning clockwise to point toward target point")
-                    hw.leftDrive.power = 0.3
-                    hw.rightDrive.power = -0.3
-                }
-                else -> {
-                    // Hit the target degree location
-                    // Start driving toward the location
-                    if (distanceTo(xIn, yIn, targetXIn, targetYIn) > 5) {
-                        telemetry.addLine("Driving toward target point")
-                        hw.leftDrive.power = 0.3
-                        hw.rightDrive.power = 0.3
-                    } else {
-                        telemetry.addLine("Reached target point")
-                        hw.leftDrive.power = 0.0
-                        hw.rightDrive.power = 0.0
-                        return // we're done! woot
-                    }
+                    return robotLocationTransform
                 }
             }
             telemetry.update()
+        }
+        return null
+    }
+
+    private fun navigateToPoint(hw: Hardware, trackables: Map<VuforiaTrackables, VuforiaTrackable>, targetXMm: Float, targetYMm: Float) {
+        val location = getCurrentLocation(trackables)
+                ?: return // pog this shouldn't happen unless opmode is stopped
+        // blocks
+
+        telemetry.addData("Current location", location.formatAsTransform())
+        telemetry.addLine("Target point: ($targetXMm mm, $targetYMm mm)")
+        telemetry.update()
+
+        val xMm = location.translation[0]
+        val yMm = location.translation[1]
+        val zMm = location.translation[2]
+
+        telemetry.addData("Pos (mm)", "{X, Y, Z} = %.1f, %.1f, %.1f",
+                xMm, yMm, zMm)
+
+        // express the rotation of the robot in degrees.
+        val vuforiaHeadingDeg = Orientation.getOrientation(
+                location,
+                AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle
+
+        val desiredHeadingDeg = calculateHeading(xMm, xMm, targetXMm, targetYMm)
+        telemetry.addData("Desired heading (deg)", desiredHeadingDeg)
+
+        val startImuHeadingDeg = hw.getImuHeading()
+        telemetry.addData("Starting IMU heading (deg)", startImuHeadingDeg)
+        val imuHeadingTelemetry = telemetry.addData("Current IMU heading (deg)", startImuHeadingDeg)
+        telemetry.update()
+
+        val turnDeg = vuforiaHeadingDeg - desiredHeadingDeg
+        val endImuHeadingDeg = calculateImuHeading(startImuHeadingDeg, turnDeg)
+
+        when {
+            turnDeg > 0 -> {
+                telemetry.log().add("Turning counterclockwise to point toward target point")
+                hw.leftDrive.power = -Hardware.DRIVE_SLOWEST
+                hw.rightDrive.power = Hardware.DRIVE_SLOWEST
+
+            }
+            turnDeg < 0 -> {
+                telemetry.log().add("Turning clockwise to point toward target point")
+                hw.leftDrive.power = Hardware.DRIVE_SLOWEST
+                hw.rightDrive.power = -Hardware.DRIVE_SLOWEST
+            }
+        }
+        telemetry.log().add("Waiting to reach correct heading")
+        telemetry.update()
+        while (opModeIsActive()) {
+            val currentImuHeadingDeg = hw.getImuHeading()
+            imuHeadingTelemetry.setValue(currentImuHeadingDeg)
+
+            if (Math.abs(currentImuHeadingDeg - endImuHeadingDeg) < 10) {
+                telemetry.log().add("Reached within ten degrees of correct heading")
+                telemetry.update()
+                break
+            } else {
+                idle()
+            }
+        }
+
+        // Drive toward point until encoders read the distance traveled
+        hw.leftDrive.power = 0.0
+        hw.rightDrive.power = 0.0
+        val distanceMm = distanceTo(xMm, yMm, targetXMm, targetYMm)
+        drive(hw, distanceMm.toDouble())
+    }
+
+    private fun drive(hw: Hardware, distanceMm: Double) {
+        hw.leftDrive.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        hw.rightDrive.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        hw.leftDrive.mode = DcMotor.RunMode.RUN_TO_POSITION
+        hw.rightDrive.mode = DcMotor.RunMode.RUN_TO_POSITION
+
+        val requiredEncoderTicks = (distanceMm / 10 * Hardware.DRIVE_ENCODER_TICKS_PER_CM).roundToInt()
+
+        telemetry.log().add("Driving $distanceMm mm ($requiredEncoderTicks ticks) to end point")
+        val leftEncoderTelemetry = telemetry.addData("Left drive encoder", 0)
+        val rightEncoderTelemetry = telemetry.addData("Right drive encoder", 0)
+        telemetry.update()
+
+        hw.leftDrive.targetPosition = requiredEncoderTicks
+        hw.rightDrive.targetPosition = requiredEncoderTicks
+        hw.leftDrive.power = Hardware.DRIVE_SLOW
+        hw.rightDrive.power = Hardware.DRIVE_SLOW
+
+        while (hw.leftDrive.isBusy || hw.rightDrive.isBusy) {
+            leftEncoderTelemetry.setValue(hw.leftDrive.currentPosition)
+            rightEncoderTelemetry.setValue(hw.rightDrive.currentPosition)
+            telemetry.update()
             idle()
         }
+
+        hw.leftDrive.power = 0.0
+        hw.rightDrive.power = 0.0
+        hw.leftDrive.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+        hw.rightDrive.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
     }
 
     override fun runOpMode() {

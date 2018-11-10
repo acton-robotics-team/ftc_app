@@ -32,8 +32,8 @@ class TankDrive : LinearOpMode() {
             hw.rightDrive.power = -gamepad1.right_stick_y * powerModifier
         } else {
             // Second gamepad is always slow
-            hw.leftDrive.power = -gamepad2.left_stick_y * Hardware.DRIVE_SLOW
-            hw.rightDrive.power = -gamepad2.right_stick_y * Hardware.DRIVE_SLOW
+//            hw.leftDrive.power = -gamepad2.left_stick_y * Hardware.DRIVE_SLOW
+//            hw.rightDrive.power = -gamepad2.right_stick_y * Hardware.DRIVE_SLOW
         }
     }
 
@@ -65,18 +65,11 @@ class TankDrive : LinearOpMode() {
     }
 
     private fun runArm(hw: Hardware) {
-        hw.arm.mode = DcMotor.RunMode.RUN_USING_ENCODER
-        if (gamepad1.a) {
-//            hw.arm.apply {
-//                mode = DcMotor.RunMode.RUN_TO_POSITION
-//                power = 0.5
-//                targetPosition = Hardware.ARM_DOWN_POSITION
-//            }
-        }
-
-        hw.arm.power = when {
-            gamepad1.x -> 1.0
-            gamepad1.y -> -1.0
+        hw.arm.power = -gamepad2.left_stick_y.toDouble()
+        hw.wrist.power = -gamepad2.right_stick_y.toDouble()
+        hw.armExtender.power = when {
+            gamepad2.dpad_up -> 1.0
+            gamepad2.dpad_down -> -1.0
             else -> 0.0
         }
         telemetry.addData("Extender encoder value", hw.arm.currentPosition)

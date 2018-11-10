@@ -6,14 +6,18 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference
 
 class Hardware(hwMap: HardwareMap) {
 
     val rightDrive: DcMotor = hwMap.dcMotor.get("right_motor")
     val leftDrive: DcMotor = hwMap.dcMotor.get("left_motor")
     val lifter: DcMotor = hwMap.dcMotor.get("lifter")
-//    val arm: DcMotor = hwMap.dcMotor.get("arm")
-    val arm: DcMotor = hwMap.dcMotor.get("arm_extender")
+    val arm: DcMotor = hwMap.dcMotor.get("arm")
+    val armExtender: DcMotor = hwMap.dcMotor.get("arm_extender")
+    val wrist: DcMotor = hwMap.dcMotor.get("wrist")
 
     val leftGrabber: Servo = hwMap.servo.get("left_grabber")
     val rightGrabber: Servo = hwMap.servo.get("right_grabber")
@@ -27,6 +31,8 @@ class Hardware(hwMap: HardwareMap) {
         leftDrive.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         leftDrive.direction = DcMotorSimple.Direction.REVERSE
         arm.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        armExtender.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        wrist.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
         rightGrabber.direction = Servo.Direction.REVERSE
         leftGrabber.scaleRange(0.0, 0.9)
@@ -46,6 +52,16 @@ class Hardware(hwMap: HardwareMap) {
             // accelerationIntegrationAlgorithm = JustLoggingAccelerationIntegrator()
         }
         imu.initialize(imuParams)
+    }
+
+    /**
+     * Gets the current IMU heading in degrees.
+     *
+     * Note: this function takes a while to return.d
+     */
+    fun getImuHeading(): Float {
+        return this.imu.getAngularOrientation(AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES)
+                .thirdAngle
     }
 
     companion object {
