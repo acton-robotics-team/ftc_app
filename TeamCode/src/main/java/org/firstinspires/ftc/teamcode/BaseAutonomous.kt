@@ -33,6 +33,7 @@ import com.disnodeteam.dogecv.CameraViewDisplay
 import com.disnodeteam.dogecv.DogeCV
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.robotcore.external.ClassFactory
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix
@@ -364,53 +365,6 @@ abstract class BaseAutonomous : LinearOpMode() {
 //        while (hw.lifter.isBusy && opModeIsActive()) {
 //            idle()
 //        }
-
-        // Start up Vuforia navigation.
-        var lastLocation: OpenGLMatrix? = null
-
-        while (opModeIsActive()) {
-            telemetry.clearAll()
-            for ((name, trackable) in trackables) {
-                /**
-                 * getUpdatedRobotLocation() will return null if no new information is available since
-                 * the last time that call was made, or if the trackable is not currently visible.
-                 * getRobotLocation() will return null if the trackable is not currently visible.
-                 */
-                telemetry.addData(
-                        name.toString(),
-                        if ((trackable.listener as VuforiaTrackableDefaultListener).isVisible) {
-                            "Visible"
-                        } else {
-                            "Not Visible"
-                        })
-
-                val robotLocationTransform =
-                        (trackable.listener as VuforiaTrackableDefaultListener).updatedRobotLocation
-                if (robotLocationTransform != null) {
-                    lastLocation = robotLocationTransform
-                }
-            }
-
-            // Parse any such detected location.
-            if (lastLocation == null) {
-                telemetry.addLine("Current position: !!unknown!!")
-            } else {
-                telemetry.addData("Current position: ", lastLocation.formatAsTransform())
-                // express position (translation) of robot in inches.
-                val translation = lastLocation.translation
-                val xIn = translation[0] / MM_PER_INCH
-                val yIn = translation[1] / MM_PER_INCH
-                val zIn = translation[2] / MM_PER_INCH
-                telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f",
-                        xIn, yIn, zIn)
-
-                // express the rotation of the robot in degrees.
-                val rotation = Orientation.getOrientation(lastLocation, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES)
-                telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle)
-            }
-            telemetry.update()
-            idle()
-        }
 
 //        hw.leftDrive.power = -0.5
 //        hw.rightDrive.power = -0.5
