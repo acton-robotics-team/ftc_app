@@ -28,10 +28,10 @@ class DriveMeasurement : LinearOpMode() {
     override fun runOpMode() {
         val hw = Hardware(hardwareMap)
 
-        hw.leftDrive.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        hw.rightDrive.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        hw.rightDrive.mode = DcMotor.RunMode.RUN_TO_POSITION
-        hw.leftDrive.mode = DcMotor.RunMode.RUN_TO_POSITION
+        hw.leftBottomDrive.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        hw.rightBottomDrive.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        hw.rightBottomDrive.mode = DcMotor.RunMode.RUN_TO_POSITION
+        hw.leftBottomDrive.mode = DcMotor.RunMode.RUN_TO_POSITION
 
         telemetry.addData("Status", "Initialized")
         telemetry.update()
@@ -40,24 +40,24 @@ class DriveMeasurement : LinearOpMode() {
         waitForStart()
         runtime.reset()
 
-        hw.rightDrive.targetPosition = (30 * Hardware.DRIVE_ENCODER_TICKS_PER_CM).roundToInt()
-        hw.leftDrive.targetPosition = (30 * Hardware.DRIVE_ENCODER_TICKS_PER_CM).roundToInt()
-        hw.rightDrive.power = Hardware.DRIVE_SLOWEST
-        hw.leftDrive.power = Hardware.DRIVE_SLOWEST
+        hw.rightBottomDrive.targetPosition = (30 * Hardware.DRIVE_ENCODER_TICKS_PER_CM).roundToInt()
+        hw.leftBottomDrive.targetPosition = (30 * Hardware.DRIVE_ENCODER_TICKS_PER_CM).roundToInt()
+        hw.rightBottomDrive.power = Hardware.DRIVE_SLOWEST
+        hw.leftBottomDrive.power = Hardware.DRIVE_SLOWEST
 
-        while (opModeIsActive() && (hw.leftDrive.isBusy || hw.rightDrive.isBusy)) {
-            telemetry.addData("Left", hw.leftDrive.currentPosition)
-            telemetry.addData("Right", hw.leftDrive.currentPosition)
+        while (opModeIsActive() && (hw.leftBottomDrive.isBusy || hw.rightBottomDrive.isBusy)) {
+            telemetry.addData("Left", hw.leftBottomDrive.currentPosition)
+            telemetry.addData("Right", hw.leftBottomDrive.currentPosition)
             telemetry.update()
             idle()
         }
 
-        hw.rightDrive.power = 0.0
-        hw.leftDrive.power = 0.0
+        hw.rightBottomDrive.power = 0.0
+        hw.leftBottomDrive.power = 0.0
 
         telemetry.addLine("Ran for ${runtime.milliseconds()} ms")
-        telemetry.addData("Left", hw.leftDrive.currentPosition)
-        telemetry.addData("Right", hw.leftDrive.currentPosition)
+        telemetry.addData("Left", hw.leftBottomDrive.currentPosition)
+        telemetry.addData("Right", hw.leftBottomDrive.currentPosition)
         telemetry.update()
     }
 }

@@ -35,7 +35,6 @@ import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.util.ElapsedTime
-import org.firstinspires.ftc.robotcore.external.ClassFactory
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix
 import org.firstinspires.ftc.robotcore.external.navigation.*
 import kotlin.math.roundToInt
@@ -120,14 +119,14 @@ abstract class BaseAutonomous : LinearOpMode() {
         when {
             turnDeg > 0 -> {
                 telemetry.log().add("Turning counterclockwise to point toward target point")
-                hw.leftDrive.power = -Hardware.DRIVE_SLOWEST
-                hw.rightDrive.power = Hardware.DRIVE_SLOWEST
+                hw.leftBottomDrive.power = -Hardware.DRIVE_SLOWEST
+                hw.rightBottomDrive.power = Hardware.DRIVE_SLOWEST
 
             }
             turnDeg < 0 -> {
                 telemetry.log().add("Turning clockwise to point toward target point")
-                hw.leftDrive.power = Hardware.DRIVE_SLOWEST
-                hw.rightDrive.power = -Hardware.DRIVE_SLOWEST
+                hw.leftBottomDrive.power = Hardware.DRIVE_SLOWEST
+                hw.rightBottomDrive.power = -Hardware.DRIVE_SLOWEST
             }
         }
         telemetry.log().add("Waiting to reach correct heading")
@@ -146,17 +145,17 @@ abstract class BaseAutonomous : LinearOpMode() {
         }
 
         // Drive toward point until encoders read the distance traveled
-        hw.leftDrive.power = 0.0
-        hw.rightDrive.power = 0.0
+        hw.leftBottomDrive.power = 0.0
+        hw.rightBottomDrive.power = 0.0
         val distanceMm = distanceTo(xMm, yMm, targetXMm, targetYMm)
         drive(hw, distanceMm.toDouble())
     }
 
     private fun drive(hw: Hardware, distanceMm: Double) {
-        hw.leftDrive.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        hw.rightDrive.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        hw.leftDrive.mode = DcMotor.RunMode.RUN_TO_POSITION
-        hw.rightDrive.mode = DcMotor.RunMode.RUN_TO_POSITION
+        hw.leftBottomDrive.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        hw.rightBottomDrive.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        hw.leftBottomDrive.mode = DcMotor.RunMode.RUN_TO_POSITION
+        hw.rightBottomDrive.mode = DcMotor.RunMode.RUN_TO_POSITION
 
         val requiredEncoderTicks = (distanceMm / 10 * Hardware.DRIVE_ENCODER_TICKS_PER_CM).roundToInt()
 
@@ -165,22 +164,22 @@ abstract class BaseAutonomous : LinearOpMode() {
         val rightEncoderTelemetry = telemetry.addData("Right drive encoder", 0)
         telemetry.update()
 
-        hw.leftDrive.targetPosition = requiredEncoderTicks
-        hw.rightDrive.targetPosition = requiredEncoderTicks
-        hw.leftDrive.power = Hardware.DRIVE_SLOW
-        hw.rightDrive.power = Hardware.DRIVE_SLOW
+        hw.leftBottomDrive.targetPosition = requiredEncoderTicks
+        hw.rightBottomDrive.targetPosition = requiredEncoderTicks
+        hw.leftBottomDrive.power = Hardware.DRIVE_SLOW
+        hw.rightBottomDrive.power = Hardware.DRIVE_SLOW
 
-        while (hw.leftDrive.isBusy || hw.rightDrive.isBusy) {
-            leftEncoderTelemetry.setValue(hw.leftDrive.currentPosition)
-            rightEncoderTelemetry.setValue(hw.rightDrive.currentPosition)
+        while (hw.leftBottomDrive.isBusy || hw.rightBottomDrive.isBusy) {
+            leftEncoderTelemetry.setValue(hw.leftBottomDrive.currentPosition)
+            rightEncoderTelemetry.setValue(hw.rightBottomDrive.currentPosition)
             telemetry.update()
             idle()
         }
 
-        hw.leftDrive.power = 0.0
-        hw.rightDrive.power = 0.0
-        hw.leftDrive.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
-        hw.rightDrive.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+        hw.leftBottomDrive.power = 0.0
+        hw.rightBottomDrive.power = 0.0
+        hw.leftBottomDrive.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+        hw.rightBottomDrive.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
     }
 
     override fun runOpMode() {
@@ -236,18 +235,18 @@ abstract class BaseAutonomous : LinearOpMode() {
 //        hw.lifter.power = 0.0
 //
 //        // Turn to get out of cage
-//        hw.rightDrive.power = -Hardware.DRIVE_SLOW
-//        hw.leftDrive.power = Hardware.DRIVE_SLOW
+//        hw.rightBottomDrive.power = -Hardware.DRIVE_SLOW
+//        hw.leftBottomDrive.power = Hardware.DRIVE_SLOW
 //        sleep(1000)
 //
-//        hw.rightDrive.power = -0.3
-//        hw.leftDrive.power = -0.3
+//        hw.rightBottomDrive.power = -0.3
+//        hw.leftBottomDrive.power = -0.3
 //
 //        sleep(500)
 //
 //        // Turn until reaching the detector
-//        hw.rightDrive.power = 0.35
-//        hw.leftDrive.power = -0.35
+//        hw.rightBottomDrive.power = 0.35
+//        hw.leftBottomDrive.power = -0.35
 //
 //        while (!detector.aligned && opModeIsActive()) {
 //            telemetry.clearAll()
@@ -262,13 +261,13 @@ abstract class BaseAutonomous : LinearOpMode() {
 //        telemetry.addLine("Gold Driving Phase")
 //        telemetry.update()
 //
-//        hw.leftDrive.power = -0.3
-//        hw.rightDrive.power = -0.3
+//        hw.leftBottomDrive.power = -0.3
+//        hw.rightBottomDrive.power = -0.3
 //
 //        sleep(2000)
 //
-//        hw.leftDrive.power = 0.0
-//        hw.rightDrive.power = 0.0
+//        hw.leftBottomDrive.power = 0.0
+//        hw.rightBottomDrive.power = 0.0
 //
         // TODO drive to depot
 //        navigateToPoint(hw, trackables, )
@@ -277,11 +276,11 @@ abstract class BaseAutonomous : LinearOpMode() {
         hw.leftGrabber.position = 0.0
         hw.rightGrabber.position = 0.0
         // Reverse a little
-        hw.leftDrive.power = -Hardware.DRIVE_SLOW
-        hw.rightDrive.power = -Hardware.DRIVE_SLOW
+        hw.leftBottomDrive.power = -Hardware.DRIVE_SLOW
+        hw.rightBottomDrive.power = -Hardware.DRIVE_SLOW
         sleep(500)
-        hw.leftDrive.power = 0.0
-        hw.rightDrive.power = 0.0
+        hw.leftBottomDrive.power = 0.0
+        hw.rightBottomDrive.power = 0.0
         // TODO navigate to crater
 
         telemetry.addLine("Done, retracting lifter. Good luck on manual!")

@@ -26,8 +26,8 @@ class TankDrive : LinearOpMode() {
     private fun runTankDrive(hw: Hardware) {
         val powerModifier = if (gamepad1.a) Hardware.DRIVE_SLOW else Hardware.DRIVE_FAST
 
-        hw.leftDrive.power = -gamepad1.left_stick_y * powerModifier
-        hw.rightDrive.power = -gamepad1.right_stick_y * powerModifier
+        hw.leftBottomDrive.power = -gamepad1.left_stick_y * powerModifier
+        hw.rightBottomDrive.power = -gamepad1.right_stick_y * powerModifier
     }
 
     /**

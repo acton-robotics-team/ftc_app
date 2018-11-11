@@ -12,8 +12,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference
 
 class Hardware(hwMap: HardwareMap) {
 
-    val rightDrive: DcMotor = hwMap.dcMotor.get("right_motor")
-    val leftDrive: DcMotor = hwMap.dcMotor.get("left_motor")
+    val rightBottomDrive: DcMotor = hwMap.dcMotor.get("right_motor")
+    val leftBottomDrive: DcMotor = hwMap.dcMotor.get("left_motor")
     val lifter: DcMotor = hwMap.dcMotor.get("lifter")
     val arm: DcMotor = hwMap.dcMotor.get("arm")
     val armExtender: DcMotor = hwMap.dcMotor.get("arm_extender")
@@ -27,10 +27,11 @@ class Hardware(hwMap: HardwareMap) {
     val webcam: WebcamName = hwMap.get(WebcamName::class.java, "webcam")
 
     init {
-        rightDrive.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        leftDrive.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        leftDrive.direction = DcMotorSimple.Direction.REVERSE
+        rightBottomDrive.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        leftBottomDrive.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        leftBottomDrive.direction = DcMotorSimple.Direction.REVERSE
         arm.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        arm.mode = DcMotor.RunMode.RUN_USING_ENCODER
         armExtender.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         wrist.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
