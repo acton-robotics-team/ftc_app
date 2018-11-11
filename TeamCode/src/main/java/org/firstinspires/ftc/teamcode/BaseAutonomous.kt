@@ -356,38 +356,27 @@ abstract class BaseAutonomous : LinearOpMode() {
 //        hw.leftDrive.power = 0.0
 //        hw.rightDrive.power = 0.0
 //
-//
-//        telemetry.addLine("Done, retracting lifter. Good luck on manual!")
-//        telemetry.update()
-//
-//        hw.lifter.targetPosition = Hardware.LIFTER_BOTTOM_POSITION
-//        hw.lifter.power = -0.5
-//        while (hw.lifter.isBusy && opModeIsActive()) {
-//            idle()
-//        }
+        // TODO drive to depot
+//        navigateToPoint(hw, trackables, )
 
-//        hw.leftDrive.power = -0.5
-//        hw.rightDrive.power = -0.5
-//
-//        sleep(100)
-//
-//        hw.leftDrive.power = 0.0
-//        hw.rightDrive.power = 0.0
-//
-//        // Initialize Vuforia tracking phase, then turn to go to depot
-//        val trackables = configureVuforiaTrackables()
-//        var lastLocation: OpenGLMatrix? = null
-//        while (opModeIsActive()) {
-//            for (trackable in trackables) {
-//                val listener = trackable.listener as VuforiaTrackableDefaultListener
-//                if (listener.isVisible) {
-//                    telemetry.addData("Visible target", trackable.name)
-//                    lastLocation = listener.updatedRobotLocation
-//                }
-//            }
-//
-//            if (lastLocation != null) {
-//            }
-//        }
+        // Release the claww
+        hw.leftGrabber.position = 0.0
+        hw.rightGrabber.position = 0.0
+        // Reverse a little
+        hw.leftDrive.power = -Hardware.DRIVE_SLOW
+        hw.rightDrive.power = -Hardware.DRIVE_SLOW
+        sleep(500)
+        hw.leftDrive.power = 0.0
+        hw.rightDrive.power = 0.0
+        // TODO navigate to crater
+
+        telemetry.addLine("Done, retracting lifter. Good luck on manual!")
+        telemetry.update()
+
+        hw.lifter.targetPosition = Hardware.LIFTER_BOTTOM_POSITION
+        hw.lifter.power = -0.5
+        while (hw.lifter.isBusy && opModeIsActive()) {
+            idle()
+        }
     }
 }
