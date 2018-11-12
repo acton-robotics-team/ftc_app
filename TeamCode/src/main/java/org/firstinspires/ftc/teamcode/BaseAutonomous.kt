@@ -238,14 +238,14 @@ abstract class BaseAutonomous : LinearOpMode() {
         hw.leftDrive.power = Hardware.DRIVE_SLOW
         sleep(1000)
 
-        hw.rightDrive.power = -0.3
-        hw.leftDrive.power = -0.3
+        // Back out
+        hw.withDriveMotors { it.power = -Hardware.DRIVE_SLOWEST }
 
         sleep(500)
 
         // Turn until reaching the detector
-        hw.rightDrive.power = 0.35
-        hw.leftDrive.power = -0.35
+        hw.rightDrive.power = Hardware.DRIVE_SLOWEST
+        hw.leftDrive.power = -Hardware.DRIVE_SLOWEST
 
         val samplingTimeout = ElapsedTime()
         while (!detector.aligned && opModeIsActive() && samplingTimeout.seconds() < 10) {
@@ -262,14 +262,12 @@ abstract class BaseAutonomous : LinearOpMode() {
             telemetry.addLine("Gold Driving Phase")
             telemetry.update()
 
-            hw.leftDrive.power = -0.3
-            hw.rightDrive.power = -0.3
+            hw.withDriveMotors { it.power = -Hardware.DRIVE_SLOWEST }
 
             sleep(2000)
         }
 
-        hw.leftDrive.power = 0.0
-        hw.rightDrive.power = 0.0
+        hw.withDriveMotors { it.power = 0.0 }
 
         // Always disable the detector
         detector.disable()
