@@ -79,7 +79,9 @@ class Hardware(hwMap: HardwareMap) {
         const val DRIVE_FAST = 1.0
 
         const val LIFTER_BOTTOM_POSITION = 0
-        const val LIFTER_TOP_POSITION = 5200
+        const val LIFTER_TOP_POSITION = 8000
+        const val LIFTER_AUTO_TOP_POSITION = 8000 + 5050
+        const val LIFTER_AUTO_END_POSITION = 0 + 5050
 
         const val ARM_DOWN = 0
         const val ARM_UP = 2104

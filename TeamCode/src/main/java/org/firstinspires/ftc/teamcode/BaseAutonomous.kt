@@ -226,8 +226,8 @@ abstract class BaseAutonomous : LinearOpMode() {
         runtime.reset()
 
         hw.lifter.mode = DcMotor.RunMode.RUN_TO_POSITION
-        // goes from 0 (starting value) down to extend lifter
-        hw.lifter.targetPosition = Hardware.LIFTER_TOP_POSITION
+        // goes from (starting value) down to extend lifter
+        hw.lifter.targetPosition = Hardware.LIFTER_AUTO_TOP_POSITION
         hw.lifter.power = 0.5
         while (hw.lifter.isBusy && opModeIsActive()) {
             idle()
@@ -291,7 +291,7 @@ abstract class BaseAutonomous : LinearOpMode() {
         telemetry.addLine("Done, retracting lifter. Good luck on manual!")
         telemetry.update()
 
-        hw.lifter.targetPosition = Hardware.LIFTER_BOTTOM_POSITION
+        hw.lifter.targetPosition = Hardware.LIFTER_AUTO_END_POSITION
         hw.lifter.power = -0.5
         while (hw.lifter.isBusy && opModeIsActive()) {
             idle()
