@@ -248,7 +248,8 @@ abstract class BaseAutonomous : LinearOpMode() {
         hw.rightDrive.power = 0.35
         hw.leftDrive.power = -0.35
 
-        while (!detector.aligned && opModeIsActive()) {
+        val samplingTimeout = ElapsedTime()
+        while (!detector.aligned && opModeIsActive() && samplingTimeout.seconds() < 10) {
             telemetry.clearAll()
             telemetry.addLine("Gold detector phase")
             telemetry.addData("X pos", detector.xPosition)
@@ -256,18 +257,22 @@ abstract class BaseAutonomous : LinearOpMode() {
 
             idle()
         }
-        // Reached alignment.
+        // Reached alignment? Maybe or maybe hit 10s timeout
+        if (detector.aligned) {
+            // We are aligned
+            telemetry.addLine("Gold Driving Phase")
+            telemetry.update()
+
+            hw.leftDrive.power = -0.3
+            hw.rightDrive.power = -0.3
+
+            sleep(2000)
+
+            hw.leftDrive.power = 0.0
+            hw.rightDrive.power = 0.0
+        }
+        // Always disable the detector
         detector.disable()
-        telemetry.addLine("Gold Driving Phase")
-        telemetry.update()
-
-        hw.leftDrive.power = -0.3
-        hw.rightDrive.power = -0.3
-
-        sleep(2000)
-
-        hw.leftDrive.power = 0.0
-        hw.rightDrive.power = 0.0
 //
         // TODO drive to depot
 //        navigateToPoint(hw, trackables, )
