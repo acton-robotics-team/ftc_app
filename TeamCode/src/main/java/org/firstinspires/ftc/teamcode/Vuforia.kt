@@ -26,9 +26,8 @@ fun createVuforia(hardwareMap: HardwareMap, hw: Hardware): VuforiaLocalizer {
     return vuforia
 }
 
-fun configureVuforiaTrackables(hw: Hardware, vuforia: VuforiaLocalizer): Map<VuforiaTrackables, VuforiaTrackable> {
-    var allTrackables: Map<VuforiaTrackables, VuforiaTrackable>? = null
-    vuforia.apply {
+fun configureVuforiaTrackables(hw: Hardware, vuforia: VuforiaLocalizer): VuforiaTrackables =
+    vuforia.run {
         val targetsRoverRuckus = loadTrackablesFromAsset("RoverRuckus")
         val blueRover = targetsRoverRuckus[0]
         blueRover.name = "Blue-Rover"
@@ -38,14 +37,6 @@ fun configureVuforiaTrackables(hw: Hardware, vuforia: VuforiaLocalizer): Map<Vuf
         frontCraters.name = "Front-Craters"
         val backSpace = targetsRoverRuckus[3]
         backSpace.name = "Back-Space"
-
-        // For convenience, gather together all the trackable objects in one easily-iterable collection */
-
-        allTrackables = mapOf(
-                VuforiaTrackables.FRONT_CRATERS to frontCraters,
-                VuforiaTrackables.BACK_SPACE to backSpace,
-                VuforiaTrackables.RED_FOOTPRINT to redFootprint,
-                VuforiaTrackables.BLUE_ROVER to blueRover)
 
         val blueRoverLocationOnField = OpenGLMatrix
                 .translation(0f, FTC_FIELD_WIDTH_MM, TARGET_HEIGHT_MM)
@@ -83,10 +74,9 @@ fun configureVuforiaTrackables(hw: Hardware, vuforia: VuforiaLocalizer): Map<Vuf
                         AxesReference.EXTRINSIC, AxesOrder.YZX, AngleUnit.DEGREES,
                         -90.0f, 0.0f, 0.0f))
 
-        for ((_, trackable) in allTrackables!!) {
+        for (trackable in listOf(blueRover, frontCraters, redFootprint, backSpace)) {
             (trackable.listener as VuforiaTrackableDefaultListener).setCameraLocationOnRobot(hw.webcam, webcamLocation)
         }
         targetsRoverRuckus.activate()
+        return targetsRoverRuckus
     }
-    return allTrackables!!
-}

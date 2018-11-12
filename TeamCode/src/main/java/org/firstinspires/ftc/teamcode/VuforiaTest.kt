@@ -42,7 +42,7 @@ class VuforiaTest : LinearOpMode() {
         while (opModeIsActive()) {
             // check all the trackable target to see which one (if any) is visible.
             targetVisible = false
-            for (trackable in trackables.values) {
+            for (trackable in trackables) {
                 if ((trackable.listener as VuforiaTrackableDefaultListener).isVisible) {
                     telemetry.addData("Visible Target", trackable.name)
                     targetVisible = true

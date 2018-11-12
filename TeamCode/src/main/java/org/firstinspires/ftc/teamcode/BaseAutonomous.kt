@@ -55,18 +55,17 @@ abstract class BaseAutonomous : LinearOpMode() {
     protected abstract val startLocation: AutonomousStartLocation
     private val runtime = ElapsedTime()
 
-    private fun getCurrentLocation(trackables: Map<VuforiaTrackables, VuforiaTrackable>): OpenGLMatrix? {
+    private fun getCurrentLocation(trackables: VuforiaTrackables): OpenGLMatrix? {
         telemetry.clearAll()
         telemetry.addLine("Looking for current location...")
         while (opModeIsActive()) {
-            for ((name, trackable) in trackables) {
+            for (trackable in trackables) {
                 /**
                  * getUpdatedRobotLocation() will return null if no new information is available since
                  * the last time that call was made, or if the trackable is not currently visible.
                  * getRobotLocation() will return null if the trackable is not currently visible.
                  */
-                telemetry.addData(
-                        name.toString(),
+                telemetry.addData(trackable.name,
                         if ((trackable.listener as VuforiaTrackableDefaultListener).isVisible) {
                             "Visible"
                         } else {
@@ -84,7 +83,7 @@ abstract class BaseAutonomous : LinearOpMode() {
         return null
     }
 
-    private fun navigateToPoint(hw: Hardware, trackables: Map<VuforiaTrackables, VuforiaTrackable>, targetXMm: Float, targetYMm: Float) {
+    private fun navigateToPoint(hw: Hardware, trackables: VuforiaTrackables, targetXMm: Float, targetYMm: Float) {
         val location = getCurrentLocation(trackables)
                 ?: return // pog this shouldn't happen unless opmode is stopped
         // blocks
@@ -273,6 +272,8 @@ abstract class BaseAutonomous : LinearOpMode() {
         }
         // Always disable the detector
         detector.disable()
+        // Disable vuforia for now
+        trackables.deactivate()
 //
         // TODO drive to depot
 //        navigateToPoint(hw, trackables, )
