@@ -266,10 +266,11 @@ abstract class BaseAutonomous : LinearOpMode() {
             hw.rightDrive.power = -0.3
 
             sleep(2000)
-
-            hw.leftDrive.power = 0.0
-            hw.rightDrive.power = 0.0
         }
+
+        hw.leftDrive.power = 0.0
+        hw.rightDrive.power = 0.0
+
         // Always disable the detector
         detector.disable()
         // Disable vuforia for now
