@@ -225,63 +225,63 @@ abstract class BaseAutonomous : LinearOpMode() {
         waitForStart()
         runtime.reset()
 
-//        hw.lifter.mode = DcMotor.RunMode.RUN_TO_POSITION
-//        // goes from 0 (starting value) down to extend lifter
-//        hw.lifter.targetPosition = Hardware.LIFTER_TOP_POSITION
-//        hw.lifter.power = 0.5
-//        while (hw.lifter.isBusy && opModeIsActive()) {
-//            idle()
-//        }
-//        hw.lifter.power = 0.0
-//
-//        // Turn to get out of cage
-//        hw.rightDrive.power = -Hardware.DRIVE_SLOW
-//        hw.leftDrive.power = Hardware.DRIVE_SLOW
-//        sleep(1000)
-//
-//        hw.rightDrive.power = -0.3
-//        hw.leftDrive.power = -0.3
-//
-//        sleep(500)
-//
-//        // Turn until reaching the detector
-//        hw.rightDrive.power = 0.35
-//        hw.leftDrive.power = -0.35
-//
-//        while (!detector.aligned && opModeIsActive()) {
-//            telemetry.clearAll()
-//            telemetry.addLine("Gold detector phase")
-//            telemetry.addData("X pos", detector.xPosition)
-//            telemetry.update()
-//
-//            idle()
-//        }
-//        // Reached alignment.
-//        detector.disable()
-//        telemetry.addLine("Gold Driving Phase")
-//        telemetry.update()
-//
-//        hw.leftDrive.power = -0.3
-//        hw.rightDrive.power = -0.3
-//
-//        sleep(2000)
-//
-//        hw.leftDrive.power = 0.0
-//        hw.rightDrive.power = 0.0
+        hw.lifter.mode = DcMotor.RunMode.RUN_TO_POSITION
+        // goes from 0 (starting value) down to extend lifter
+        hw.lifter.targetPosition = Hardware.LIFTER_TOP_POSITION
+        hw.lifter.power = 0.5
+        while (hw.lifter.isBusy && opModeIsActive()) {
+            idle()
+        }
+        hw.lifter.power = 0.0
+
+        // Turn to get out of cage
+        hw.rightDrive.power = -Hardware.DRIVE_SLOW
+        hw.leftDrive.power = Hardware.DRIVE_SLOW
+        sleep(1000)
+
+        hw.rightDrive.power = -0.3
+        hw.leftDrive.power = -0.3
+
+        sleep(500)
+
+        // Turn until reaching the detector
+        hw.rightDrive.power = 0.35
+        hw.leftDrive.power = -0.35
+
+        while (!detector.aligned && opModeIsActive()) {
+            telemetry.clearAll()
+            telemetry.addLine("Gold detector phase")
+            telemetry.addData("X pos", detector.xPosition)
+            telemetry.update()
+
+            idle()
+        }
+        // Reached alignment.
+        detector.disable()
+        telemetry.addLine("Gold Driving Phase")
+        telemetry.update()
+
+        hw.leftDrive.power = -0.3
+        hw.rightDrive.power = -0.3
+
+        sleep(2000)
+
+        hw.leftDrive.power = 0.0
+        hw.rightDrive.power = 0.0
 //
         // TODO drive to depot
 //        navigateToPoint(hw, trackables, )
 
-        // Release the claww
-        hw.leftGrabber.position = 0.0
-        hw.rightGrabber.position = 0.0
-        // Reverse a little
-        hw.leftDrive.power = -Hardware.DRIVE_SLOW
-        hw.rightDrive.power = -Hardware.DRIVE_SLOW
-        sleep(500)
-        hw.leftDrive.power = 0.0
-        hw.rightDrive.power = 0.0
-        // TODO navigate to crater
+//        // Release the claww
+//        hw.leftGrabber.position = 0.0
+//        hw.rightGrabber.position = 0.0
+//        // Reverse a little
+//        hw.leftDrive.power = -Hardware.DRIVE_SLOW
+//        hw.rightDrive.power = -Hardware.DRIVE_SLOW
+//        sleep(500)
+//        hw.leftDrive.power = 0.0
+//        hw.rightDrive.power = 0.0
+//        // TODO navigate to crater
 
         telemetry.addLine("Done, retracting lifter. Good luck on manual!")
         telemetry.update()

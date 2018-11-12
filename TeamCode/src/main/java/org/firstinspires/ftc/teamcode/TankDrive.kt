@@ -58,19 +58,59 @@ class TankDrive : LinearOpMode() {
     }
 
     private fun runArm(hw: Hardware) {
-        hw.arm.power = -gamepad2.left_stick_y.toDouble()
-        hw.wrist.power = -gamepad2.right_stick_y.toDouble()
-        hw.armExtender.power = when {
-            gamepad2.dpad_up -> 1.0
-            gamepad2.dpad_down -> -1.0
-            else -> 0.0
+        hw.arm.apply {
+            mode = DcMotor.RunMode.RUN_TO_POSITION
+            if (!isBusy) {
+                when {
+                    gamepad2.left_stick_y > 0 -> {
+                        power = -0.75
+                        targetPosition -= 100
+                    }
+                    gamepad2.left_stick_y < 0 -> {
+                        power = 0.75
+                        targetPosition += 100
+                    }
+                }
+            }
         }
-        telemetry.addData("Extender encoder value", hw.arm.currentPosition)
+
+        // Just direct set power because we don't have an encoder on it
+        hw.wrist.power = -gamepad2.right_stick_y.toDouble()
+
+        hw.armExtender.apply {
+            if (gamepad2.left_bumper) {
+                mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+                power = when {
+                    gamepad2.dpad_up -> 0.5
+                    gamepad2.dpad_down -> -0.5
+                    else -> 0.0
+                }
+            } else {
+                mode = DcMotor.RunMode.RUN_TO_POSITION
+
+                when {
+                    gamepad2.dpad_up -> {
+                        power = 0.5
+                        targetPosition = Hardware.ARM_EXTENDED
+                    }
+                    gamepad2.dpad_down -> {
+                        power = -0.5
+                        targetPosition = Hardware.ARM_RETRACTED
+                    }
+                }
+            }
+        }
+
+        telemetry.addData("Arm encoder value", hw.arm.currentPosition)
+        telemetry.addData("Arm target position", hw.arm.targetPosition)
+        telemetry.addData("Wrist encoder value", hw.wrist.currentPosition)
+        telemetry.addData("Arm extender encoder value", hw.armExtender.currentPosition)
+        telemetry.addData("Arm extender target position", hw.armExtender.targetPosition)
     }
 
     private fun runArmGrabber(hw: Hardware) {
-        hw.leftGrabber.position = gamepad1.left_trigger.toDouble()
-        hw.rightGrabber.position = gamepad1.right_trigger.toDouble()
+        hw.leftGrabber.position = 1 - gamepad1.left_trigger.toDouble()
+        hw.rightGrabber.position = 1 - gamepad1.right_trigger.toDouble()
     }
 
     override fun runOpMode() {
