@@ -64,11 +64,11 @@ class TankDrive : LinearOpMode() {
                 when {
                     gamepad2.left_stick_y > 0 -> {
                         power = -0.75
-                        targetPosition -= 100
+                        targetPosition = Math.min(targetPosition - 100, Hardware.ARM_DOWN)
                     }
                     gamepad2.left_stick_y < 0 -> {
                         power = 0.75
-                        targetPosition += 100
+                        targetPosition = Math.max(targetPosition + 100, Hardware.ARM_UP)
                     }
                 }
             }
