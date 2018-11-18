@@ -292,7 +292,7 @@ abstract class BaseAutonomous : LinearOpMode() {
         telemetry.update()
 
         hw.lifter.targetPosition = Hardware.LIFTER_AUTO_END_POSITION
-        hw.lifter.power = -0.5
+        hw.lifter.power = 0.5
         while (hw.lifter.isBusy && opModeIsActive()) {
             idle()
         }

@@ -49,7 +49,7 @@ class TankDrive : LinearOpMode() {
                     hw.lifter.targetPosition = Hardware.LIFTER_TOP_POSITION
                 }
                 gamepad1.dpad_down -> {
-                    hw.lifter.power = -1.0
+                    hw.lifter.power = 1.0
                     hw.lifter.targetPosition = Hardware.LIFTER_BOTTOM_POSITION
                 }
             }
@@ -63,7 +63,7 @@ class TankDrive : LinearOpMode() {
             if (!isBusy) {
                 when {
                     gamepad2.left_stick_y > 0 -> {
-                        power = -0.75
+                        power = 0.75
                         targetPosition = Math.max(targetPosition - 100, Hardware.ARM_DOWN)
                     }
                     gamepad2.left_stick_y < 0 -> {
@@ -94,7 +94,7 @@ class TankDrive : LinearOpMode() {
                         targetPosition = Hardware.ARM_EXTENDED
                     }
                     gamepad2.dpad_down -> {
-                        power = -0.5
+                        power = 0.5
                         targetPosition = Hardware.ARM_RETRACTED
                     }
                 }
