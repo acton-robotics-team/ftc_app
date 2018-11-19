@@ -57,6 +57,8 @@ class TankDrive : LinearOpMode() {
         telemetry.addData("Lifter encoder value", hw.lifter.currentPosition)
     }
 
+    private var armTarget = Hardware.ARM_DOWN
+
     private fun runArm(hw: Hardware) {
         hw.arm.apply {
             if (gamepad2.left_bumper) {
@@ -65,12 +67,13 @@ class TankDrive : LinearOpMode() {
             } else {
                 mode = DcMotor.RunMode.RUN_TO_POSITION
                 power = 0.3
-                targetPosition = when {
+                armTarget = when {
                     gamepad2.x -> Hardware.ARM_DOWN
-                    gamepad2.y -> Hardware.ARM_UP / 2
+                    gamepad2.y -> Hardware.ARM_HALF_UP
                     gamepad2.b -> Hardware.ARM_UP
-                    else -> 0
+                    else -> armTarget
                 }
+                targetPosition = armTarget
             }
         }
 
