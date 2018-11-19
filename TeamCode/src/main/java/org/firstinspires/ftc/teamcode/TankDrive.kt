@@ -59,17 +59,17 @@ class TankDrive : LinearOpMode() {
 
     private fun runArm(hw: Hardware) {
         hw.arm.apply {
-            mode = DcMotor.RunMode.RUN_TO_POSITION
-            if (!isBusy) {
-                when {
-                    gamepad2.left_stick_y > 0 -> {
-                        power = 0.75
-                        targetPosition = Math.max(targetPosition - 100, Hardware.ARM_DOWN)
-                    }
-                    gamepad2.left_stick_y < 0 -> {
-                        power = 0.75
-                        targetPosition = Math.min(targetPosition + 100, Hardware.ARM_UP)
-                    }
+            if (gamepad2.left_bumper) {
+                mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+                power = 0.5 * gamepad2.left_stick_y
+            } else {
+                mode = DcMotor.RunMode.RUN_TO_POSITION
+                power = 0.3
+                targetPosition = when {
+                    gamepad2.x -> Hardware.ARM_DOWN
+                    gamepad2.y -> Hardware.ARM_UP / 2
+                    gamepad2.b -> Hardware.ARM_UP
+                    else -> 0
                 }
             }
         }

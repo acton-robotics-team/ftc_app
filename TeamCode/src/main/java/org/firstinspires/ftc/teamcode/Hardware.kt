@@ -30,9 +30,9 @@ class Hardware(hwMap: HardwareMap) {
         rightDrive.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         leftDrive.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         leftDrive.direction = DcMotorSimple.Direction.REVERSE
-        arm.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         arm.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        arm.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        arm.mode = DcMotor.RunMode.RUN_TO_POSITION
+
         armExtender.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         armExtender.mode = DcMotor.RunMode.RUN_USING_ENCODER
         armExtender.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
@@ -84,7 +84,7 @@ class Hardware(hwMap: HardwareMap) {
         const val LIFTER_AUTO_END_POSITION = 0 + 5050
 
         const val ARM_DOWN = 0
-        const val ARM_UP = 2104
+        const val ARM_UP = -2104
         const val ARM_RETRACTED = 0
         const val ARM_EXTENDED = 11045 // placeholder
 
