@@ -66,7 +66,7 @@ class TankDrive : LinearOpMode() {
                 power = 0.5 * gamepad2.left_stick_y
             } else {
                 mode = DcMotor.RunMode.RUN_TO_POSITION
-                power = 0.3
+                power = 0.5
                 armTarget = when {
                     gamepad2.x -> Hardware.ARM_DOWN
                     gamepad2.y -> Hardware.ARM_HALF_UP
