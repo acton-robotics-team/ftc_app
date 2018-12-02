@@ -61,14 +61,16 @@ class TankDrive : LinearOpMode() {
 
     private fun runArm(hw: Hardware) {
         hw.arm.apply {
-            if (gamepad2.left_bumper) {
+            if (gamepad2.right_bumper) {
                 mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
-                power = 0.5 * gamepad2.left_stick_y
-            } else {
+                power = 0.5 * gamepad2.right_stick_y
+            } else if (gamepad2.x) {
+                mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+                power = 0.0
+            } else if (gamepad2.y || gamepad2.b) {
                 mode = DcMotor.RunMode.RUN_TO_POSITION
                 power = 0.5
                 armTarget = when {
-                    gamepad2.x -> Hardware.ARM_DOWN
                     gamepad2.y -> Hardware.ARM_HALF_UP
                     gamepad2.b -> Hardware.ARM_UP
                     else -> armTarget
@@ -78,25 +80,25 @@ class TankDrive : LinearOpMode() {
         }
 
         // Just direct set power because we don't have an encoder on it
-        hw.wrist.power = -gamepad2.right_stick_y.toDouble()
+        hw.wrist.power = 0.4 * -gamepad2.left_stick_y.toDouble()
 
         hw.armExtender.apply {
             if (gamepad2.left_bumper) {
-                mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+                mode = DcMotor.RunMode.RUN_USING_ENCODER
                 power = when {
                     gamepad2.dpad_up -> 0.5
                     gamepad2.dpad_down -> -0.5
                     else -> 0.0
                 }
             } else {
-                mode = DcMotor.RunMode.RUN_TO_POSITION
-
                 when {
                     gamepad2.dpad_up -> {
+                        mode = DcMotor.RunMode.RUN_TO_POSITION
                         power = 0.5
                         targetPosition = Hardware.ARM_EXTENDED
                     }
                     gamepad2.dpad_down -> {
+                        mode = DcMotor.RunMode.RUN_TO_POSITION
                         power = 0.5
                         targetPosition = Hardware.ARM_RETRACTED
                     }

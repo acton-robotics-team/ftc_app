@@ -84,7 +84,7 @@ class Hardware(hwMap: HardwareMap) {
         const val LIFTER_AUTO_END_POSITION = 0 + 5050
 
         const val ARM_DOWN = 0
-        const val ARM_HALF_UP = Hardware.ARM_UP / 2
+        const val ARM_HALF_UP = -500
         const val ARM_UP = -2104
         const val ARM_RETRACTED = 0
         const val ARM_EXTENDED = 11045 // placeholder
