@@ -95,12 +95,12 @@ class TankDrive : LinearOpMode() {
                     gamepad2.dpad_up -> {
                         mode = DcMotor.RunMode.RUN_TO_POSITION
                         power = 0.5
-                        targetPosition = Hardware.ARM_EXTENDED
+                        targetPosition = Hardware.ARM_FULLY_EXTENDED
                     }
                     gamepad2.dpad_down -> {
                         mode = DcMotor.RunMode.RUN_TO_POSITION
                         power = 0.5
-                        targetPosition = Hardware.ARM_RETRACTED
+                        targetPosition = Hardware.ARM_BARELY_OFF_GROUND
                     }
                 }
             }

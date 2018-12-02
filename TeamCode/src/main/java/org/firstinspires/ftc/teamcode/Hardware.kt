@@ -86,8 +86,9 @@ class Hardware(hwMap: HardwareMap) {
         const val ARM_DOWN = 0
         const val ARM_HALF_UP = -500
         const val ARM_UP = -2104
-        const val ARM_RETRACTED = 0
-        const val ARM_EXTENDED = 11045 // placeholder
+        const val ARM_HANGING_START = 0
+        const val ARM_BARELY_OFF_GROUND = 7000
+        const val ARM_FULLY_EXTENDED = 13770 // placeholder
 
         const val DRIVE_ENCODER_TICKS_PER_CM = 1000.0 / 27
     }
