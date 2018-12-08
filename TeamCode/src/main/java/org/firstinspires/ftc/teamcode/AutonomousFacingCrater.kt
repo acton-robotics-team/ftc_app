@@ -4,5 +4,5 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 
 @Autonomous(name = "Autonomous: Facing crater")
 class AutonomousFacingCrater : BaseAutonomous() {
-    override val startLocation: AutonomousStartLocation = AutonomousStartLocation.CRATER
+    override val startLocation: AutonomousStartLocation = AutonomousStartLocation.FACING_CRATER
 }

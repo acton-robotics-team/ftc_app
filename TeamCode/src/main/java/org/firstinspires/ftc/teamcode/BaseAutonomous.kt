@@ -55,6 +55,18 @@ abstract class BaseAutonomous : LinearOpMode() {
     protected abstract val startLocation: AutonomousStartLocation
     private val runtime = ElapsedTime()
 
+    private fun log(entry: String) {
+        // Get caller name
+        val stacktrace = Thread.currentThread().stackTrace
+        val e = stacktrace[2]
+        val methodName = e.methodName
+
+        val logHeader = "[${String.format("%.2f", runtime.seconds())}] [$methodName]"
+
+        telemetry.log().add("$logHeader $entry")
+        telemetry.update()
+    }
+
     private fun getCurrentLocation(trackables: VuforiaTrackables): OpenGLMatrix? {
         telemetry.clearAll()
         telemetry.addLine("Looking for current location...")
@@ -117,26 +129,24 @@ abstract class BaseAutonomous : LinearOpMode() {
 
         when {
             turnDeg > 0 -> {
-                telemetry.log().add("Turning counterclockwise to point toward target point")
+                log("Turning counterclockwise to point toward target point")
                 hw.leftDrive.power = -Hardware.DRIVE_SLOWEST
                 hw.rightDrive.power = Hardware.DRIVE_SLOWEST
 
             }
             turnDeg < 0 -> {
-                telemetry.log().add("Turning clockwise to point toward target point")
+                log("Turning clockwise to point toward target point")
                 hw.leftDrive.power = Hardware.DRIVE_SLOWEST
                 hw.rightDrive.power = -Hardware.DRIVE_SLOWEST
             }
         }
-        telemetry.log().add("Waiting to reach correct heading")
-        telemetry.update()
+        log("Waiting to reach correct heading")
         while (opModeIsActive()) {
             val currentImuHeadingDeg = hw.getImuHeading()
             imuHeadingTelemetry.setValue(currentImuHeadingDeg)
 
             if (Math.abs(currentImuHeadingDeg - endImuHeadingDeg) < 10) {
-                telemetry.log().add("Reached within ten degrees of correct heading")
-                telemetry.update()
+                log("Reached within ten degrees of correct heading")
                 break
             } else {
                 idle()
@@ -158,7 +168,7 @@ abstract class BaseAutonomous : LinearOpMode() {
 
         val requiredEncoderTicks = (distanceMm / 10 * Hardware.DRIVE_ENCODER_TICKS_PER_CM).roundToInt()
 
-        telemetry.log().add("Driving $distanceMm mm ($requiredEncoderTicks ticks) to end point")
+        log("Driving $distanceMm mm ($requiredEncoderTicks ticks) to end point")
         val leftEncoderTelemetry = telemetry.addData("Left drive encoder", 0)
         val rightEncoderTelemetry = telemetry.addData("Right drive encoder", 0)
         telemetry.update()
@@ -181,15 +191,40 @@ abstract class BaseAutonomous : LinearOpMode() {
         }
     }
 
+    /**
+     * Turns by X degrees (relative)
+     */
+    private fun turn(hw: Hardware, deg: Float) {
+        val startHeading = hw.getImuHeading()
+        log("Starting turn of $deg degrees from initial heading $startHeading")
+        val targetHeading = calculateImuHeading(startHeading, deg)
+        log("Target IMU heading: $targetHeading deg")
+
+        if (deg > 0) {
+            // Turn right (clockwise)
+            hw.rightDrive.power = -Hardware.DRIVE_SLOW
+            hw.leftDrive.power = Hardware.DRIVE_SLOW
+        } else {
+            // Turn left (counterclockwise)
+            hw.rightDrive.power = Hardware.DRIVE_SLOW
+            hw.leftDrive.power = -Hardware.DRIVE_SLOW
+        }
+
+        val headingTelemetry = telemetry.addData("Current heading", hw.getImuHeading())
+        while (opModeIsActive() && Math.abs(hw.getImuHeading() - targetHeading) > 10) {
+            headingTelemetry.setValue(hw.getImuHeading())
+            idle()
+        }
+        log("Finished turn.")
+    }
+
     override fun runOpMode() {
         telemetry.isAutoClear = false
-        telemetry.addLine("Wait for initialization! Do not start!")
-        telemetry.update()
+        log("Wait for initialization! Do not start!")
 
         val hw = Hardware(hardwareMap)
 
-        telemetry.addLine("Initialized all hardware.")
-        telemetry.update()
+        log("Initialized all hardware.")
 
         val detector = GoldAlignDetector()
         detector.apply {
@@ -205,33 +240,23 @@ abstract class BaseAutonomous : LinearOpMode() {
             ratioScorer.perfectRatio = 1.0
             enable()
         }
-
-        telemetry.addLine("Initialized DogeCV.")
-        telemetry.update()
+        log("Initialized DogeCV.")
 
         val vuforia = createVuforia(hardwareMap, hw)
-        telemetry.addLine("Created Vuforia.")
-        telemetry.update()
+        log("Created Vuforia.")
 
         val trackables = configureVuforiaTrackables(hw, vuforia)
-        telemetry.addLine("Initialized Vuforia trackables.")
-        telemetry.update()
-
-        telemetry.addLine("Started Vuforia with DogeCV integration.")
+        log("Initialized Vuforia trackables.")
 
         telemetry.addData("Status", "Initialized and ready to start!")
         telemetry.update()
         waitForStart()
         runtime.reset()
 
-        hw.lifter.mode = DcMotor.RunMode.RUN_TO_POSITION
-        // goes from (starting value) down to extend lifter
-        hw.lifter.targetPosition = Hardware.LIFTER_AUTO_TOP_POSITION
-        hw.lifter.power = 0.5
-        while (hw.lifter.isBusy && opModeIsActive()) {
-            idle()
-        }
-        hw.lifter.power = 0.0
+        // Lock in grabbers
+        hw.leftGrabber.position = Hardware.GRABBER_GRABBED
+        hw.rightGrabber.position = Hardware.GRABBER_GRABBED
+        hw.lifter.moveToPosition(Hardware.LIFTER_AUTO_DROP_DOWN_POSITION, 0.5, false)
 
         // Turn to get out of cage
         hw.rightDrive.power = -Hardware.DRIVE_SLOW
@@ -250,7 +275,7 @@ abstract class BaseAutonomous : LinearOpMode() {
         val samplingTimeout = ElapsedTime()
         while (!detector.aligned && opModeIsActive() && samplingTimeout.seconds() < 10) {
             telemetry.clearAll()
-            telemetry.addLine("Gold detector phase")
+            log("Phase: Gold detection")
             telemetry.addData("X pos", detector.xPosition)
             telemetry.update()
 
@@ -259,8 +284,7 @@ abstract class BaseAutonomous : LinearOpMode() {
         // Reached alignment? Maybe or maybe hit 10s timeout
         if (detector.aligned) {
             // We are aligned
-            telemetry.addLine("Gold Driving Phase")
-            telemetry.update()
+            log("Phase: Gold driving")
 
             hw.withDriveMotors { it.power = -Hardware.DRIVE_SLOWEST }
 
@@ -271,30 +295,37 @@ abstract class BaseAutonomous : LinearOpMode() {
 
         // Always disable the detector
         detector.disable()
-        // Disable vuforia for now
-        trackables.deactivate()
-//
-        // TODO drive to depot
-//        navigateToPoint(hw, trackables, )
 
-//        // Release the claww
-//        hw.leftGrabber.position = 0.0
-//        hw.rightGrabber.position = 0.0
-//        // Reverse a little
-//        hw.leftDrive.power = -Hardware.DRIVE_SLOW
-//        hw.rightDrive.power = -Hardware.DRIVE_SLOW
-//        sleep(500)
-//        hw.leftDrive.power = 0.0
-//        hw.rightDrive.power = 0.0
-//        // TODO navigate to crater
+        if (startLocation == AutonomousStartLocation.FACING_DEPOT) {
+            // Navigate toward the depot
+            hw.withDriveMotors { it.power = -Hardware.DRIVE_SLOW }
+            sleep(500)
+            hw.withDriveMotors { it.power = 0.0 }
+            turn(hw, 180f) // turn around
 
-        telemetry.addLine("Done, retracting lifter. Good luck on manual!")
-        telemetry.update()
+            // Extend the arm
+            hw.arm.moveToPosition(Hardware.ARM_HALF_UP, 0.5, true)
+            hw.armExtender.moveToPosition(Hardware.ARM_EXTENDED, 0.5, true)
 
-        hw.lifter.targetPosition = Hardware.LIFTER_AUTO_END_POSITION
-        hw.lifter.power = 0.5
-        while (hw.lifter.isBusy && opModeIsActive()) {
-            idle()
+            // Open the claww for a second
+            hw.rightGrabber.position = Hardware.GRABBER_RELEASED
+            hw.leftGrabber.position = Hardware.GRABBER_RELEASED
+            sleep(100)
+            hw.rightGrabber.position = Hardware.GRABBER_GRABBED
+            hw.leftGrabber.position = Hardware.GRABBER_GRABBED
+
+            // lit, retract the machinery and keep going
+            hw.armExtender.moveToPosition(Hardware.ARM_RETRACTED, 0.5, false)
+            hw.arm.power = 0.0
+
+            // Drive to crater
+            // TODO add
+            navigateToPoint(hw, trackables, 1f, 1f)
         }
+
+        log("Done, retracting lifter. Good luck on manual!")
+
+        // Reset everything to normal positions
+        hw.lifter.moveToPosition(Hardware.LIFTER_AUTO_END_POSITION, 0.5, false)
     }
 }
