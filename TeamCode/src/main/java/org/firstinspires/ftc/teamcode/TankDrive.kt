@@ -67,12 +67,12 @@ class TankDrive : LinearOpMode() {
             } else if (gamepad2.x) {
                 mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
                 power = 0.0
-            } else if (gamepad2.y || gamepad2.b) {
+            } else if (gamepad2.y || gamepad2.a) {
                 mode = DcMotor.RunMode.RUN_TO_POSITION
                 power = 0.5
                 armTarget = when {
                     gamepad2.y -> Hardware.ARM_HALF_UP
-                    gamepad2.b -> Hardware.ARM_UP
+                    gamepad2.a -> Hardware.ARM_UP
                     else -> armTarget
                 }
                 targetPosition = armTarget
@@ -95,12 +95,12 @@ class TankDrive : LinearOpMode() {
                     gamepad2.dpad_up -> {
                         mode = DcMotor.RunMode.RUN_TO_POSITION
                         power = 0.5
-                        targetPosition = Hardware.ARM_FULLY_EXTENDED
+                        targetPosition = Hardware.ARM_EXTENDED
                     }
                     gamepad2.dpad_down -> {
                         mode = DcMotor.RunMode.RUN_TO_POSITION
                         power = 0.5
-                        targetPosition = Hardware.ARM_BARELY_OFF_GROUND
+                        targetPosition = Hardware.ARM_RETRACTED
                     }
                 }
             }
@@ -129,7 +129,9 @@ class TankDrive : LinearOpMode() {
         runtime.reset()
 
         // run until the end of the match (driver presses STOP)
+        val loopTime = ElapsedTime()
         while (opModeIsActive()) {
+            loopTime.reset()
             runTankDrive(hw)
             runLifter(hw)
             runArm(hw)
@@ -137,6 +139,7 @@ class TankDrive : LinearOpMode() {
 
             // Show the elapsed game time
             telemetry.addData("Status", "Run Time: " + runtime.toString())
+            telemetry.addData("Loop time", loopTime.milliseconds().toString() + "ms")
             telemetry.update()
         }
     }

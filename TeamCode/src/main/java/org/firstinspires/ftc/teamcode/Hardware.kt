@@ -80,15 +80,14 @@ class Hardware(hwMap: HardwareMap) {
 
         const val LIFTER_BOTTOM_POSITION = 0
         const val LIFTER_TOP_POSITION = 8000
-        const val LIFTER_AUTO_TOP_POSITION = 8000 + 5050
-        const val LIFTER_AUTO_END_POSITION = 0 + 5050
+        const val LIFTER_AUTO_DROP_DOWN_POSITION = LIFTER_TOP_POSITION
+        const val LIFTER_AUTO_END_POSITION = LIFTER_BOTTOM_POSITION
 
         const val ARM_DOWN = 0
         const val ARM_HALF_UP = -500
-        const val ARM_UP = -2104
-        const val ARM_HANGING_START = 0
-        const val ARM_BARELY_OFF_GROUND = 7000
-        const val ARM_FULLY_EXTENDED = 13770 // placeholder
+        const val ARM_UP = -1800
+        const val ARM_RETRACTED = 0
+        const val ARM_EXTENDED = 11253
 
         const val DRIVE_ENCODER_TICKS_PER_CM = 1000.0 / 27
     }
