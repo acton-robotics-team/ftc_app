@@ -11,9 +11,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference
 
 class Hardware(hwMap: HardwareMap) {
-
-    val rightDrive: DcMotor = hwMap.dcMotor.get("right_motor")
-    val leftDrive: DcMotor = hwMap.dcMotor.get("left_motor")
+    private val frontRightDrive: DcMotor = hwMap.dcMotor.get("front_right")
+    private val frontLeftDrive: DcMotor = hwMap.dcMotor.get("front_left")
+    val backRightDrive: DcMotor = hwMap.dcMotor.get("back_right")
+    val backLeftDrive: DcMotor = hwMap.dcMotor.get("back_left")
     val lifter: DcMotor = hwMap.dcMotor.get("lifter")
     val arm: DcMotor = hwMap.dcMotor.get("arm")
     val armExtender: DcMotor = hwMap.dcMotor.get("arm_extender")
@@ -27,9 +28,12 @@ class Hardware(hwMap: HardwareMap) {
     val webcam: WebcamName = hwMap.get(WebcamName::class.java, "webcam")
 
     init {
-        rightDrive.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        leftDrive.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        leftDrive.direction = DcMotorSimple.Direction.REVERSE
+        frontRightDrive.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        frontLeftDrive.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        backRightDrive.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        backLeftDrive.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        frontLeftDrive.direction = DcMotorSimple.Direction.REVERSE
+        backLeftDrive.direction = DcMotorSimple.Direction.REVERSE
         arm.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         arm.mode = DcMotor.RunMode.RUN_TO_POSITION
 
@@ -68,12 +72,26 @@ class Hardware(hwMap: HardwareMap) {
                 .thirdAngle
     }
 
-    fun withDriveMotors(fn: (motor: DcMotor) -> Unit) {
-        fn(leftDrive)
-        fn(rightDrive)
+    fun setDrivePower(power: Double) {
+        setLeftDrivePower(power)
+        setRightDrivePower(power)
+    }
+
+    fun setLeftDrivePower(power: Double) {
+        frontLeftDrive.power = power
+        backLeftDrive.power = TETRIX_TO_NEVEREST_POWER * power
+    }
+
+    fun setRightDrivePower(power: Double) {
+        frontRightDrive.power = power
+        backRightDrive.power = TETRIX_TO_NEVEREST_POWER * power
     }
 
     companion object {
+        const val FRONT_TETRIX_RPM = 152.0
+        const val FRONT_NEVEREST_RPM = 160.0
+        const val TETRIX_TO_NEVEREST_POWER = FRONT_NEVEREST_RPM / FRONT_TETRIX_RPM
+
         const val DRIVE_SLOWEST = 0.35
         const val DRIVE_SLOW = 0.5
         const val DRIVE_FAST = 1.0
@@ -82,7 +100,7 @@ class Hardware(hwMap: HardwareMap) {
         const val GRABBER_RELEASED = 0.0
 
         const val LIFTER_BOTTOM_POSITION = 0
-        const val LIFTER_TOP_POSITION = 8000
+        const val LIFTER_TOP_POSITION = 13870
         const val LIFTER_AUTO_DROP_DOWN_POSITION = LIFTER_TOP_POSITION
         const val LIFTER_AUTO_END_POSITION = LIFTER_BOTTOM_POSITION
 

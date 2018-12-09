@@ -130,14 +130,14 @@ abstract class BaseAutonomous : LinearOpMode() {
         when {
             turnDeg > 0 -> {
                 log("Turning counterclockwise to point toward target point")
-                hw.leftDrive.power = -Hardware.DRIVE_SLOWEST
-                hw.rightDrive.power = Hardware.DRIVE_SLOWEST
+                hw.setLeftDrivePower(-Hardware.DRIVE_SLOWEST)
+                hw.setRightDrivePower(Hardware.DRIVE_SLOWEST)
 
             }
             turnDeg < 0 -> {
                 log("Turning clockwise to point toward target point")
-                hw.leftDrive.power = Hardware.DRIVE_SLOWEST
-                hw.rightDrive.power = -Hardware.DRIVE_SLOWEST
+                hw.setLeftDrivePower(Hardware.DRIVE_SLOWEST)
+                hw.setRightDrivePower(-Hardware.DRIVE_SLOWEST)
             }
         }
         log("Waiting to reach correct heading")
@@ -154,17 +154,16 @@ abstract class BaseAutonomous : LinearOpMode() {
         }
 
         // Drive toward point until encoders read the distance traveled
-        hw.leftDrive.power = 0.0
-        hw.rightDrive.power = 0.0
+        hw.setDrivePower(0.0)
         val distanceMm = distanceTo(xMm, yMm, targetXMm, targetYMm)
         drive(hw, distanceMm.toDouble())
     }
 
     private fun drive(hw: Hardware, distanceMm: Double) {
-        hw.withDriveMotors {
-            it.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-            it.mode = DcMotor.RunMode.RUN_TO_POSITION
-        }
+        hw.backRightDrive.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        hw.backLeftDrive.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        hw.backRightDrive.mode = DcMotor.RunMode.RUN_TO_POSITION
+        hw.backLeftDrive.mode = DcMotor.RunMode.RUN_TO_POSITION
 
         val requiredEncoderTicks = (distanceMm / 10 * Hardware.DRIVE_ENCODER_TICKS_PER_CM).roundToInt()
 
@@ -173,22 +172,20 @@ abstract class BaseAutonomous : LinearOpMode() {
         val rightEncoderTelemetry = telemetry.addData("Right drive encoder", 0)
         telemetry.update()
 
-        hw.withDriveMotors {
-            it.targetPosition = requiredEncoderTicks
-            it.power = Hardware.DRIVE_SLOW
-        }
+        hw.setDrivePower(Hardware.DRIVE_SLOW)
+        hw.backLeftDrive.targetPosition = requiredEncoderTicks
+        hw.backRightDrive.targetPosition = requiredEncoderTicks
 
-        while (hw.leftDrive.isBusy || hw.rightDrive.isBusy) {
-            leftEncoderTelemetry.setValue(hw.leftDrive.currentPosition)
-            rightEncoderTelemetry.setValue(hw.rightDrive.currentPosition)
+        while (hw.backRightDrive.isBusy || hw.backLeftDrive.isBusy) {
+            leftEncoderTelemetry.setValue(hw.backLeftDrive.currentPosition)
+            rightEncoderTelemetry.setValue(hw.backRightDrive.currentPosition)
             telemetry.update()
             idle()
         }
 
-        hw.withDriveMotors {
-            it.power = 0.0
-            it.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
-        }
+        hw.setDrivePower(0.0)
+        hw.backLeftDrive.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+        hw.backRightDrive.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
     }
 
     /**
@@ -202,12 +199,12 @@ abstract class BaseAutonomous : LinearOpMode() {
 
         if (deg > 0) {
             // Turn right (clockwise)
-            hw.rightDrive.power = -Hardware.DRIVE_SLOW
-            hw.leftDrive.power = Hardware.DRIVE_SLOW
+            hw.setRightDrivePower(-Hardware.DRIVE_SLOW)
+            hw.setLeftDrivePower(Hardware.DRIVE_SLOW)
         } else {
             // Turn left (counterclockwise)
-            hw.rightDrive.power = Hardware.DRIVE_SLOW
-            hw.leftDrive.power = -Hardware.DRIVE_SLOW
+            hw.setRightDrivePower(Hardware.DRIVE_SLOW)
+            hw.setLeftDrivePower(-Hardware.DRIVE_SLOW)
         }
 
         val headingTelemetry = telemetry.addData("Current heading", hw.getImuHeading())
@@ -259,18 +256,17 @@ abstract class BaseAutonomous : LinearOpMode() {
         hw.lifter.moveToPosition(Hardware.LIFTER_AUTO_DROP_DOWN_POSITION, 0.5, false)
 
         // Turn to get out of cage
-        hw.rightDrive.power = -Hardware.DRIVE_SLOW
-        hw.leftDrive.power = Hardware.DRIVE_SLOW
-        sleep(1000)
+        hw.setRightDrivePower(-Hardware.DRIVE_SLOW)
+        hw.setLeftDrivePower(Hardware.DRIVE_SLOW)
 
         // Back out
-        hw.withDriveMotors { it.power = -Hardware.DRIVE_SLOWEST }
+        hw.setDrivePower(-Hardware.DRIVE_SLOWEST)
 
         sleep(500)
 
         // Turn until reaching the detector
-        hw.rightDrive.power = Hardware.DRIVE_SLOWEST
-        hw.leftDrive.power = -Hardware.DRIVE_SLOWEST
+        hw.setRightDrivePower(Hardware.DRIVE_SLOWEST)
+        hw.setLeftDrivePower(-Hardware.DRIVE_SLOWEST)
 
         val samplingTimeout = ElapsedTime()
         while (!detector.aligned && opModeIsActive() && samplingTimeout.seconds() < 10) {
@@ -286,21 +282,21 @@ abstract class BaseAutonomous : LinearOpMode() {
             // We are aligned
             log("Phase: Gold driving")
 
-            hw.withDriveMotors { it.power = -Hardware.DRIVE_SLOWEST }
+            hw.setDrivePower(-Hardware.DRIVE_SLOWEST)
 
             sleep(2000)
         }
 
-        hw.withDriveMotors { it.power = 0.0 }
+        hw.setDrivePower(0.0)
 
         // Always disable the detector
         detector.disable()
 
         if (startLocation == AutonomousStartLocation.FACING_DEPOT) {
             // Navigate toward the depot
-            hw.withDriveMotors { it.power = -Hardware.DRIVE_SLOW }
+            hw.setDrivePower(-Hardware.DRIVE_SLOW)
             sleep(500)
-            hw.withDriveMotors { it.power = 0.0 }
+            hw.setDrivePower(0.0)
             turn(hw, 180f) // turn around
 
             // Extend the arm

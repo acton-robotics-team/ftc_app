@@ -26,8 +26,8 @@ class TankDrive : LinearOpMode() {
     private fun runTankDrive(hw: Hardware) {
         val powerModifier = if (gamepad1.a) Hardware.DRIVE_SLOW else Hardware.DRIVE_FAST
 
-        hw.leftDrive.power = -gamepad1.left_stick_y * powerModifier
-        hw.rightDrive.power = -gamepad1.right_stick_y * powerModifier
+        hw.setLeftDrivePower(-gamepad1.left_stick_y * powerModifier)
+        hw.setRightDrivePower(-gamepad1.right_stick_y * powerModifier)
     }
 
     /**
@@ -35,23 +35,15 @@ class TankDrive : LinearOpMode() {
      */
     private fun runLifter(hw: Hardware) {
         if (gamepad1.left_bumper) {
-            hw.lifter.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
-            hw.lifter.power = when {
-                gamepad1.dpad_up -> 0.5
-                gamepad1.dpad_down -> -0.5
-                else -> 0.0
-            }
-        } else {
             hw.lifter.mode = DcMotor.RunMode.RUN_TO_POSITION
+            hw.lifter.power = 1.0
+            hw.lifter.targetPosition = Hardware.LIFTER_TOP_POSITION
+        } else {
+            hw.lifter.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
             when {
-                gamepad1.dpad_up -> {
-                    hw.lifter.power = 1.0
-                    hw.lifter.targetPosition = Hardware.LIFTER_TOP_POSITION
-                }
-                gamepad1.dpad_down -> {
-                    hw.lifter.power = 1.0
-                    hw.lifter.targetPosition = Hardware.LIFTER_BOTTOM_POSITION
-                }
+                gamepad1.dpad_up -> hw.lifter.power = 0.5
+                gamepad1.dpad_down -> hw.lifter.power = -0.5
+                else -> hw.lifter.power = 0.0
             }
         }
         telemetry.addData("Lifter encoder value", hw.lifter.currentPosition)
