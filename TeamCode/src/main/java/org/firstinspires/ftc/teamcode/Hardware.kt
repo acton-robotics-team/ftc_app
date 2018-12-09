@@ -11,8 +11,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference
 
 class Hardware(hwMap: HardwareMap) {
-    private val frontRightDrive: DcMotor = hwMap.dcMotor.get("front_right")
-    private val frontLeftDrive: DcMotor = hwMap.dcMotor.get("front_left")
+    val frontRightDrive: DcMotor = hwMap.dcMotor.get("front_right")
+    val frontLeftDrive: DcMotor = hwMap.dcMotor.get("front_left")
     val backRightDrive: DcMotor = hwMap.dcMotor.get("back_right")
     val backLeftDrive: DcMotor = hwMap.dcMotor.get("back_left")
     val lifter: DcMotor = hwMap.dcMotor.get("lifter")

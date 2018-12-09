@@ -239,16 +239,19 @@ abstract class BaseAutonomous : LinearOpMode() {
         }
         log("Initialized DogeCV.")
 
-        val vuforia = createVuforia(hardwareMap, hw)
+//        val vuforia = createVuforia(hardwareMap, hw)
         log("Created Vuforia.")
 
-        val trackables = configureVuforiaTrackables(hw, vuforia)
+//        val trackables = configureVuforiaTrackables(hw, vuforia)
         log("Initialized Vuforia trackables.")
 
         telemetry.addData("Status", "Initialized and ready to start!")
         telemetry.update()
         waitForStart()
         runtime.reset()
+
+        turn(hw, 180f)
+        return
 
         // Lock in grabbers
         hw.leftGrabber.position = Hardware.GRABBER_GRABBED
@@ -300,23 +303,23 @@ abstract class BaseAutonomous : LinearOpMode() {
             turn(hw, 180f) // turn around
 
             // Extend the arm
-            hw.arm.moveToPosition(Hardware.ARM_HALF_UP, 0.5, true)
-            hw.armExtender.moveToPosition(Hardware.ARM_EXTENDED, 0.5, true)
-
-            // Open the claww for a second
-            hw.rightGrabber.position = Hardware.GRABBER_RELEASED
-            hw.leftGrabber.position = Hardware.GRABBER_RELEASED
-            sleep(100)
-            hw.rightGrabber.position = Hardware.GRABBER_GRABBED
-            hw.leftGrabber.position = Hardware.GRABBER_GRABBED
-
-            // lit, retract the machinery and keep going
-            hw.armExtender.moveToPosition(Hardware.ARM_RETRACTED, 0.5, false)
-            hw.arm.power = 0.0
+//            hw.arm.moveToPosition(Hardware.ARM_HALF_UP, 0.5, true)
+//            hw.armExtender.moveToPosition(Hardware.ARM_EXTENDED, 0.5, true)
+//
+//            // Open the claww for a second
+//            hw.rightGrabber.position = Hardware.GRABBER_RELEASED
+//            hw.leftGrabber.position = Hardware.GRABBER_RELEASED
+//            sleep(100)
+//            hw.rightGrabber.position = Hardware.GRABBER_GRABBED
+//            hw.leftGrabber.position = Hardware.GRABBER_GRABBED
+//
+//            // lit, retract the machinery and keep going
+//            hw.armExtender.moveToPosition(Hardware.ARM_RETRACTED, 0.5, false)
+//            hw.arm.power = 0.0
 
             // Drive to crater
             // TODO add
-            navigateToPoint(hw, trackables, 1f, 1f)
+//            navigateToPoint(hw, trackables, 1f, 1f)
         }
 
         log("Done, retracting lifter. Good luck on manual!")
