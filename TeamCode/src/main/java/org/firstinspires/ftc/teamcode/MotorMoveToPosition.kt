@@ -11,7 +11,9 @@ fun DcMotor.moveToPosition(encoderTicks: Int, power: Double, maintainPosition: B
     this.power = power
     this.targetPosition = encoderTicks
 
-    while (this.isBusy) { }
+    while (this.isBusy) {
+        Thread.yield()
+    }
 
     if (!maintainPosition) {
         this.power = 0.0

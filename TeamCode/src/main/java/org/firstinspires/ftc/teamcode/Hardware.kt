@@ -41,6 +41,9 @@ class Hardware(hwMap: HardwareMap) {
         armExtender.mode = DcMotor.RunMode.RUN_USING_ENCODER
         armExtender.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         wrist.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        wrist.direction = DcMotorSimple.Direction.REVERSE
+        wrist.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        wrist.mode = DcMotor.RunMode.RUN_TO_POSITION
 
         rightGrabber.direction = Servo.Direction.REVERSE
         leftGrabber.scaleRange(0.0, 0.9)
@@ -109,6 +112,19 @@ class Hardware(hwMap: HardwareMap) {
         const val ARM_UP = -1800
         const val ARM_RETRACTED = 0
         const val ARM_EXTENDED = 11253
+
+        /**
+         * Starting, retracted position
+         */
+        const val WRIST_STARTING_POSITION = 100
+        /**
+         * The point after which it is safe to extend the extender.
+         */
+        const val WRIST_PAST_EXTENDER_MOTOR = (0.3 * 1120).toInt()
+        /**
+         * The maximum rotation of the wrist possible.
+         */
+        const val WRIST_MAX = (0.8 * 1120).toInt()
 
         const val DRIVE_ENCODER_TICKS_PER_CM = 1000.0 / 27
     }

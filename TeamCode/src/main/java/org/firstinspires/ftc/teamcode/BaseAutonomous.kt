@@ -197,19 +197,22 @@ abstract class BaseAutonomous : LinearOpMode() {
         val targetHeading = calculateImuHeading(startHeading, deg)
         log("Target IMU heading: $targetHeading deg")
 
+        // Drive slowly because reading the IMU is slow and takes a while
         if (deg > 0) {
             // Turn right (clockwise)
-            hw.setRightDrivePower(-Hardware.DRIVE_SLOW)
-            hw.setLeftDrivePower(Hardware.DRIVE_SLOW)
+            hw.setRightDrivePower(-Hardware.DRIVE_SLOWEST)
+            hw.setLeftDrivePower(Hardware.DRIVE_SLOWEST)
         } else {
             // Turn left (counterclockwise)
-            hw.setRightDrivePower(Hardware.DRIVE_SLOW)
-            hw.setLeftDrivePower(-Hardware.DRIVE_SLOW)
+            hw.setRightDrivePower(Hardware.DRIVE_SLOWEST)
+            hw.setLeftDrivePower(-Hardware.DRIVE_SLOWEST)
         }
 
-        val headingTelemetry = telemetry.addData("Current heading", hw.getImuHeading())
-        while (opModeIsActive() && Math.abs(hw.getImuHeading() - targetHeading) > 10) {
-            headingTelemetry.setValue(hw.getImuHeading())
+        var heading = hw.getImuHeading()
+        val headingTelemetry = telemetry.addData("Current heading", heading)
+        while (opModeIsActive() && Math.abs(heading - targetHeading) > 10) {
+            heading = hw.getImuHeading()
+            headingTelemetry.setValue(heading)
             idle()
         }
         log("Finished turn.")
