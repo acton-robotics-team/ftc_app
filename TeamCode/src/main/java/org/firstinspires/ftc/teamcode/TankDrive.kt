@@ -79,7 +79,7 @@ class TankDrive : LinearOpMode() {
             if (Math.abs(gamepad2.left_stick_y) > 0.1) {
                 wristPreviouslyOnManualControl = true
                 mode = DcMotor.RunMode.RUN_USING_ENCODER
-                power = 0.4 * -gamepad2.left_stick_y;
+                power = 0.3 * -gamepad2.left_stick_y;
             } else {
                 mode = DcMotor.RunMode.RUN_TO_POSITION
                 power = 0.3
@@ -125,8 +125,7 @@ class TankDrive : LinearOpMode() {
     }
 
     private fun runArmGrabber(hw: Hardware) {
-        hw.leftGrabber.position = 1 - gamepad2.left_trigger.toDouble()
-        hw.rightGrabber.position = 1 - gamepad2.right_trigger.toDouble()
+        hw.grabber.position = 1 - gamepad2.left_trigger.toDouble()
     }
 
     override fun runOpMode() {

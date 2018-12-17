@@ -20,8 +20,7 @@ class Hardware(hwMap: HardwareMap) {
     val armExtender: DcMotor = hwMap.dcMotor.get("arm_extender")
     val wrist: DcMotor = hwMap.dcMotor.get("wrist")
 
-    val leftGrabber: Servo = hwMap.servo.get("left_grabber")
-    val rightGrabber: Servo = hwMap.servo.get("right_grabber")
+    val grabber: Servo = hwMap.servo.get("grabber")
 
     val imu: BNO055IMU = hwMap.get(BNO055IMU::class.java, "imu")
 
@@ -45,9 +44,7 @@ class Hardware(hwMap: HardwareMap) {
         wrist.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         wrist.mode = DcMotor.RunMode.RUN_TO_POSITION
 
-        rightGrabber.direction = Servo.Direction.REVERSE
-        leftGrabber.scaleRange(0.0, 0.9)
-        rightGrabber.scaleRange(0.0, 0.9)
+        grabber.scaleRange(0.0, 0.9)
 
         // Zero encoders
         lifter.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER

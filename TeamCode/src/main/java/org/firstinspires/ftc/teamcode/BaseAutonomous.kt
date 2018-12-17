@@ -257,8 +257,7 @@ abstract class BaseAutonomous : LinearOpMode() {
         return
 
         // Lock in grabbers
-        hw.leftGrabber.position = Hardware.GRABBER_GRABBED
-        hw.rightGrabber.position = Hardware.GRABBER_GRABBED
+        hw.grabber.position = Hardware.GRABBER_GRABBED
         hw.lifter.moveToPosition(Hardware.LIFTER_AUTO_DROP_DOWN_POSITION, 0.5, false)
 
         // Turn to get out of cage
