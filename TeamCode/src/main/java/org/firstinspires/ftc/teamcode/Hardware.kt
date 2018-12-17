@@ -91,7 +91,7 @@ class Hardware(hwMap: HardwareMap) {
         const val FRONT_NEVEREST_RPM = 160.0
         const val TETRIX_TO_NEVEREST_POWER = FRONT_NEVEREST_RPM / FRONT_TETRIX_RPM
 
-        const val DRIVE_SLOWEST = 0.35
+        const val DRIVE_SLOWEST = 0.15
         const val DRIVE_SLOW = 0.5
         const val DRIVE_FAST = 1.0
 
@@ -99,7 +99,7 @@ class Hardware(hwMap: HardwareMap) {
         const val GRABBER_RELEASED = 0.0
 
         const val LIFTER_BOTTOM_POSITION = 0
-        const val LIFTER_TOP_POSITION = 13870
+        const val LIFTER_TOP_POSITION = 14300
         const val LIFTER_AUTO_DROP_DOWN_POSITION = LIFTER_TOP_POSITION
         const val LIFTER_AUTO_END_POSITION = LIFTER_BOTTOM_POSITION
 

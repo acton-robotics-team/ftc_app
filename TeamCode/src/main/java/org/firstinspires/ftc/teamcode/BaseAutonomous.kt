@@ -253,17 +253,17 @@ abstract class BaseAutonomous : LinearOpMode() {
         waitForStart()
         runtime.reset()
 
-        turn(hw, 180f)
-        return
+        //turn(hw, 180f)
+        //return
 
         // Lock in grabbers
         hw.grabber.position = Hardware.GRABBER_GRABBED
-        hw.lifter.moveToPosition(Hardware.LIFTER_AUTO_DROP_DOWN_POSITION, 0.5, false)
+        hw.lifter.moveToPosition(Hardware.LIFTER_AUTO_DROP_DOWN_POSITION, 2.5, false)
 
         // Turn to get out of cage
         hw.setRightDrivePower(-Hardware.DRIVE_SLOW)
         hw.setLeftDrivePower(Hardware.DRIVE_SLOW)
-
+        sleep(1000);
         // Back out
         hw.setDrivePower(-Hardware.DRIVE_SLOWEST)
 
@@ -295,38 +295,40 @@ abstract class BaseAutonomous : LinearOpMode() {
         hw.setDrivePower(0.0)
 
         // Always disable the detector
-        detector.disable()
-
-        if (startLocation == AutonomousStartLocation.FACING_DEPOT) {
-            // Navigate toward the depot
-            hw.setDrivePower(-Hardware.DRIVE_SLOW)
-            sleep(500)
-            hw.setDrivePower(0.0)
-            turn(hw, 180f) // turn around
-
-            // Extend the arm
-//            hw.arm.moveToPosition(Hardware.ARM_HALF_UP, 0.5, true)
-//            hw.armExtender.moveToPosition(Hardware.ARM_EXTENDED, 0.5, true)
+//        detector.disable()
 //
-//            // Open the claww for a second
-//            hw.rightGrabber.position = Hardware.GRABBER_RELEASED
-//            hw.leftGrabber.position = Hardware.GRABBER_RELEASED
-//            sleep(100)
-//            hw.rightGrabber.position = Hardware.GRABBER_GRABBED
-//            hw.leftGrabber.position = Hardware.GRABBER_GRABBED
+//        if (startLocation == AutonomousStartLocation.FACING_DEPOT) {
+//            // Navigate toward the depot
+//            hw.setDrivePower(-Hardware.DRIVE_SLOW)
+//            sleep(500)
+//            hw.setDrivePower(0.0)
+//            turn(hw, 180f) // turn around
 //
-//            // lit, retract the machinery and keep going
-//            hw.armExtender.moveToPosition(Hardware.ARM_RETRACTED, 0.5, false)
-//            hw.arm.power = 0.0
-
-            // Drive to crater
-            // TODO add
-//            navigateToPoint(hw, trackables, 1f, 1f)
-        }
-
-        log("Done, retracting lifter. Good luck on manual!")
-
-        // Reset everything to normal positions
-        hw.lifter.moveToPosition(Hardware.LIFTER_AUTO_END_POSITION, 0.5, false)
+//
+//
+//            // Extend the arm
+////            hw.arm.moveToPosition(Hardware.ARM_HALF_UP, 0.5, true)
+////            hw.armExtender.moveToPosition(Hardware.ARM_EXTENDED, 0.5, true)
+////
+////            // Open the claww for a second
+////            hw.rightGrabber.position = Hardware.GRABBER_RELEASED
+////            hw.leftGrabber.position = Hardware.GRABBER_RELEASED
+////            sleep(100)
+////            hw.rightGrabber.position = Hardware.GRABBER_GRABBED
+////            hw.leftGrabber.position = Hardware.GRABBER_GRABBED
+////
+////            // lit, retract the machinery and keep going
+////            hw.armExtender.moveToPosition(Hardware.ARM_RETRACTED, 0.5, false)
+////            hw.arm.power = 0.0
+//
+//            // Drive to crater
+//            // TODO add
+////            navigateToPoint(hw, trackables, 1f, 1f)
+//        }
+//
+//        log("Done, retracting lifter. Good luck on manual!")
+//
+//        // Reset everything to normal positions
+//        hw.lifter.moveToPosition(Hardware.LIFTER_AUTO_END_POSITION, 0.5, false)
     }
 }
