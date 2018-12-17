@@ -49,29 +49,28 @@ class TankDrive : LinearOpMode() {
         telemetry.addData("Lifter encoder value", hw.lifter.currentPosition)
     }
 
-    private var armTarget = Hardware.ARM_DOWN
-
+    private var armPreviouslyOnManualControl = false
+    private var lastArmTargetPosition = 0
     private var wristPreviouslyOnManualControl = false
     private var lastWristTargetPosition = 0
 
     private fun runArm(hw: Hardware) {
         hw.arm.apply {
-            if (gamepad2.right_bumper) {
-                mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
-                power = 0.5 * gamepad2.right_stick_y
-            } else if (gamepad2.x) {
-                mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
-                power = 0.0
-            } else if (gamepad2.y || gamepad2.a) {
+            if (Math.abs(gamepad2.right_stick_y) > 0.1) {
+                armPreviouslyOnManualControl = true
+                mode = DcMotor.RunMode.RUN_USING_ENCODER
+                power = 0.3 * -gamepad2.right_stick_y
+            } else {
                 mode = DcMotor.RunMode.RUN_TO_POSITION
-                power = 0.5
-                armTarget = when {
-                    gamepad2.y -> Hardware.ARM_HALF_UP
-                    gamepad2.a -> Hardware.ARM_UP
-                    else -> armTarget
+                power = 0.3
+                if (armPreviouslyOnManualControl) {
+                    armPreviouslyOnManualControl = false
+                    lastArmTargetPosition = currentPosition
                 }
-                targetPosition = armTarget
+                targetPosition = lastArmTargetPosition
             }
+            telemetry.addData("Arm encoder position", currentPosition)
+            telemetry.addData("Arm encoder target position", targetPosition)
         }
 
         // Encoder; using RUN_TO_POSITION setting set in Hardware
@@ -79,7 +78,7 @@ class TankDrive : LinearOpMode() {
             if (Math.abs(gamepad2.left_stick_y) > 0.1) {
                 wristPreviouslyOnManualControl = true
                 mode = DcMotor.RunMode.RUN_USING_ENCODER
-                power = 0.3 * -gamepad2.left_stick_y;
+                power = 0.3 * -gamepad2.left_stick_y
             } else {
                 mode = DcMotor.RunMode.RUN_TO_POSITION
                 power = 0.3
