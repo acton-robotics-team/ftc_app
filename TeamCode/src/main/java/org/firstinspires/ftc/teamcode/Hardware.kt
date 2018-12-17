@@ -9,6 +9,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference
+import java.lang.Exception
 
 class Hardware(hwMap: HardwareMap) {
     val frontRightDrive: DcMotor = hwMap.dcMotor.get("front_right")
@@ -43,8 +44,6 @@ class Hardware(hwMap: HardwareMap) {
         wrist.direction = DcMotorSimple.Direction.REVERSE
         wrist.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         wrist.mode = DcMotor.RunMode.RUN_TO_POSITION
-
-        grabber.scaleRange(0.0, 0.9)
 
         // Zero encoders
         lifter.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
