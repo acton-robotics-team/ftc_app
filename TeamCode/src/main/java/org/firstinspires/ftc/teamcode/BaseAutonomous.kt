@@ -261,13 +261,9 @@ abstract class BaseAutonomous : LinearOpMode() {
         hw.lifter.moveToPosition(Hardware.LIFTER_AUTO_DROP_DOWN_POSITION, 2.5, false)
 
         // Turn to get out of cage
-        hw.setRightDrivePower(-Hardware.DRIVE_SLOW)
-        hw.setLeftDrivePower(Hardware.DRIVE_SLOW)
-        sleep(1000);
+        turn(hw, 45f)
         // Back out
-        hw.setDrivePower(-Hardware.DRIVE_SLOWEST)
-
-        sleep(500)
+        drive(hw, -100.0)
 
         // Turn until reaching the detector
         hw.setRightDrivePower(Hardware.DRIVE_SLOWEST)
