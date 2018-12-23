@@ -125,30 +125,29 @@ abstract class BaseAutonomous : LinearOpMode() {
         telemetry.update()
 
         val turnDeg = vuforiaHeadingDeg - desiredHeadingDeg
-        val endImuHeadingDeg = calculateImuHeading(startImuHeadingDeg, turnDeg)
+        val endImuHeadingDeg = startImuHeadingDeg - turnDeg
 
         when {
             turnDeg > 0 -> {
                 log("Turning counterclockwise to point toward target point")
-                hw.setLeftDrivePower(-Hardware.DRIVE_SLOWEST)
-                hw.setRightDrivePower(Hardware.DRIVE_SLOWEST)
+                hw.setLeftDrivePower(-Hardware.DRIVE_SLOW)
+                hw.setRightDrivePower(Hardware.DRIVE_SLOW)
 
             }
             turnDeg < 0 -> {
                 log("Turning clockwise to point toward target point")
-                hw.setLeftDrivePower(Hardware.DRIVE_SLOWEST)
-                hw.setRightDrivePower(-Hardware.DRIVE_SLOWEST)
+                hw.setLeftDrivePower(Hardware.DRIVE_SLOW)
+                hw.setRightDrivePower(-Hardware.DRIVE_SLOW)
             }
         }
         log("Waiting to reach correct heading")
         while (opModeIsActive()) {
             val currentImuHeadingDeg = hw.getImuHeading()
-            imuHeadingTelemetry.setValue(currentImuHeadingDeg)
-
-            if (Math.abs(currentImuHeadingDeg - endImuHeadingDeg) < 10) {
-                log("Reached within ten degrees of correct heading")
+            if (Math.abs(currentImuHeadingDeg - endImuHeadingDeg) < 1) {
+                log("Reached within 1 degrees of correct heading")
                 break
             } else {
+                imuHeadingTelemetry.setValue(currentImuHeadingDeg)
                 idle()
             }
         }
@@ -172,11 +171,15 @@ abstract class BaseAutonomous : LinearOpMode() {
         val rightEncoderTelemetry = telemetry.addData("Right drive encoder", 0)
         telemetry.update()
 
-        hw.setDrivePower(Hardware.DRIVE_SLOW)
+        if (distanceMm > 0) {
+            hw.setDrivePower(Hardware.DRIVE_SLOW)
+        } else {
+            hw.setDrivePower(-Hardware.DRIVE_SLOW)
+        }
         hw.backLeftDrive.targetPosition = requiredEncoderTicks
         hw.backRightDrive.targetPosition = requiredEncoderTicks
 
-        while (hw.backRightDrive.isBusy || hw.backLeftDrive.isBusy) {
+        while (hw.backRightDrive.isBusy && hw.backLeftDrive.isBusy) {
             leftEncoderTelemetry.setValue(hw.backLeftDrive.currentPosition)
             rightEncoderTelemetry.setValue(hw.backRightDrive.currentPosition)
             telemetry.update()
@@ -194,25 +197,26 @@ abstract class BaseAutonomous : LinearOpMode() {
     private fun turn(hw: Hardware, deg: Float) {
         val startHeading = hw.getImuHeading()
         log("Starting turn of $deg degrees from initial heading $startHeading")
-        val targetHeading = calculateImuHeading(startHeading, deg)
+        val targetHeading = startHeading - deg - 1
         log("Target IMU heading: $targetHeading deg")
 
         // Drive slowly because reading the IMU is slow and takes a while
         if (deg > 0) {
             // Turn right (clockwise)
-            hw.setRightDrivePower(-Hardware.DRIVE_SLOWEST)
-            hw.setLeftDrivePower(Hardware.DRIVE_SLOWEST)
+            hw.setRightDrivePower(-Hardware.DRIVE_SLOW)
+            hw.setLeftDrivePower(Hardware.DRIVE_SLOW)
         } else {
             // Turn left (counterclockwise)
-            hw.setRightDrivePower(Hardware.DRIVE_SLOWEST)
-            hw.setLeftDrivePower(-Hardware.DRIVE_SLOWEST)
+            hw.setRightDrivePower(Hardware.DRIVE_SLOW)
+            hw.setLeftDrivePower(-Hardware.DRIVE_SLOW)
         }
 
         var heading = hw.getImuHeading()
         val headingTelemetry = telemetry.addData("Current heading", heading)
-        while (opModeIsActive() && Math.abs(heading - targetHeading) > 10) {
+        while (opModeIsActive() && Math.abs(heading - targetHeading) > 1) {
             heading = hw.getImuHeading()
             headingTelemetry.setValue(heading)
+            telemetry.update();
             idle()
         }
         log("Finished turn.")
@@ -263,7 +267,7 @@ abstract class BaseAutonomous : LinearOpMode() {
         // Turn to get out of cage
         turn(hw, 45f)
         // Back out
-        drive(hw, -100.0)
+        drive(hw, -40.0)
 
         // Turn until reaching the detector
         hw.setRightDrivePower(Hardware.DRIVE_SLOWEST)
@@ -291,40 +295,27 @@ abstract class BaseAutonomous : LinearOpMode() {
         hw.setDrivePower(0.0)
 
         // Always disable the detector
-//        detector.disable()
-//
-//        if (startLocation == AutonomousStartLocation.FACING_DEPOT) {
-//            // Navigate toward the depot
-//            hw.setDrivePower(-Hardware.DRIVE_SLOW)
-//            sleep(500)
-//            hw.setDrivePower(0.0)
-//            turn(hw, 180f) // turn around
-//
-//
-//
-//            // Extend the arm
-////            hw.arm.moveToPosition(Hardware.ARM_HALF_UP, 0.5, true)
-////            hw.armExtender.moveToPosition(Hardware.ARM_EXTENDED, 0.5, true)
-////
-////            // Open the claww for a second
-////            hw.rightGrabber.position = Hardware.GRABBER_RELEASED
-////            hw.leftGrabber.position = Hardware.GRABBER_RELEASED
-////            sleep(100)
-////            hw.rightGrabber.position = Hardware.GRABBER_GRABBED
-////            hw.leftGrabber.position = Hardware.GRABBER_GRABBED
-////
-////            // lit, retract the machinery and keep going
-////            hw.armExtender.moveToPosition(Hardware.ARM_RETRACTED, 0.5, false)
-////            hw.arm.power = 0.0
-//
-//            // Drive to crater
-//            // TODO add
-////            navigateToPoint(hw, trackables, 1f, 1f)
+        detector.disable()
+
+//        when (startLocation) {
+//            AutonomousStartLocation.FACING_DEPOT -> {
+//                // Navigate toward the depot
+//                drive(hw, -500.0)
+//                turn(hw, 180f) // turn around
+//                // Release the claww (todo)
+//                // Navigate to crater
+//                turn(hw, 135f)
+//                drive(hw, 2000.0)
+//            }
+//            AutonomousStartLocation.FACING_CRATER -> {
+//                // todo
+//            }
 //        }
-//
-//        log("Done, retracting lifter. Good luck on manual!")
-//
-//        // Reset everything to normal positions
-//        hw.lifter.moveToPosition(Hardware.LIFTER_AUTO_END_POSITION, 0.5, false)
+
+        log("Done, retracting lifter. Good luck on manual!")
+
+        // Reset everything to normal positions
+        hw.lifter.moveToPosition(Hardware.LIFTER_AUTO_END_POSITION, 0.5, false)
+
     }
 }
