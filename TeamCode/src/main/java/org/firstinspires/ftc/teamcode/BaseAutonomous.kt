@@ -183,7 +183,7 @@ abstract class BaseAutonomous : LinearOpMode() {
         hw.backLeftDrive.targetPosition = requiredEncoderTicks
         hw.backRightDrive.targetPosition = requiredEncoderTicks
 
-        while (hw.backRightDrive.isBusy && hw.backLeftDrive.isBusy) {
+        while (opModeIsActive() && hw.backRightDrive.isBusy && hw.backLeftDrive.isBusy) {
             leftEncoderTelemetry.setValue(hw.backLeftDrive.currentPosition)
             rightEncoderTelemetry.setValue(hw.backRightDrive.currentPosition)
             telemetry.update()
