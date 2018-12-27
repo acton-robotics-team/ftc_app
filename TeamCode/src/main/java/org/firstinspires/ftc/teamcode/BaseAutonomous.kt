@@ -55,6 +55,10 @@ abstract class BaseAutonomous : LinearOpMode() {
     protected abstract val startLocation: AutonomousStartLocation
     private val runtime = ElapsedTime()
 
+    private enum class GoldPosition {
+        RIGHT, LEFT, CENTER
+    }
+
     private fun log(entry: String) {
         // Get caller name
         val stacktrace = Thread.currentThread().stackTrace
@@ -197,28 +201,32 @@ abstract class BaseAutonomous : LinearOpMode() {
     private fun turn(hw: Hardware, deg: Float) {
         val startHeading = hw.getImuHeading()
         log("Starting turn of $deg degrees from initial heading $startHeading")
-        val targetHeading = startHeading - deg - 1
+        val targetHeading = startHeading - deg
         log("Target IMU heading: $targetHeading deg")
 
         // Drive slowly because reading the IMU is slow and takes a while
+        val reachedTargetCondition: (heading: Float) -> Boolean
         if (deg > 0) {
             // Turn right (clockwise)
-            hw.setRightDrivePower(-Hardware.DRIVE_SLOW)
-            hw.setLeftDrivePower(Hardware.DRIVE_SLOW)
+            hw.setRightDrivePower(-0.3)
+            hw.setLeftDrivePower(0.3)
+            reachedTargetCondition = { heading -> heading < targetHeading }
         } else {
             // Turn left (counterclockwise)
-            hw.setRightDrivePower(Hardware.DRIVE_SLOW)
-            hw.setLeftDrivePower(-Hardware.DRIVE_SLOW)
+            hw.setRightDrivePower(0.3)
+            hw.setLeftDrivePower(-0.3)
+            reachedTargetCondition = { heading -> heading > targetHeading }
         }
 
         var heading = hw.getImuHeading()
         val headingTelemetry = telemetry.addData("Current heading", heading)
-        while (opModeIsActive() && Math.abs(heading - targetHeading) > 1) {
+        while (opModeIsActive() && !reachedTargetCondition(heading)) {
             heading = hw.getImuHeading()
             headingTelemetry.setValue(heading)
-            telemetry.update();
+            telemetry.update()
             idle()
         }
+        hw.setDrivePower(0.0)
         log("Finished turn.")
     }
 
@@ -272,11 +280,16 @@ abstract class BaseAutonomous : LinearOpMode() {
         // Turn until reaching the detector
         hw.setRightDrivePower(Hardware.DRIVE_SLOWEST)
         hw.setLeftDrivePower(-Hardware.DRIVE_SLOWEST)
+        hw.lifter.apply {
+            mode = DcMotor.RunMode.RUN_TO_POSITION
+            power = 0.5
+            targetPosition = Hardware.LIFTER_AUTO_END_POSITION
+        }
 
         val samplingTimeout = ElapsedTime()
+        log("Phase: Gold detection")
         while (!detector.aligned && opModeIsActive() && samplingTimeout.seconds() < 10) {
             telemetry.clearAll()
-            log("Phase: Gold detection")
             telemetry.addData("X pos", detector.xPosition)
             telemetry.update()
 
@@ -285,11 +298,10 @@ abstract class BaseAutonomous : LinearOpMode() {
         // Reached alignment? Maybe or maybe hit 10s timeout
         if (detector.aligned) {
             // We are aligned
+            log("Found mineral in " + samplingTimeout.toString()) // 2.24,
             log("Phase: Gold driving")
 
-            hw.setDrivePower(-Hardware.DRIVE_SLOWEST)
-
-            sleep(2000)
+            drive(hw, -760.0)
         }
 
         hw.setDrivePower(0.0)
@@ -297,25 +309,37 @@ abstract class BaseAutonomous : LinearOpMode() {
         // Always disable the detector
         detector.disable()
 
-//        when (startLocation) {
-//            AutonomousStartLocation.FACING_DEPOT -> {
-//                // Navigate toward the depot
-//                drive(hw, -500.0)
-//                turn(hw, 180f) // turn around
-//                // Release the claww (todo)
-//                // Navigate to crater
-//                turn(hw, 135f)
-//                drive(hw, 2000.0)
-//            }
-//            AutonomousStartLocation.FACING_CRATER -> {
-//                // todo
-//            }
-//        }
+        val heading = hw.getImuHeading()
 
-        log("Done, retracting lifter. Good luck on manual!")
+        val goldPosition = if (heading > -60 && heading < -10) {
+            GoldPosition.LEFT
+        } else if (heading < 20) {
+            GoldPosition.CENTER
+        } else {
+            GoldPosition.RIGHT
+        }
+        log("Inferred gold position at $goldPosition")
 
-        // Reset everything to normal positions
-        hw.lifter.moveToPosition(Hardware.LIFTER_AUTO_END_POSITION, 0.5, false)
-
+        when (startLocation) {
+            AutonomousStartLocation.FACING_DEPOT -> {
+                if (goldPosition == GoldPosition.LEFT) {
+                    turn(hw, hw.getImuHeading())
+                } else if (goldPosition == GoldPosition.CENTER) {
+                    turn(hw, 45f)
+                } else {
+                    turn(hw, 45f)
+                }
+            }
+            AutonomousStartLocation.FACING_CRATER -> {
+                // todo
+            }
+        }
+        drive(hw, -890.0)
+        // Release the claww (todo)
+        hw.markerReleaser.position = Hardware.MARKER_RELEASED
+        sleep(1000)
+        hw.markerReleaser.position = Hardware.MARKER_RETRACTED
+        turn(hw, hw.getImuHeading() - 40)
+        drive(hw, 2440.0)
     }
 }

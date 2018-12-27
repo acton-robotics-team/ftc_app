@@ -22,6 +22,7 @@ class Hardware(hwMap: HardwareMap) {
     val wrist: DcMotor = hwMap.dcMotor.get("wrist")
 
     val grabber: Servo = hwMap.servo.get("grabber")
+    val markerReleaser: Servo = hwMap.servo.get("marker")
 
     val imu: BNO055IMU = hwMap.get(BNO055IMU::class.java, "imu")
 
@@ -108,6 +109,9 @@ class Hardware(hwMap: HardwareMap) {
         const val ARM_UP = -1800
         const val ARM_RETRACTED = 0
         const val ARM_EXTENDED = 11253
+
+        const val MARKER_RELEASED = 0.1
+        const val MARKER_RETRACTED = 1.0
 
         /**
          * Starting, retracted position
