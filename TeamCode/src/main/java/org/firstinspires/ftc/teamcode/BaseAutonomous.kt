@@ -313,22 +313,27 @@ abstract class BaseAutonomous : LinearOpMode() {
 
         when (startLocation) {
             AutonomousStartLocation.FACING_DEPOT -> {
+                // Turn to face the depot
                 when (goldPosition) {
                     GoldPosition.LEFT -> turn(hw, hw.getImuHeading())
                     GoldPosition.CENTER -> turn(hw, 45f)
                     else -> turn(hw, 45f)
                 }
+
+                // Reverse into the depot
+                drive(hw, -890.0)
+                // Release the marker
+                hw.markerReleaser.position = Hardware.MARKER_RELEASED
+                sleep(1000)
+                hw.markerReleaser.position = Hardware.MARKER_RETRACTED
+                // Turn toward the crater
+                turn(hw, hw.getImuHeading() - 40)
+                // Drive toward the crater
+                drive(hw, 2440.0)
             }
             AutonomousStartLocation.FACING_CRATER -> {
                 // todo
             }
         }
-        drive(hw, -890.0)
-        // Release the claww (todo)
-        hw.markerReleaser.position = Hardware.MARKER_RELEASED
-        sleep(1000)
-        hw.markerReleaser.position = Hardware.MARKER_RETRACTED
-        turn(hw, hw.getImuHeading() - 40)
-        drive(hw, 2440.0)
     }
 }
