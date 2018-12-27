@@ -254,22 +254,12 @@ abstract class BaseAutonomous : LinearOpMode() {
         }
         log("Initialized DogeCV.")
 
-//        val vuforia = createVuforia(hardwareMap, hw)
-        log("Created Vuforia.")
-
-//        val trackables = configureVuforiaTrackables(hw, vuforia)
-        log("Initialized Vuforia trackables.")
-
         telemetry.addData("Status", "Initialized and ready to start!")
         telemetry.update()
         waitForStart()
         runtime.reset()
 
-        //turn(hw, 180f)
-        //return
-
-        // Lock in grabbers
-        hw.grabber.position = Hardware.GRABBER_GRABBED
+        // Drop down
         hw.lifter.moveToPosition(Hardware.LIFTER_AUTO_DROP_DOWN_POSITION, 2.5, false)
 
         // Turn to get out of cage
@@ -298,11 +288,12 @@ abstract class BaseAutonomous : LinearOpMode() {
         // Reached alignment? Maybe or maybe hit 10s timeout
         if (detector.aligned) {
             // We are aligned
-            log("Found mineral in " + samplingTimeout.toString()) // 2.24,
+            log("Found mineral in " + samplingTimeout.toString())
             log("Phase: Gold driving")
 
-            drive(hw, -760.0)
+            drive(hw, -760.0) // far enough to always hit the mineral
         }
+
 
         hw.setDrivePower(0.0)
 
@@ -322,12 +313,10 @@ abstract class BaseAutonomous : LinearOpMode() {
 
         when (startLocation) {
             AutonomousStartLocation.FACING_DEPOT -> {
-                if (goldPosition == GoldPosition.LEFT) {
-                    turn(hw, hw.getImuHeading())
-                } else if (goldPosition == GoldPosition.CENTER) {
-                    turn(hw, 45f)
-                } else {
-                    turn(hw, 45f)
+                when (goldPosition) {
+                    GoldPosition.LEFT -> turn(hw, hw.getImuHeading())
+                    GoldPosition.CENTER -> turn(hw, 45f)
+                    else -> turn(hw, 45f)
                 }
             }
             AutonomousStartLocation.FACING_CRATER -> {
