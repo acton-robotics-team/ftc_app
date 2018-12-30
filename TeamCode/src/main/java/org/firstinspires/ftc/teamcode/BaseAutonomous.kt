@@ -332,7 +332,22 @@ abstract class BaseAutonomous : LinearOpMode() {
                 drive(hw, 2440.0)
             }
             AutonomousStartLocation.FACING_CRATER -> {
-                // todo
+                // Back up (go forwards) after hitting jewel
+                drive(hw, 150.0) // change the amount as needed
+                // Navigate toward depot
+                turn(hw, -hw.getImuHeading()+90f)
+                drive(hw, 150.0)
+
+                // Turn to straighten in line with the depot (Hopefully against the wall)
+                turn(hw, 45f)
+                drive(hw, 1750.0)
+                // Drive until depot and release the object
+                hw.markerReleaser.position = Hardware.MARKER_RELEASED
+                sleep(1000)
+                hw.markerReleaser.position = Hardware.MARKER_RETRACTED
+
+                // Navigate back to crater
+                drive(hw, -2000.0)
             }
         }
     }
