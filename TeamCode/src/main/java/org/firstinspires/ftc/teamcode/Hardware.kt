@@ -26,8 +26,6 @@ class Hardware(hwMap: HardwareMap) {
 
     val imu: BNO055IMU = hwMap.get(BNO055IMU::class.java, "imu")
 
-    val webcam: WebcamName = hwMap.get(WebcamName::class.java, "webcam")
-
     init {
         frontRightDrive.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         frontLeftDrive.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
