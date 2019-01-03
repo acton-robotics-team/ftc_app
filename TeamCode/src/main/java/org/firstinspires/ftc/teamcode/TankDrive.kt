@@ -69,11 +69,8 @@ class TankDrive : LinearOpMode() {
                 }
                 targetPosition = lastArmTargetPosition
             }
-            telemetry.addData("Arm encoder position", currentPosition)
-            telemetry.addData("Arm encoder target position", targetPosition)
         }
 
-        // Encoder; using RUN_TO_POSITION setting set in Hardware
         hw.wrist.apply {
             if (Math.abs(gamepad2.left_stick_y) > 0.1) {
                 wristPreviouslyOnManualControl = true
@@ -88,37 +85,22 @@ class TankDrive : LinearOpMode() {
                 }
                 targetPosition = lastWristTargetPosition
             }
-            telemetry.addData("Wrist encoder position", currentPosition)
-            telemetry.addData("Wrist encoder target position", targetPosition)
         }
-
+        
         hw.armExtender.apply {
-            if (gamepad2.left_bumper) {
-                mode = DcMotor.RunMode.RUN_USING_ENCODER
-                power = when {
-                    gamepad2.dpad_up -> 0.5
-                    gamepad2.dpad_down -> -0.5
-                    else -> 0.0
-                }
-            } else if (hw.wrist.currentPosition > Hardware.WRIST_PAST_EXTENDER_MOTOR) {
-                // Only allow extender to be extended when the wrist is in the proper position
-                when {
-                    gamepad2.dpad_up -> {
-                        mode = DcMotor.RunMode.RUN_TO_POSITION
-                        power = 0.5
-                        targetPosition = Hardware.ARM_EXTENDED
-                    }
-                    gamepad2.dpad_down -> {
-                        mode = DcMotor.RunMode.RUN_TO_POSITION
-                        power = 0.5
-                        targetPosition = Hardware.ARM_RETRACTED
-                    }
-                }
+            mode = DcMotor.RunMode.RUN_TO_POSITION
+            power = 0.5
+            targetPosition = when {
+                gamepad2.dpad_up -> Math.min(currentPosition + 200, Hardware.ARM_EXTENDED)
+                gamepad2.dpad_down -> Math.max(currentPosition - 200, Hardware.ARM_RETRACTED)
+                else -> targetPosition
             }
         }
 
         telemetry.addData("Arm encoder value", hw.arm.currentPosition)
         telemetry.addData("Arm target position", hw.arm.targetPosition)
+        telemetry.addData("Wrist encoder position", hw.wrist.currentPosition)
+        telemetry.addData("Wrist encoder target position", hw.wrist.targetPosition)
         telemetry.addData("Arm extender encoder value", hw.armExtender.currentPosition)
         telemetry.addData("Arm extender target position", hw.armExtender.targetPosition)
     }
