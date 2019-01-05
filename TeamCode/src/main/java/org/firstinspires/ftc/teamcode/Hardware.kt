@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode
 
 import com.qualcomm.hardware.bosch.BNO055IMU
+import com.qualcomm.hardware.bosch.BNO055IMUImpl
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
@@ -24,14 +25,18 @@ class Hardware(hwMap: HardwareMap) {
     val grabber: Servo = hwMap.servo.get("grabber")
     val markerReleaser: Servo = hwMap.servo.get("marker")
 
-    val imu: BNO055IMU = hwMap.get(BNO055IMU::class.java, "imu")
+    val imu: BNO055IMUImpl = hwMap.get(BNO055IMUImpl::class.java, "imu")
 
     init {
         frontRightDrive.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        frontRightDrive.mode = DcMotor.RunMode.RUN_USING_ENCODER
         frontLeftDrive.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        frontLeftDrive.mode = DcMotor.RunMode.RUN_USING_ENCODER
         backRightDrive.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        backRightDrive.mode = DcMotor.RunMode.RUN_USING_ENCODER
         backLeftDrive.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         frontLeftDrive.direction = DcMotorSimple.Direction.REVERSE
+        frontLeftDrive.mode = DcMotor.RunMode.RUN_USING_ENCODER
         backLeftDrive.direction = DcMotorSimple.Direction.REVERSE
         arm.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         arm.mode = DcMotor.RunMode.RUN_TO_POSITION

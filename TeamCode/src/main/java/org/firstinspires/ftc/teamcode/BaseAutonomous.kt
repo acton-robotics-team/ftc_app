@@ -35,6 +35,11 @@ import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.util.ElapsedTime
+import edu.spa.ftclib.internal.controller.ErrorTimeThresholdFinishingAlgorithm
+import edu.spa.ftclib.internal.controller.FinishableIntegratedController
+import edu.spa.ftclib.internal.controller.PIDController
+import edu.spa.ftclib.internal.drivetrain.HeadingableTankDrivetrain
+import edu.spa.ftclib.internal.sensor.IntegratingGyroscopeSensor
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix
 import org.firstinspires.ftc.robotcore.external.navigation.*
 import kotlin.math.roundToInt
@@ -162,7 +167,7 @@ abstract class BaseAutonomous : LinearOpMode() {
         drive(hw, distanceMm.toDouble())
     }
 
-    private fun drive(hw: Hardware, distanceMm: Double, speed: Double = Hardware.DRIVE_SLOW) {
+    private fun drive(hw: Hardware, distanceMm: Double, speed: Double = 0.75) {
         hw.backRightDrive.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         hw.backLeftDrive.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         hw.backRightDrive.mode = DcMotor.RunMode.RUN_TO_POSITION
@@ -199,28 +204,36 @@ abstract class BaseAutonomous : LinearOpMode() {
      * Turns by X degrees (relative)
      */
     private fun turn(hw: Hardware, deg: Float) {
+        val setTurnPower = { power: Double ->
+            if (deg > 0) {
+                // Turn right (clockwise)
+                hw.setRightDrivePower(-power)
+                hw.setLeftDrivePower(power)
+            } else {
+                // Turn left (counterclockwise)
+                hw.setRightDrivePower(power)
+                hw.setLeftDrivePower(-power)
+            }
+        }
         val startHeading = hw.getImuHeading()
-        log("Starting turn of $deg degrees from initial heading $startHeading")
         val targetHeading = startHeading - deg
+        // Drive slowly because reading the IMU is slow and takes a while
+        val reachedTargetCondition: (heading: Float) -> Boolean = when {
+            deg > 0 -> { heading -> heading < targetHeading }
+            else -> { heading -> heading > targetHeading }
+        }
+
+        log("Starting turn of $deg degrees from initial heading $startHeading")
         log("Target IMU heading: $targetHeading deg")
 
-        // Drive slowly because reading the IMU is slow and takes a while
-        val reachedTargetCondition: (heading: Float) -> Boolean
-        if (deg > 0) {
-            // Turn right (clockwise)
-            hw.setRightDrivePower(-0.3)
-            hw.setLeftDrivePower(0.3)
-            reachedTargetCondition = { heading -> heading < targetHeading }
-        } else {
-            // Turn left (counterclockwise)
-            hw.setRightDrivePower(0.3)
-            hw.setLeftDrivePower(-0.3)
-            reachedTargetCondition = { heading -> heading > targetHeading }
-        }
+        setTurnPower(0.45)
 
         var heading = hw.getImuHeading()
         val headingTelemetry = telemetry.addData("Current heading", heading)
         while (opModeIsActive() && !reachedTargetCondition(heading)) {
+            if (Math.abs(heading - targetHeading) < 10) {
+                setTurnPower(Hardware.DRIVE_SLOWEST)
+            }
             heading = hw.getImuHeading()
             headingTelemetry.setValue(heading)
             telemetry.update()
@@ -235,6 +248,14 @@ abstract class BaseAutonomous : LinearOpMode() {
         log("Wait for initialization! Do not start!")
 
         val hw = Hardware(hardwareMap)
+        val pid = PIDController(1.5, 0.05, 0.0)
+        pid.maxErrorForIntegral = 0.002
+
+        val controller = FinishableIntegratedController(IntegratingGyroscopeSensor(hw.imu), pid, ErrorTimeThresholdFinishingAlgorithm(Math.PI / 50, 1.0))
+        val drivetrain = HeadingableTankDrivetrain(arrayOf(hw.backLeftDrive, hw.backRightDrive), controller)
+
+        drivetrain.rotation = -90.0
+        return
 
         log("Initialized all hardware.")
 
@@ -268,8 +289,8 @@ abstract class BaseAutonomous : LinearOpMode() {
         drive(hw, -40.0)
 
         // Turn until reaching the detector
-        hw.setRightDrivePower(Hardware.DRIVE_SLOWEST)
-        hw.setLeftDrivePower(-Hardware.DRIVE_SLOWEST)
+        hw.setRightDrivePower(0.2)
+        hw.setLeftDrivePower(-0.2)
         hw.lifter.apply {
             mode = DcMotor.RunMode.RUN_TO_POSITION
             power = 0.5
@@ -286,14 +307,12 @@ abstract class BaseAutonomous : LinearOpMode() {
             idle()
         }
         // Reached alignment? Maybe or maybe hit 10s timeout
-        if (detector.aligned) {
-            // We are aligned
-            log("Found mineral in " + samplingTimeout.toString())
-            log("X position @ found = " + detector.xPosition)
-            log("Phase: Gold driving")
+        // We are aligned
+        log("Found mineral in " + samplingTimeout.toString())
+        log("X position @ found = " + detector.xPosition)
+        log("Phase: Gold driving")
 
-            drive(hw, -825.0) // far enough to always hit the mineral
-        }
+        drive(hw, -825.0) // far enough to always hit the mineral
 
         hw.setDrivePower(0.0)
 
@@ -328,10 +347,17 @@ abstract class BaseAutonomous : LinearOpMode() {
                 hw.markerReleaser.position = Hardware.MARKER_RELEASED
                 sleep(1000)
                 hw.markerReleaser.position = Hardware.MARKER_RETRACTED
-                // Turn toward the crater
-                turn(hw, hw.getImuHeading() + 130)
+                // Turn toward the crater (enemy side)
+                turn(hw, 50f)
+                drive(hw, 850.0) // This will slide along and make us point toward crater
+                drive(hw, -127.0)
+                turn(hw, -30f)
+                drive(hw, 100.0)
+                turn(hw, -22f)
+                drive(hw, 50.0)
+                turn(hw, -15f)
                 // Drive toward the crater
-                drive(hw, -2600.0, 0.7)
+                drive(hw, 1300.0, 0.7)
             }
             AutonomousStartLocation.FACING_CRATER -> {
                 // Go forward after hitting jewel (back toward lander)
