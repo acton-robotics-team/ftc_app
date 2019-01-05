@@ -248,14 +248,6 @@ abstract class BaseAutonomous : LinearOpMode() {
         log("Wait for initialization! Do not start!")
 
         val hw = Hardware(hardwareMap)
-        val pid = PIDController(1.5, 0.05, 0.0)
-        pid.maxErrorForIntegral = 0.002
-
-        val controller = FinishableIntegratedController(IntegratingGyroscopeSensor(hw.imu), pid, ErrorTimeThresholdFinishingAlgorithm(Math.PI / 50, 1.0))
-        val drivetrain = HeadingableTankDrivetrain(arrayOf(hw.backLeftDrive, hw.backRightDrive), controller)
-
-        drivetrain.rotation = -90.0
-        return
 
         log("Initialized all hardware.")
 
