@@ -39,6 +39,7 @@ class Hardware(hwMap: HardwareMap) {
         armExtender.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         armExtender.mode = DcMotor.RunMode.RUN_USING_ENCODER
         armExtender.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        armExtender.direction = DcMotorSimple.Direction.REVERSE
         wrist.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         wrist.direction = DcMotorSimple.Direction.REVERSE
         wrist.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER

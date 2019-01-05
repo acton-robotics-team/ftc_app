@@ -86,13 +86,13 @@ class TankDrive : LinearOpMode() {
                 targetPosition = lastWristTargetPosition
             }
         }
-        
+
         hw.armExtender.apply {
             mode = DcMotor.RunMode.RUN_TO_POSITION
-            power = 0.5
+            power = 0.75
             targetPosition = when {
-                gamepad2.dpad_up -> Math.min(currentPosition + 200, Hardware.ARM_EXTENDED)
-                gamepad2.dpad_down -> Math.max(currentPosition - 200, Hardware.ARM_RETRACTED)
+                gamepad2.dpad_up -> Math.min(currentPosition + 100, Hardware.ARM_EXTENDED)
+                gamepad2.dpad_down -> Math.max(currentPosition - 100, Hardware.ARM_RETRACTED)
                 else -> targetPosition
             }
         }
