@@ -89,7 +89,7 @@ class TankDrive : LinearOpMode() {
 
         hw.armExtender.apply {
             mode = DcMotor.RunMode.RUN_TO_POSITION
-            power = 0.75
+            power = 0.3
             targetPosition = when {
                 gamepad2.dpad_up -> Math.min(currentPosition + 100, Hardware.ARM_EXTENDED)
                 gamepad2.dpad_down -> Math.max(currentPosition - 100, Hardware.ARM_RETRACTED)
@@ -107,6 +107,19 @@ class TankDrive : LinearOpMode() {
 
     private fun runArmGrabber(hw: Hardware) {
         hw.grabber.position = 1 - gamepad2.left_trigger.toDouble()
+    }
+
+    private fun runMacros(hw: Hardware) {
+        // Gamepad 2, A btn
+        if (gamepad2.a) {
+            lastArmTargetPosition = Hardware.ARM_GRABBING_POSITION
+            lastWristTargetPosition = Hardware.WRIST_GRABBING_POSITION
+        }
+        // Gamepad 2, X btn
+        else if (gamepad2.x) {
+            lastArmTargetPosition = Hardware.ARM_SCORING_POSITION
+            lastWristTargetPosition = Hardware.WRIST_SCORING_POSITION
+        }
     }
 
     override fun runOpMode() {
@@ -128,6 +141,7 @@ class TankDrive : LinearOpMode() {
             runLifter(hw)
             runArm(hw)
             runArmGrabber(hw)
+            runMacros(hw)
 
             // Show the elapsed game time
             telemetry.addData("Status", "Run Time: " + runtime.toString())

@@ -11,6 +11,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference
 import java.lang.Exception
+import kotlin.math.roundToInt
 
 class Hardware(hwMap: HardwareMap) {
     val frontRightDrive: DcMotor = hwMap.dcMotor.get("front_right")
@@ -94,40 +95,27 @@ class Hardware(hwMap: HardwareMap) {
         const val FRONT_TETRIX_RPM = 152.0
         const val FRONT_NEVEREST_RPM = 160.0
         const val TETRIX_TO_NEVEREST_POWER = FRONT_NEVEREST_RPM / FRONT_TETRIX_RPM
+        const val NEVEREST_40_TICKS_PER_REV = 1120
 
         const val DRIVE_SLOWEST = 0.15
         const val DRIVE_SLOW = 0.5
         const val DRIVE_FAST = 1.0
-
-        const val GRABBER_GRABBED = 1.0
-        const val GRABBER_RELEASED = 0.0
 
         const val LIFTER_BOTTOM_POSITION = 0
         const val LIFTER_TOP_POSITION = 14700
         const val LIFTER_AUTO_DROP_DOWN_POSITION = LIFTER_TOP_POSITION
         const val LIFTER_AUTO_END_POSITION = LIFTER_BOTTOM_POSITION
 
-        const val ARM_DOWN = 0
-        const val ARM_HALF_UP = -500
-        const val ARM_UP = -1800
+        const val ARM_GRABBING_POSITION = -600
+        const val ARM_SCORING_POSITION = -1600
         const val ARM_RETRACTED = 0
         const val ARM_EXTENDED = 11253
 
+        const val WRIST_GRABBING_POSITION = 466
+        const val WRIST_SCORING_POSITION = 384
+
         const val MARKER_RELEASED = 0.1
         const val MARKER_RETRACTED = 1.0
-
-        /**
-         * Starting, retracted position
-         */
-        const val WRIST_STARTING_POSITION = 100
-        /**
-         * The point after which it is safe to extend the extender.
-         */
-        const val WRIST_PAST_EXTENDER_MOTOR = (0.3 * 1120).toInt()
-        /**
-         * The maximum rotation of the wrist possible.
-         */
-        const val WRIST_MAX = (0.8 * 1120).toInt()
 
         const val DRIVE_ENCODER_TICKS_PER_CM = 1000.0 / 27
     }
