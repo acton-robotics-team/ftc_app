@@ -15,12 +15,12 @@ class TestPid : LinearOpMode() {
         val pid = PIDController(1.5, 0.05, 0.0)
         pid.maxErrorForIntegral = 0.002
 
-        val controller = FinishableIntegratedController(IntegratingGyroscopeSensor(hw.imu), pid, ErrorTimeThresholdFinishingAlgorithm(Math.PI / 50, 1.0))
-        val drivetrain = HeadingableTankDrivetrain(arrayOf(hw.backLeftDrive, hw.backRightDrive), controller)
+        val controller = FinishableIntegratedController(IntegratingGyroscopeSensor(hw.imu), pid, ErrorTimeThresholdFinishingAlgorithm(Math.PI / 25, 1.0))
+        val drivetrain = FourWheelDriveTrain(hw.backLeftDrive, hw.backRightDrive, hw.frontLeftDrive, hw.frontRightDrive, controller)
 
         waitForStart()
 
-        drivetrain.rotation = -Math.PI / 2
+        drivetrain.targetHeading = -Math.PI / 2
         while (opModeIsActive()) {
             telemetry.addData("Is rotating?", drivetrain.isRotating)
             doTelemetry(drivetrain)

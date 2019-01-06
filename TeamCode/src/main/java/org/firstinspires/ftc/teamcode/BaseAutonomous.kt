@@ -40,8 +40,6 @@ import edu.spa.ftclib.internal.controller.FinishableIntegratedController
 import edu.spa.ftclib.internal.controller.PIDController
 import edu.spa.ftclib.internal.drivetrain.HeadingableTankDrivetrain
 import edu.spa.ftclib.internal.sensor.IntegratingGyroscopeSensor
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix
-import org.firstinspires.ftc.robotcore.external.navigation.*
 import kotlin.math.roundToInt
 
 /**
@@ -105,8 +103,8 @@ abstract class BaseAutonomous : LinearOpMode() {
         }
 
         hw.setDrivePower(0.0)
-        hw.backLeftDrive.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
-        hw.backRightDrive.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+        hw.backLeftDrive.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        hw.backRightDrive.mode = DcMotor.RunMode.RUN_USING_ENCODER
     }
 
     private fun doTelemetry(drivetrain: HeadingableTankDrivetrain) {
@@ -126,13 +124,54 @@ abstract class BaseAutonomous : LinearOpMode() {
     /**
      * Turns by X degrees (relative)
      */
-    private fun turn(drivetrain: HeadingableTankDrivetrain, deg: Float) {
-        val rad = -deg * Math.PI / 180
-        drivetrain.rotation = rad
+    private fun turn(hw: Hardware, drivetrain: FourWheelDriveTrain, deg: Float) {
+        val rad = deg * Math.PI / 180
+        val initHeadingRad = hw.getImuHeading() * Math.PI / 180
+        drivetrain.targetHeading = initHeadingRad - rad // magic
         while (drivetrain.isRotating) {
             doTelemetry(drivetrain)
+            drivetrain.updateHeading()
             idle()
         }
+    }
+
+    private fun turnImprecise(hw: Hardware, deg: Float) {
+        val setTurnPower = { power: Double ->
+            if (deg > 0) {
+                // Turn right (clockwise)
+                hw.setRightDrivePower(-power)
+                hw.setLeftDrivePower(power)
+            } else {
+                // Turn left (counterclockwise)
+                hw.setRightDrivePower(power)
+                hw.setLeftDrivePower(-power)
+            }
+        }
+        val startHeading = hw.getImuHeading()
+        val targetHeading = startHeading - deg
+        // Drive slowly because reading the IMU is slow and takes a while
+        val reachedTargetCondition: (heading: Float) -> Boolean = when {
+            deg > 0 -> { heading -> heading < targetHeading }
+            else -> { heading -> heading > targetHeading }
+        }
+
+        log("Starting turn of $deg degrees from initial heading $startHeading")
+        log("Target IMU heading: $targetHeading deg")
+
+        setTurnPower(0.45)
+
+        var heading = hw.getImuHeading()
+        val headingTelemetry = telemetry.addData("Current heading", heading)
+        while (opModeIsActive() && !reachedTargetCondition(heading)) {
+            if (Math.abs(heading - targetHeading) < 10) {
+                setTurnPower(Hardware.DRIVE_SLOWEST)
+            }
+            heading = hw.getImuHeading()
+            headingTelemetry.setValue(heading)
+            telemetry.update()
+        }
+        hw.setDrivePower(0.0)
+        log("Finished turn.")
     }
 
     override fun runOpMode() {
@@ -143,8 +182,8 @@ abstract class BaseAutonomous : LinearOpMode() {
         val pid = PIDController(1.5, 0.05, 0.0)
         pid.maxErrorForIntegral = 0.002
 
-        val controller = FinishableIntegratedController(IntegratingGyroscopeSensor(hw.imu), pid, ErrorTimeThresholdFinishingAlgorithm(Math.PI / 50, 1.0))
-        val drivetrain = HeadingableTankDrivetrain(arrayOf(hw.backLeftDrive, hw.backRightDrive), controller)
+        val controller = FinishableIntegratedController(IntegratingGyroscopeSensor(hw.imu), pid, ErrorTimeThresholdFinishingAlgorithm(Math.PI / 25, 1.0))
+        val drivetrain = FourWheelDriveTrain(hw.backLeftDrive, hw.backRightDrive, hw.frontLeftDrive, hw.frontRightDrive, controller)
 
         log("Initialized all hardware.")
 
@@ -173,13 +212,13 @@ abstract class BaseAutonomous : LinearOpMode() {
         hw.lifter.moveToPosition(Hardware.LIFTER_AUTO_DROP_DOWN_POSITION, 2.5, false)
 
         // Turn to get out of cage
-        turn(drivetrain, 45f)
+        turnImprecise(hw, 45f)
         // Back out
         drive(hw, -40.0)
 
         // Turn until reaching the detector
-        hw.setRightDrivePower(0.2)
-        hw.setLeftDrivePower(-0.2)
+        hw.setRightDrivePower(0.07)
+        hw.setLeftDrivePower(-0.07)
         hw.lifter.apply {
             mode = DcMotor.RunMode.RUN_TO_POSITION
             power = 0.5
@@ -224,10 +263,10 @@ abstract class BaseAutonomous : LinearOpMode() {
                 // Turn to face the depot
                 when (goldPosition) {
                     // turn back to center
-                    GoldPosition.LEFT -> turn(drivetrain, hw.getImuHeading())
+                    GoldPosition.LEFT -> turn(hw, drivetrain, hw.getImuHeading())
                     // turn 45 degrees from initial position to aim toward wall
-                    GoldPosition.CENTER -> turn(drivetrain, hw.getImuHeading() + 45f)
-                    GoldPosition.RIGHT -> turn(drivetrain, hw.getImuHeading() + 45f)
+                    GoldPosition.CENTER -> turn(hw, drivetrain, hw.getImuHeading() + 45f)
+                    GoldPosition.RIGHT -> turn(hw, drivetrain, hw.getImuHeading() + 45f)
                 }
                 // Reverse into the depot
                 drive(hw, -890.0)
@@ -236,15 +275,12 @@ abstract class BaseAutonomous : LinearOpMode() {
                 sleep(1000)
                 hw.markerReleaser.position = Hardware.MARKER_RETRACTED
                 // Turn toward the crater (enemy side)
-                turn(drivetrain, 50f)
+                turn(hw, drivetrain, 50f)
                 drive(hw, 850.0)
                 // Do like a 5 point turn
-                drive(hw, -127.0)
-                turn(drivetrain, -30f)
-                drive(hw, 100.0)
-                turn(drivetrain, -22f)
-                drive(hw, 50.0)
-                turn(drivetrain, -15f)
+                turn(hw, drivetrain, -70f)
+                drive(hw, 150.0)
+                turn(hw, drivetrain, -20f)
                 // Drive toward the crater
                 drive(hw, 1300.0, 0.7)
             }
@@ -252,17 +288,17 @@ abstract class BaseAutonomous : LinearOpMode() {
                 // Go forward after hitting jewel (back toward lander)
                 drive(hw, 150.0) // change the amount as needed
                 // Navigate toward depot (turn toward depot)
-                turn(drivetrain, hw.getImuHeading() + 90f)
+                turn(hw, drivetrain, hw.getImuHeading() + 90f)
                 drive(hw, 1117.0)
                 // Turn to straighten in line with the depot (Hopefully against the wall)
-                turn(drivetrain, hw.getImuHeading() + 130f)
+                turn(hw, drivetrain, hw.getImuHeading() + 130f)
                 // Drive until depot and release the object
                 drive(hw, 1651.0)
-                turn(drivetrain, hw.getImuHeading() - 45f)
+                turn(hw, drivetrain, hw.getImuHeading() - 45f)
                 hw.markerReleaser.position = Hardware.MARKER_RELEASED
                 sleep(1000)
                 hw.markerReleaser.position = Hardware.MARKER_RETRACTED
-                turn(drivetrain, hw.getImuHeading() - 130f)
+                turn(hw, drivetrain, hw.getImuHeading() - 130f)
 
                 // Navigate back to crater
                 drive(hw, 2440.0)

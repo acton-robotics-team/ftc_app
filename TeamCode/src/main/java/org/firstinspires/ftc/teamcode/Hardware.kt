@@ -29,15 +29,14 @@ class Hardware(hwMap: HardwareMap) {
 
     init {
         frontRightDrive.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        frontRightDrive.mode = DcMotor.RunMode.RUN_USING_ENCODER
         frontLeftDrive.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        frontLeftDrive.mode = DcMotor.RunMode.RUN_USING_ENCODER
         backRightDrive.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        backRightDrive.mode = DcMotor.RunMode.RUN_USING_ENCODER
         backLeftDrive.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         frontLeftDrive.direction = DcMotorSimple.Direction.REVERSE
-        frontLeftDrive.mode = DcMotor.RunMode.RUN_USING_ENCODER
         backLeftDrive.direction = DcMotorSimple.Direction.REVERSE
+        backLeftDrive.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        backRightDrive.mode = DcMotor.RunMode.RUN_USING_ENCODER
+
         arm.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         arm.mode = DcMotor.RunMode.RUN_TO_POSITION
 
