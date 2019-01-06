@@ -311,16 +311,16 @@ abstract class BaseAutonomous : LinearOpMode() {
             AutonomousStartLocation.FACING_CRATER -> {
                 drive(hw, when (goldPosition) {
                     GoldPosition.LEFT -> -660.0
-                    GoldPosition.CENTER -> -500.0
+                    GoldPosition.CENTER -> -550.0
                     GoldPosition.RIGHT -> -813.0
                 })
                 if (goldPosition == GoldPosition.RIGHT || goldPosition == GoldPosition.LEFT) {
                     turn(hw, drivetrain, hw.getImuHeading()) // turn back toward rover
                 }
                 // Go forward after hitting jewel (back toward lander)
-                drive(hw, 300.0) // change the amount as needed
+                drive(hw, 250.0) // change the amount as needed
                 // Navigate toward depot (turn toward depot) and drive into wall
-                turn(hw, drivetrain, hw.getImuHeading() + 80f)
+                turn(hw, drivetrain, hw.getImuHeading() + 85f)
                 drive(hw, when (goldPosition) {
                     GoldPosition.RIGHT -> 300.0
                     GoldPosition.CENTER -> 900.2
