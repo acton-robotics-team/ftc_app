@@ -116,6 +116,7 @@ class TankDrive : LinearOpMode() {
         val hw = Hardware(hardwareMap)
 
         // Wait for the game to start (driver presses PLAY)
+        hw.armExtender.targetPosition = 0 // wtf
         waitForStart()
         runtime.reset()
 
