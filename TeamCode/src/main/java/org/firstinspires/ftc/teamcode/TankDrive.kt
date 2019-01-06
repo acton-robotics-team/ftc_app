@@ -126,12 +126,23 @@ class TankDrive : LinearOpMode() {
         telemetry.addData("Status", "Initialized")
         telemetry.update()
 
+        waitForStart()
+        runtime.reset()
+
+//        hardwareMap.dcMotor.get("wrist").apply {
+//            mode = DcMotor.RunMode.RUN_TO_POSITION
+//            power = 0.5
+//            targetPosition = 0
+//            while (opModeIsActive() && isBusy) {
+//                idle()
+//            }
+//        }
+
+        // Move back to initial position after autonomous mode has extended it
         val hw = Hardware(hardwareMap)
 
         // Wait for the game to start (driver presses PLAY)
         hw.armExtender.targetPosition = 0 // wtf
-        waitForStart()
-        runtime.reset()
 
         // run until the end of the match (driver presses STOP)
         val loopTime = ElapsedTime()

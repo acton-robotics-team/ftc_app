@@ -266,6 +266,9 @@ abstract class BaseAutonomous : LinearOpMode() {
 
         when (startLocation) {
             AutonomousStartLocation.FACING_DEPOT -> {
+                if (goldPosition != GoldPosition.RIGHT) {
+                    turnImprecise(hw, 7f)
+                }
                 drive(hw, -825.0) // far enough to always hit the mineral
 
                 // Turn to face the depot
@@ -294,7 +297,16 @@ abstract class BaseAutonomous : LinearOpMode() {
                 drive(hw, 150.0)
                 turn(hw, drivetrain, hw.getImuHeading() + 47f)
                 // Drive toward the crater
+//                hw.wrist.apply {
+//                    mode = DcMotor.RunMode.RUN_TO_POSITION
+//                    power = 0.5
+//                    targetPosition = Hardware.WRIST_GRABBING_POSITION
+//                }
                 drive(hw, 1300.0)
+//                while (opModeIsActive()&& hw.wrist.isBusy) {
+//                    idle()
+//                }
+//                hw.wrist.power = 0.0
             }
             AutonomousStartLocation.FACING_CRATER -> {
                 drive(hw, when (goldPosition) {
@@ -308,7 +320,7 @@ abstract class BaseAutonomous : LinearOpMode() {
                 // Go forward after hitting jewel (back toward lander)
                 drive(hw, 300.0) // change the amount as needed
                 // Navigate toward depot (turn toward depot) and drive into wall
-                turn(hw, drivetrain, hw.getImuHeading() + 95f)
+                turn(hw, drivetrain, hw.getImuHeading() + 80f)
                 drive(hw, when (goldPosition) {
                     GoldPosition.RIGHT -> 300.0
                     GoldPosition.CENTER -> 900.2
