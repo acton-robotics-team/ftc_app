@@ -76,97 +76,6 @@ abstract class BaseAutonomous : LinearOpMode() {
         telemetry.update()
     }
 
-    private fun getCurrentLocation(trackables: VuforiaTrackables): OpenGLMatrix? {
-        telemetry.clearAll()
-        telemetry.addLine("Looking for current location...")
-        while (opModeIsActive()) {
-            for (trackable in trackables) {
-                /**
-                 * getUpdatedRobotLocation() will return null if no new information is available since
-                 * the last time that call was made, or if the trackable is not currently visible.
-                 * getRobotLocation() will return null if the trackable is not currently visible.
-                 */
-                telemetry.addData(trackable.name,
-                        if ((trackable.listener as VuforiaTrackableDefaultListener).isVisible) {
-                            "Visible"
-                        } else {
-                            "Not Visible"
-                        })
-
-                val robotLocationTransform =
-                        (trackable.listener as VuforiaTrackableDefaultListener).updatedRobotLocation
-                if (robotLocationTransform != null) {
-                    return robotLocationTransform
-                }
-            }
-            telemetry.update()
-        }
-        return null
-    }
-
-    private fun navigateToPoint(hw: Hardware, trackables: VuforiaTrackables, targetXMm: Float, targetYMm: Float) {
-        val location = getCurrentLocation(trackables)
-                ?: return // pog this shouldn't happen unless opmode is stopped
-        // blocks
-
-        telemetry.addData("Current location", location.formatAsTransform())
-        telemetry.addLine("Target point: ($targetXMm mm, $targetYMm mm)")
-        telemetry.update()
-
-        val xMm = location.translation[0]
-        val yMm = location.translation[1]
-        val zMm = location.translation[2]
-
-        telemetry.addData("Pos (mm)", "{X, Y, Z} = %.1f, %.1f, %.1f",
-                xMm, yMm, zMm)
-
-        // express the rotation of the robot in degrees.
-        val vuforiaHeadingDeg = Orientation.getOrientation(
-                location,
-                AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle
-
-        val desiredHeadingDeg = calculateHeading(xMm, xMm, targetXMm, targetYMm)
-        telemetry.addData("Desired heading (deg)", desiredHeadingDeg)
-
-        val startImuHeadingDeg = hw.getImuHeading()
-        telemetry.addData("Starting IMU heading (deg)", startImuHeadingDeg)
-        val imuHeadingTelemetry = telemetry.addData("Current IMU heading (deg)", startImuHeadingDeg)
-        telemetry.update()
-
-        val turnDeg = vuforiaHeadingDeg - desiredHeadingDeg
-        val endImuHeadingDeg = startImuHeadingDeg - turnDeg
-
-        when {
-            turnDeg > 0 -> {
-                log("Turning counterclockwise to point toward target point")
-                hw.setLeftDrivePower(-Hardware.DRIVE_SLOW)
-                hw.setRightDrivePower(Hardware.DRIVE_SLOW)
-
-            }
-            turnDeg < 0 -> {
-                log("Turning clockwise to point toward target point")
-                hw.setLeftDrivePower(Hardware.DRIVE_SLOW)
-                hw.setRightDrivePower(-Hardware.DRIVE_SLOW)
-            }
-        }
-        log("Waiting to reach correct heading")
-        while (opModeIsActive()) {
-            val currentImuHeadingDeg = hw.getImuHeading()
-            if (Math.abs(currentImuHeadingDeg - endImuHeadingDeg) < 1) {
-                log("Reached within 1 degrees of correct heading")
-                break
-            } else {
-                imuHeadingTelemetry.setValue(currentImuHeadingDeg)
-                idle()
-            }
-        }
-
-        // Drive toward point until encoders read the distance traveled
-        hw.setDrivePower(0.0)
-        val distanceMm = distanceTo(xMm, yMm, targetXMm, targetYMm)
-        drive(hw, distanceMm.toDouble())
-    }
-
     private fun drive(hw: Hardware, distanceMm: Double, speed: Double = 0.75) {
         hw.backRightDrive.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         hw.backLeftDrive.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
@@ -200,47 +109,30 @@ abstract class BaseAutonomous : LinearOpMode() {
         hw.backRightDrive.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
     }
 
+    private fun doTelemetry(drivetrain: HeadingableTankDrivetrain) {
+        val pid = drivetrain.controller.algorithm as PIDController
+        telemetry.addData("heading, target",
+                drivetrain.controller.sensorValue.toString() + "," + pid.target)
+        telemetry.addData("KP", pid.kp)
+        telemetry.addData("KI", pid.ki)
+        telemetry.addData("KD", pid.kd)
+        telemetry.addData("error", pid.error)
+        telemetry.addData("integral", pid.integral)
+        telemetry.addData("derivative", pid.derivative)
+        telemetry.addData("random", Math.random())
+        telemetry.update()
+    }
+
     /**
      * Turns by X degrees (relative)
      */
-    private fun turn(hw: Hardware, deg: Float) {
-        val setTurnPower = { power: Double ->
-            if (deg > 0) {
-                // Turn right (clockwise)
-                hw.setRightDrivePower(-power)
-                hw.setLeftDrivePower(power)
-            } else {
-                // Turn left (counterclockwise)
-                hw.setRightDrivePower(power)
-                hw.setLeftDrivePower(-power)
-            }
-        }
-        val startHeading = hw.getImuHeading()
-        val targetHeading = startHeading - deg
-        // Drive slowly because reading the IMU is slow and takes a while
-        val reachedTargetCondition: (heading: Float) -> Boolean = when {
-            deg > 0 -> { heading -> heading < targetHeading }
-            else -> { heading -> heading > targetHeading }
-        }
-
-        log("Starting turn of $deg degrees from initial heading $startHeading")
-        log("Target IMU heading: $targetHeading deg")
-
-        setTurnPower(0.45)
-
-        var heading = hw.getImuHeading()
-        val headingTelemetry = telemetry.addData("Current heading", heading)
-        while (opModeIsActive() && !reachedTargetCondition(heading)) {
-            if (Math.abs(heading - targetHeading) < 10) {
-                setTurnPower(Hardware.DRIVE_SLOWEST)
-            }
-            heading = hw.getImuHeading()
-            headingTelemetry.setValue(heading)
-            telemetry.update()
+    private fun turn(drivetrain: HeadingableTankDrivetrain, deg: Float) {
+        val rad = -deg * Math.PI / 180
+        drivetrain.rotation = rad
+        while (drivetrain.isRotating) {
+            doTelemetry(drivetrain)
             idle()
         }
-        hw.setDrivePower(0.0)
-        log("Finished turn.")
     }
 
     override fun runOpMode() {
@@ -248,6 +140,11 @@ abstract class BaseAutonomous : LinearOpMode() {
         log("Wait for initialization! Do not start!")
 
         val hw = Hardware(hardwareMap)
+        val pid = PIDController(1.5, 0.05, 0.0)
+        pid.maxErrorForIntegral = 0.002
+
+        val controller = FinishableIntegratedController(IntegratingGyroscopeSensor(hw.imu), pid, ErrorTimeThresholdFinishingAlgorithm(Math.PI / 50, 1.0))
+        val drivetrain = HeadingableTankDrivetrain(arrayOf(hw.backLeftDrive, hw.backRightDrive), controller)
 
         log("Initialized all hardware.")
 
@@ -276,7 +173,7 @@ abstract class BaseAutonomous : LinearOpMode() {
         hw.lifter.moveToPosition(Hardware.LIFTER_AUTO_DROP_DOWN_POSITION, 2.5, false)
 
         // Turn to get out of cage
-        turn(hw, 45f)
+        turn(drivetrain, 45f)
         // Back out
         drive(hw, -40.0)
 
@@ -327,12 +224,11 @@ abstract class BaseAutonomous : LinearOpMode() {
                 // Turn to face the depot
                 when (goldPosition) {
                     // turn back to center
-                    GoldPosition.LEFT -> turn(hw, hw.getImuHeading())
+                    GoldPosition.LEFT -> turn(drivetrain, hw.getImuHeading())
                     // turn 45 degrees from initial position to aim toward wall
-                    GoldPosition.CENTER -> turn(hw, hw.getImuHeading() + 45f)
-                    GoldPosition.RIGHT -> turn(hw, hw.getImuHeading() + 45f)
+                    GoldPosition.CENTER -> turn(drivetrain, hw.getImuHeading() + 45f)
+                    GoldPosition.RIGHT -> turn(drivetrain, hw.getImuHeading() + 45f)
                 }
-
                 // Reverse into the depot
                 drive(hw, -890.0)
                 // Release the marker
@@ -340,14 +236,15 @@ abstract class BaseAutonomous : LinearOpMode() {
                 sleep(1000)
                 hw.markerReleaser.position = Hardware.MARKER_RETRACTED
                 // Turn toward the crater (enemy side)
-                turn(hw, 50f)
-                drive(hw, 850.0) // This will slide along and make us point toward crater
+                turn(drivetrain, 50f)
+                drive(hw, 850.0)
+                // Do like a 5 point turn
                 drive(hw, -127.0)
-                turn(hw, -30f)
+                turn(drivetrain, -30f)
                 drive(hw, 100.0)
-                turn(hw, -22f)
+                turn(drivetrain, -22f)
                 drive(hw, 50.0)
-                turn(hw, -15f)
+                turn(drivetrain, -15f)
                 // Drive toward the crater
                 drive(hw, 1300.0, 0.7)
             }
@@ -355,17 +252,17 @@ abstract class BaseAutonomous : LinearOpMode() {
                 // Go forward after hitting jewel (back toward lander)
                 drive(hw, 150.0) // change the amount as needed
                 // Navigate toward depot (turn toward depot)
-                turn(hw, hw.getImuHeading() + 90f)
+                turn(drivetrain, hw.getImuHeading() + 90f)
                 drive(hw, 1117.0)
                 // Turn to straighten in line with the depot (Hopefully against the wall)
-                turn(hw, hw.getImuHeading() + 130f)
+                turn(drivetrain, hw.getImuHeading() + 130f)
                 // Drive until depot and release the object
                 drive(hw, 1651.0)
-                turn(hw, hw.getImuHeading() - 45f)
+                turn(drivetrain, hw.getImuHeading() - 45f)
                 hw.markerReleaser.position = Hardware.MARKER_RELEASED
                 sleep(1000)
                 hw.markerReleaser.position = Hardware.MARKER_RETRACTED
-                turn(hw, hw.getImuHeading() - 130f)
+                turn(drivetrain, hw.getImuHeading() - 130f)
 
                 // Navigate back to crater
                 drive(hw, 2440.0)
