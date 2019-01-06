@@ -230,8 +230,8 @@ abstract class BaseAutonomous : LinearOpMode() {
             power = 1.0
             targetPosition = Hardware.LIFTER_AUTO_END_POSITION
         }
-        hw.setRightDrivePower(0.1)
-        hw.setLeftDrivePower(-0.1)
+        hw.setRightDrivePower(0.16)
+        hw.setLeftDrivePower(-0.16)
 
         val samplingTimeout = ElapsedTime()
         log("Phase: Gold detection")
@@ -293,9 +293,9 @@ abstract class BaseAutonomous : LinearOpMode() {
                 turn(hw, drivetrain, 50f)
                 drive(hw, 850.0)
                 // Do like a 5 point turn
-                turn(hw, drivetrain, -70f)
+                turn(hw, drivetrain, hw.getImuHeading() + 45f + 20f)
                 drive(hw, 150.0)
-                turn(hw, drivetrain, hw.getImuHeading() + 47f)
+                turn(hw, drivetrain, hw.getImuHeading() + 50f)
                 // Drive toward the crater
 //                hw.wrist.apply {
 //                    mode = DcMotor.RunMode.RUN_TO_POSITION
@@ -323,7 +323,7 @@ abstract class BaseAutonomous : LinearOpMode() {
                 turn(hw, drivetrain, hw.getImuHeading() + 85f)
                 drive(hw, when (goldPosition) {
                     GoldPosition.RIGHT -> 300.0
-                    GoldPosition.CENTER -> 900.2
+                    GoldPosition.CENTER -> 970.0
                     GoldPosition.LEFT -> 1200.4
                 })
                 drive(hw, 375.0)
