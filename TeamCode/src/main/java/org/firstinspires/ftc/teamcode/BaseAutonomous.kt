@@ -311,7 +311,7 @@ abstract class BaseAutonomous : LinearOpMode() {
             AutonomousStartLocation.FACING_CRATER -> {
                 drive(hw, when (goldPosition) {
                     GoldPosition.LEFT -> -660.0
-                    GoldPosition.CENTER -> -550.0
+                    GoldPosition.CENTER -> -600.0
                     GoldPosition.RIGHT -> -813.0
                 })
                 if (goldPosition == GoldPosition.RIGHT || goldPosition == GoldPosition.LEFT) {
