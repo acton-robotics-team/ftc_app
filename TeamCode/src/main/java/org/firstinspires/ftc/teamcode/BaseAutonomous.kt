@@ -99,7 +99,6 @@ abstract class BaseAutonomous : LinearOpMode() {
             leftEncoderTelemetry.setValue(hw.backLeftDrive.currentPosition)
             rightEncoderTelemetry.setValue(hw.backRightDrive.currentPosition)
             telemetry.update()
-            idle()
         }
 
         hw.setDrivePower(0.0)
@@ -123,17 +122,24 @@ abstract class BaseAutonomous : LinearOpMode() {
     }
 
     /**
-     * Turns by X degrees (relative)
+     * Turns by X degrees relative to the robot's current heading
      */
     private fun turn(hw: Hardware, drivetrain: FourWheelDriveTrain, deg: Float) {
         val rad = deg * Math.PI / 180
         val initHeadingRad = hw.getImuHeading() * Math.PI / 180
         drivetrain.targetHeading = initHeadingRad - rad // magic
-        while (drivetrain.isRotating) {
+        while (opModeIsActive() && drivetrain.isRotating) {
             doTelemetry(drivetrain)
             drivetrain.updateHeading()
-            idle()
+
         }
+    }
+
+    /**
+     * Turns from X degrees relative to the starting heading
+     */
+    private fun turnFromStartPosition(hw: Hardware, drivetrain: FourWheelDriveTrain, deg: Float) {
+        turn(hw, drivetrain, hw.getImuHeading() + deg)
     }
 
     private fun turnImprecise(hw: Hardware, deg: Float) {
@@ -215,9 +221,7 @@ abstract class BaseAutonomous : LinearOpMode() {
             power = 1.0
             targetPosition = Hardware.LIFTER_AUTO_DROP_DOWN_POSITION
         }
-        while (opModeIsActive() && hw.lifter.isBusy) {
-            idle()
-        }
+        while (opModeIsActive() && hw.lifter.isBusy) {}
 
         // Turn to get out of cage
         turnImprecise(hw, 45f)
@@ -240,8 +244,6 @@ abstract class BaseAutonomous : LinearOpMode() {
             telemetry.addData("X pos", detector.xPosition)
             telemetry.addData("Lifter position", hw.lifter.currentPosition)
             telemetry.update()
-
-            idle()
         }
         // Reached alignment? Maybe or maybe hit 10s timeout
         // We are aligned
@@ -275,11 +277,11 @@ abstract class BaseAutonomous : LinearOpMode() {
                 // Turn to face the depot
                 when (goldPosition) {
                     // turn back to center
-                    GoldPosition.LEFT -> turn(hw, drivetrain, hw.getImuHeading())
+                    GoldPosition.LEFT -> turnFromStartPosition(hw, drivetrain, 0f)
                     // turn 45 degrees from initial position to aim toward wall
-                    GoldPosition.CENTER -> turn(hw, drivetrain, hw.getImuHeading() + 45f)
+                    GoldPosition.CENTER -> turnFromStartPosition(hw, drivetrain, 45f)
                     GoldPosition.RIGHT -> {
-                        turn(hw, drivetrain, hw.getImuHeading() + 45f)
+                        turnFromStartPosition(hw, drivetrain, 45f)
                         // Drive extra back
                         drive(hw, -17.7)
                     }
@@ -294,20 +296,11 @@ abstract class BaseAutonomous : LinearOpMode() {
                 turn(hw, drivetrain, 50f)
                 drive(hw, 33.5)
                 // Do like a 5 point turn
-                turn(hw, drivetrain, hw.getImuHeading() + 45f + 20f)
+                turnFromStartPosition(hw, drivetrain, 65f)
                 drive(hw, 5.9)
-                turn(hw, drivetrain, hw.getImuHeading() + 50f)
+                turnFromStartPosition(hw, drivetrain, 50f)
                 // Drive toward the crater
-//                hw.wrist.apply {
-//                    mode = DcMotor.RunMode.RUN_TO_POSITION
-//                    power = 0.5
-//                    targetPosition = Hardware.WRIST_GRABBING_POSITION
-//                }
                 drive(hw, 51.2)
-//                while (opModeIsActive()&& hw.wrist.isBusy) {
-//                    idle()
-//                }
-//                hw.wrist.power = 0.0
             }
             AutonomousStartLocation.FACING_CRATER -> {
                 drive(hw, when (goldPosition) {
@@ -316,26 +309,26 @@ abstract class BaseAutonomous : LinearOpMode() {
                     GoldPosition.RIGHT -> -32.0
                 })
                 if (goldPosition == GoldPosition.RIGHT || goldPosition == GoldPosition.LEFT) {
-                    turn(hw, drivetrain, hw.getImuHeading()) // turn back toward rover
+                    turnFromStartPosition(hw, drivetrain, 0f) // turn back toward rover
                 }
                 // Go forward after hitting jewel (back toward lander)
                 drive(hw, 10.0) // change the amount as needed
                 // Navigate toward depot (turn toward depot) and drive into wall
-                turn(hw, drivetrain, hw.getImuHeading() + 85f)
+                turnFromStartPosition(hw, drivetrain, 85f)
                 drive(hw, when (goldPosition) {
                     GoldPosition.RIGHT -> 11.8
                     GoldPosition.CENTER -> 38.2
                     GoldPosition.LEFT -> 47.25
                 })
                 drive(hw, 14.8)
-                turn(hw, drivetrain, hw.getImuHeading() + 45f)
+                turnFromStartPosition(hw, drivetrain, 45f)
                 // Drive until depot and release the object
                 drive(hw, 27.6)
                 turnImprecise(hw, -90f)
                 hw.markerReleaser.position = Hardware.MARKER_RELEASED
                 sleep(500)
                 hw.markerReleaser.position = Hardware.MARKER_RETRACTED
-                turn(hw, drivetrain, hw.getImuHeading() - 135f)
+                turnFromStartPosition(hw, drivetrain, -135f)
 
                 // Navigate back to crater
                 drive(hw, 80.0)
