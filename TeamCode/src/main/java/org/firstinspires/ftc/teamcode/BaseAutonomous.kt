@@ -271,7 +271,7 @@ abstract class BaseAutonomous : LinearOpMode() {
                 }
                 drive(hw, -32.5) // far enough to always hit the mineral
                 drive(hw, 32.5)
-                return
+                
                 // Turn to face the depot
                 when (goldPosition) {
                     // turn back to center
