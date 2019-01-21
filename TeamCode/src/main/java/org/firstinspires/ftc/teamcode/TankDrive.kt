@@ -22,8 +22,11 @@ import com.qualcomm.robotcore.util.ElapsedTime
 @TeleOp(name = "Tank Drive", group = "Linear Opmode")
 class TankDrive : LinearOpMode() {
     private val runtime = ElapsedTime()
+    private lateinit var hw: Hardware
+    private lateinit var armRotator1: PositionHoldingMotor
+    private lateinit var armRotator2: PositionHoldingMotor
 
-    private fun runTankDrive(hw: Hardware) {
+    private fun runTankDrive() {
         val powerModifier = if (gamepad1.a) Hardware.DRIVE_SLOW else Hardware.DRIVE_FAST
 
         hw.setLeftDrivePower(-gamepad1.left_stick_y * powerModifier)
@@ -33,7 +36,7 @@ class TankDrive : LinearOpMode() {
     /**
      * Left bumper = manual control, you're on your own
      */
-    private fun runLifter(hw: Hardware) {
+    private fun runLifter() {
         if (gamepad1.left_bumper) {
             hw.lifter.mode = DcMotor.RunMode.RUN_TO_POSITION
             hw.lifter.power = 1.0
@@ -49,44 +52,9 @@ class TankDrive : LinearOpMode() {
         telemetry.addData("Lifter encoder value", hw.lifter.currentPosition)
     }
 
-    private var armPreviouslyOnManualControl = false
-    private var lastArmTargetPosition = 0
-    private var wristPreviouslyOnManualControl = false
-    private var lastWristTargetPosition = 0
-
-    private fun runArm(hw: Hardware) {
-        hw.arm.apply {
-            if (Math.abs(gamepad2.right_stick_y) > 0.1) {
-                armPreviouslyOnManualControl = true
-                mode = DcMotor.RunMode.RUN_USING_ENCODER
-                power = 0.3 * -gamepad2.right_stick_y
-            } else {
-                mode = DcMotor.RunMode.RUN_TO_POSITION
-                power = 0.3
-                if (armPreviouslyOnManualControl) {
-                    armPreviouslyOnManualControl = false
-                    lastArmTargetPosition = currentPosition
-                }
-                targetPosition = lastArmTargetPosition
-            }
-        }
-
-        hw.wrist.apply {
-            if (Math.abs(gamepad2.left_stick_y) > 0.1) {
-                wristPreviouslyOnManualControl = true
-                mode = DcMotor.RunMode.RUN_USING_ENCODER
-                power = 0.3 * -gamepad2.left_stick_y
-            } else {
-                mode = DcMotor.RunMode.RUN_TO_POSITION
-                power = 0.3
-                if (wristPreviouslyOnManualControl) {
-                    wristPreviouslyOnManualControl = false
-                    lastWristTargetPosition = currentPosition
-                }
-                targetPosition = lastWristTargetPosition
-            }
-        }
-
+    private fun runArm() {
+        armRotator1.processInput(-gamepad2.right_stick_y)
+        armRotator2.processInput(-gamepad2.right_stick_y)
         hw.armExtender.apply {
             mode = DcMotor.RunMode.RUN_TO_POSITION
             power = 0.3
@@ -97,28 +65,26 @@ class TankDrive : LinearOpMode() {
             }
         }
 
-        telemetry.addData("Arm encoder value", hw.arm.currentPosition)
-        telemetry.addData("Arm target position", hw.arm.targetPosition)
-        telemetry.addData("Wrist encoder position", hw.wrist.currentPosition)
-        telemetry.addData("Wrist encoder target position", hw.wrist.targetPosition)
+        telemetry.addData("Arm encoder value", hw.armRotator1.currentPosition)
+        telemetry.addData("Arm target position", hw.armRotator1.targetPosition)
         telemetry.addData("Arm extender encoder value", hw.armExtender.currentPosition)
         telemetry.addData("Arm extender target position", hw.armExtender.targetPosition)
     }
 
-    private fun runArmGrabber(hw: Hardware) {
+    private fun runArmGrabber() {
         hw.grabber.position = 1 - gamepad2.left_trigger.toDouble()
     }
 
-    private fun runMacros(hw: Hardware) {
+    private fun runMacros() {
         // Gamepad 2, A btn
         if (gamepad2.a) {
-            lastArmTargetPosition = Hardware.ARM_GRABBING_POSITION
-            lastWristTargetPosition = Hardware.WRIST_GRABBING_POSITION
+            armRotator1.setTargetPosition(Hardware.ARM_GRABBING_POSITION)
+            armRotator2.setTargetPosition(Hardware.ARM_GRABBING_POSITION)
         }
         // Gamepad 2, X btn
         else if (gamepad2.x) {
-            lastArmTargetPosition = Hardware.ARM_SCORING_POSITION
-            lastWristTargetPosition = Hardware.WRIST_SCORING_POSITION
+            armRotator1.setTargetPosition(Hardware.ARM_SCORING_POSITION)
+            armRotator2.setTargetPosition(Hardware.ARM_GRABBING_POSITION)
         }
     }
 
@@ -129,17 +95,10 @@ class TankDrive : LinearOpMode() {
         waitForStart()
         runtime.reset()
 
-//        hardwareMap.dcMotor.get("wrist").apply {
-//            mode = DcMotor.RunMode.RUN_TO_POSITION
-//            power = 0.5
-//            targetPosition = 0
-//            while (opModeIsActive() && isBusy) {
-//                idle()
-//            }
-//        }
-
         // Move back to initial position after autonomous mode has extended it
-        val hw = Hardware(hardwareMap)
+        hw = Hardware(hardwareMap)
+        armRotator1 = PositionHoldingMotor(hw.armRotator1, 0.3)
+        armRotator2 = PositionHoldingMotor(hw.armRotator2, 0.3)
 
         // Wait for the game to start (driver presses PLAY)
         hw.armExtender.targetPosition = 0 // wtf
@@ -148,11 +107,11 @@ class TankDrive : LinearOpMode() {
         val loopTime = ElapsedTime()
         while (opModeIsActive()) {
             loopTime.reset()
-            runTankDrive(hw)
-            runLifter(hw)
-            runArm(hw)
-            runArmGrabber(hw)
-            runMacros(hw)
+            runTankDrive()
+            runLifter()
+            runArm()
+            runArmGrabber()
+            runMacros()
 
             // Show the elapsed game time
             telemetry.addData("Status", "Run Time: " + runtime.toString())

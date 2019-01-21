@@ -19,9 +19,9 @@ class Hardware(hwMap: HardwareMap) {
     val backRightDrive: DcMotor = hwMap.dcMotor.get("back_right")
     val backLeftDrive: DcMotor = hwMap.dcMotor.get("back_left")
     val lifter: DcMotor = hwMap.dcMotor.get("lifter")
-    val arm: DcMotor = hwMap.dcMotor.get("arm")
+    val armRotator1: DcMotor = hwMap.dcMotor.get("armrotator1")
+    val armRotator2: DcMotor = hwMap.dcMotor.get("armrotator2")
     val armExtender: DcMotor = hwMap.dcMotor.get("arm_extender")
-    val wrist: DcMotor = hwMap.dcMotor.get("wrist")
 
     val grabber: Servo = hwMap.servo.get("grabber")
     val markerReleaser: Servo = hwMap.servo.get("marker")
@@ -29,26 +29,20 @@ class Hardware(hwMap: HardwareMap) {
     val imu: BNO055IMUImpl = hwMap.get(BNO055IMUImpl::class.java, "imu")
 
     init {
-        frontRightDrive.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        frontLeftDrive.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        backRightDrive.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        backLeftDrive.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        frontLeftDrive.direction = DcMotorSimple.Direction.REVERSE
-        backLeftDrive.direction = DcMotorSimple.Direction.REVERSE
-        backLeftDrive.mode = DcMotor.RunMode.RUN_USING_ENCODER
-        backRightDrive.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        listOf(frontLeftDrive, frontRightDrive, backRightDrive, backLeftDrive).forEach {
+            it.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        }
+        listOf(frontLeftDrive, backLeftDrive).forEach {
+            it.direction = DcMotorSimple.Direction.REVERSE
+            it.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        }
 
-        arm.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        arm.mode = DcMotor.RunMode.RUN_TO_POSITION
-
-        armExtender.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        armExtender.mode = DcMotor.RunMode.RUN_USING_ENCODER
-        armExtender.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        listOf(armRotator1, armRotator2, armExtender).forEach {
+            it.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+            it.mode = DcMotor.RunMode.RUN_USING_ENCODER
+            it.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        }
         armExtender.direction = DcMotorSimple.Direction.REVERSE
-        wrist.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        wrist.direction = DcMotorSimple.Direction.REVERSE
-        wrist.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        wrist.mode = DcMotor.RunMode.RUN_TO_POSITION
 
         // Zero encoders
         lifter.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
@@ -89,6 +83,11 @@ class Hardware(hwMap: HardwareMap) {
     fun setRightDrivePower(power: Double) {
         frontRightDrive.power = power
         backRightDrive.power = TETRIX_TO_NEVEREST_POWER * power
+    }
+
+    fun withArmRotators(action: (DcMotor) -> Unit) {
+        action(armRotator1)
+        action(armRotator2)
     }
 
     companion object {
