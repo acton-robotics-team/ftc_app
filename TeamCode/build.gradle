@@ -23,8 +23,6 @@ dependencies {
     implementation project(':openCVLibrary3')
     implementation project(':DogeCV')
 
-    testImplementation "org.junit.jupiter:junit-jupiter-api:5.3.1"
-
 }
 
 android {
