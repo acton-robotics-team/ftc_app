@@ -118,5 +118,7 @@ class Hardware(hwMap: HardwareMap) {
         const val MARKER_RETRACTED = 1.0
 
         const val DRIVE_ENCODER_TICKS_PER_CM = 1000.0 / 27
+        const val OMNIWHEELS_RADIUS_IN = 2
+        const val DRIVE_ENCODER_TICKS_PER_IN = NEVEREST_40_TICKS_PER_REV / (2 * Math.PI * OMNIWHEELS_RADIUS_IN)
     }
 }

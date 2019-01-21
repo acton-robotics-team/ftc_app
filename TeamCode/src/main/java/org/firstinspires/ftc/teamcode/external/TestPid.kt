@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.external;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -7,6 +7,8 @@ import edu.spa.ftclib.internal.controller.FinishableIntegratedController
 import edu.spa.ftclib.internal.controller.PIDController
 import edu.spa.ftclib.internal.drivetrain.HeadingableTankDrivetrain
 import edu.spa.ftclib.internal.sensor.IntegratingGyroscopeSensor
+import org.firstinspires.ftc.teamcode.FourWheelDriveTrain
+import org.firstinspires.ftc.teamcode.Hardware
 
 @Autonomous(name = "Test PID opmode")
 class TestPid : LinearOpMode() {

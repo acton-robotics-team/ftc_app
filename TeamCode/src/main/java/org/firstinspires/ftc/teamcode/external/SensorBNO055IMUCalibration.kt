@@ -27,24 +27,20 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode
+package org.firstinspires.ftc.teamcode.external
 
 import com.qualcomm.hardware.adafruit.AdafruitBNO055IMU
 import com.qualcomm.hardware.bosch.BNO055IMU
-import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.util.ReadWriteFile
 
-import org.firstinspires.ftc.robotcore.external.Func
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil
-
-import java.io.File
-import java.util.Locale
+import org.firstinspires.ftc.teamcode.Hardware
 
 /**
  * [SensorBNO055IMUCalibration] calibrates the IMU accelerometer per
