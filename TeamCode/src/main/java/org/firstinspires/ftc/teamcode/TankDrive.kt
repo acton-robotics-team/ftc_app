@@ -55,14 +55,10 @@ class TankDrive : LinearOpMode() {
     private fun runArm() {
 //        armRotator1.processInput(-gamepad2.right_stick_y)
 //        armRotator2.processInput(-gamepad2.right_stick_y)
-        hw.armExtender.apply {
-            mode = DcMotor.RunMode.RUN_TO_POSITION
-            power = 0.3
-            targetPosition = when {
-                gamepad2.dpad_up -> Math.min(currentPosition + 100, Hardware.ARM_EXTENDED)
-                gamepad2.dpad_down -> Math.max(currentPosition - 100, Hardware.ARM_RETRACTED)
-                else -> targetPosition
-            }
+        hw.armExtender.power = when {
+            gamepad2.dpad_up -> 0.3
+            gamepad2.dpad_down -> -0.3
+            else -> 0.0
         }
 
         hw.boxSweeper.position = 1.0
@@ -71,8 +67,6 @@ class TankDrive : LinearOpMode() {
 
         telemetry.addData("Arm encoder value", hw.armRotator1.currentPosition)
         telemetry.addData("Arm target position", hw.armRotator1.targetPosition)
-        telemetry.addData("Arm extender encoder value", hw.armExtender.currentPosition)
-        telemetry.addData("Arm extender target position", hw.armExtender.targetPosition)
     }
 
     private fun runMacros() {
@@ -99,9 +93,6 @@ class TankDrive : LinearOpMode() {
         hw = Hardware(hardwareMap)
         armRotator1 = PositionHoldingMotor(hw.armRotator1, 0.3)
         armRotator2 = PositionHoldingMotor(hw.armRotator2, 0.3)
-
-        // Wait for the game to start (driver presses PLAY)
-        hw.armExtender.targetPosition = 0 // wtf
 
         // run until the end of the match (driver presses STOP)
         val loopTime = ElapsedTime()

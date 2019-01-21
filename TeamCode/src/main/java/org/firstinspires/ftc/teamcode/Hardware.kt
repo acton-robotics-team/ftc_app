@@ -39,11 +39,12 @@ class Hardware(hwMap: HardwareMap) {
             it.mode = DcMotor.RunMode.RUN_USING_ENCODER
         }
 
-        listOf(armRotator1, armRotator2, armExtender).forEach {
+        listOf(armRotator1, armRotator2).forEach {
             it.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
             it.mode = DcMotor.RunMode.RUN_USING_ENCODER
             it.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         }
+        armExtender.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
         armExtender.direction = DcMotorSimple.Direction.REVERSE
 
         // Zero encoders
