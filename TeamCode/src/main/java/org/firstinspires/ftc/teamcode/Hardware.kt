@@ -6,24 +6,26 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.Servo
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference
-import java.lang.Exception
-import kotlin.math.roundToInt
 
 class Hardware(hwMap: HardwareMap) {
     val frontRightDrive: DcMotor = hwMap.dcMotor.get("front_right")
     val frontLeftDrive: DcMotor = hwMap.dcMotor.get("front_left")
     val backRightDrive: DcMotor = hwMap.dcMotor.get("back_right")
     val backLeftDrive: DcMotor = hwMap.dcMotor.get("back_left")
+
     val lifter: DcMotor = hwMap.dcMotor.get("lifter")
-    val armRotator1: DcMotor = hwMap.dcMotor.get("armrotator1")
-    val armRotator2: DcMotor = hwMap.dcMotor.get("armrotator2")
+
+    val armRotator1: DcMotor = hwMap.dcMotor.get("arm_rotator1")
+    val armRotator2: DcMotor = hwMap.dcMotor.get("arm_rotator2")
     val armExtender: DcMotor = hwMap.dcMotor.get("arm_extender")
 
-    val grabber: Servo = hwMap.servo.get("grabber")
+    val boxHingeServo1: Servo = hwMap.servo.get("box_hinge1")
+    val boxHingeServo2: Servo = hwMap.servo.get("box_hinge2")
+    val boxSweeper: Servo = hwMap.servo.get("box_sweeper")
+
     val markerReleaser: Servo = hwMap.servo.get("marker")
 
     val imu: BNO055IMUImpl = hwMap.get(BNO055IMUImpl::class.java, "imu")

@@ -53,8 +53,8 @@ class TankDrive : LinearOpMode() {
     }
 
     private fun runArm() {
-        armRotator1.processInput(-gamepad2.right_stick_y)
-        armRotator2.processInput(-gamepad2.right_stick_y)
+//        armRotator1.processInput(-gamepad2.right_stick_y)
+//        armRotator2.processInput(-gamepad2.right_stick_y)
         hw.armExtender.apply {
             mode = DcMotor.RunMode.RUN_TO_POSITION
             power = 0.3
@@ -65,14 +65,14 @@ class TankDrive : LinearOpMode() {
             }
         }
 
+        hw.boxSweeper.position = 1.0
+        hw.boxHingeServo1.position = (gamepad2.right_trigger).toDouble()
+        hw.boxHingeServo2.position = (gamepad2.right_trigger).toDouble()
+
         telemetry.addData("Arm encoder value", hw.armRotator1.currentPosition)
         telemetry.addData("Arm target position", hw.armRotator1.targetPosition)
         telemetry.addData("Arm extender encoder value", hw.armExtender.currentPosition)
         telemetry.addData("Arm extender target position", hw.armExtender.targetPosition)
-    }
-
-    private fun runArmGrabber() {
-        hw.grabber.position = 1 - gamepad2.left_trigger.toDouble()
     }
 
     private fun runMacros() {
@@ -110,7 +110,6 @@ class TankDrive : LinearOpMode() {
             runTankDrive()
             runLifter()
             runArm()
-            runArmGrabber()
             runMacros()
 
             // Show the elapsed game time
