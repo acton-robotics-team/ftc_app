@@ -74,20 +74,20 @@ abstract class BaseAutonomous : LinearOpMode() {
         telemetry.update()
     }
 
-    private fun drive(hw: Hardware, distanceMm: Double, speed: Double = Hardware.DRIVE_FAST) {
+    private fun drive(hw: Hardware, inches: Double, speed: Double = Hardware.DRIVE_FAST) {
         hw.backRightDrive.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         hw.backLeftDrive.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         hw.backRightDrive.mode = DcMotor.RunMode.RUN_TO_POSITION
         hw.backLeftDrive.mode = DcMotor.RunMode.RUN_TO_POSITION
 
-        val requiredEncoderTicks = (distanceMm / 10 * Hardware.DRIVE_ENCODER_TICKS_PER_CM).roundToInt()
+        val requiredEncoderTicks = (inches * Hardware.DRIVE_ENCODER_TICKS_PER_IN).roundToInt()
 
-        log("Driving $distanceMm mm ($requiredEncoderTicks ticks) to end point")
+        log("Driving $inches in ($requiredEncoderTicks ticks) to end point")
         val leftEncoderTelemetry = telemetry.addData("Left drive encoder", 0)
         val rightEncoderTelemetry = telemetry.addData("Right drive encoder", 0)
         telemetry.update()
 
-        if (distanceMm > 0) {
+        if (inches > 0) {
             hw.setDrivePower(speed)
         } else {
             hw.setDrivePower(-speed)
@@ -222,7 +222,7 @@ abstract class BaseAutonomous : LinearOpMode() {
         // Turn to get out of cage
         turnImprecise(hw, 45f)
         // Back out
-        drive(hw, -80.0)
+        drive(hw, -3.15)
 
         // Turn until reaching the detector
         hw.lifter.apply {
@@ -269,8 +269,8 @@ abstract class BaseAutonomous : LinearOpMode() {
                 if (goldPosition != GoldPosition.RIGHT) {
                     turnImprecise(hw, 7f)
                 }
-                drive(hw, -825.0) // far enough to always hit the mineral
-                drive(hw, 825.0)
+                drive(hw, -32.5) // far enough to always hit the mineral
+                drive(hw, 32.5)
                 return
                 // Turn to face the depot
                 when (goldPosition) {
@@ -281,21 +281,21 @@ abstract class BaseAutonomous : LinearOpMode() {
                     GoldPosition.RIGHT -> {
                         turn(hw, drivetrain, hw.getImuHeading() + 45f)
                         // Drive extra back
-                        drive(hw, -450.0)
+                        drive(hw, -17.7)
                     }
                 }
                 // Reverse into the depot
-                drive(hw, -890.0)
+                drive(hw, -35.0)
                 // Release the marker
                 hw.markerReleaser.position = Hardware.MARKER_RELEASED
-                sleep(1000)
+                sleep(250)
                 hw.markerReleaser.position = Hardware.MARKER_RETRACTED
                 // Turn toward the crater (enemy side)
                 turn(hw, drivetrain, 50f)
-                drive(hw, 850.0)
+                drive(hw, 33.5)
                 // Do like a 5 point turn
                 turn(hw, drivetrain, hw.getImuHeading() + 45f + 20f)
-                drive(hw, 150.0)
+                drive(hw, 5.9)
                 turn(hw, drivetrain, hw.getImuHeading() + 50f)
                 // Drive toward the crater
 //                hw.wrist.apply {
@@ -303,7 +303,7 @@ abstract class BaseAutonomous : LinearOpMode() {
 //                    power = 0.5
 //                    targetPosition = Hardware.WRIST_GRABBING_POSITION
 //                }
-                drive(hw, 1300.0)
+                drive(hw, 51.2)
 //                while (opModeIsActive()&& hw.wrist.isBusy) {
 //                    idle()
 //                }
@@ -311,26 +311,26 @@ abstract class BaseAutonomous : LinearOpMode() {
             }
             AutonomousStartLocation.FACING_CRATER -> {
                 drive(hw, when (goldPosition) {
-                    GoldPosition.LEFT -> -660.0
-                    GoldPosition.CENTER -> -600.0
-                    GoldPosition.RIGHT -> -813.0
+                    GoldPosition.LEFT -> -26.0
+                    GoldPosition.CENTER -> -23.6
+                    GoldPosition.RIGHT -> -32.0
                 })
                 if (goldPosition == GoldPosition.RIGHT || goldPosition == GoldPosition.LEFT) {
                     turn(hw, drivetrain, hw.getImuHeading()) // turn back toward rover
                 }
                 // Go forward after hitting jewel (back toward lander)
-                drive(hw, 250.0) // change the amount as needed
+                drive(hw, 10.0) // change the amount as needed
                 // Navigate toward depot (turn toward depot) and drive into wall
                 turn(hw, drivetrain, hw.getImuHeading() + 85f)
                 drive(hw, when (goldPosition) {
-                    GoldPosition.RIGHT -> 300.0
-                    GoldPosition.CENTER -> 970.0
-                    GoldPosition.LEFT -> 1200.4
+                    GoldPosition.RIGHT -> 11.8
+                    GoldPosition.CENTER -> 38.2
+                    GoldPosition.LEFT -> 47.25
                 })
-                drive(hw, 375.0)
+                drive(hw, 14.8)
                 turn(hw, drivetrain, hw.getImuHeading() + 45f)
                 // Drive until depot and release the object
-                drive(hw, 700.6)
+                drive(hw, 27.6)
                 turnImprecise(hw, -90f)
                 hw.markerReleaser.position = Hardware.MARKER_RELEASED
                 sleep(500)
@@ -338,7 +338,7 @@ abstract class BaseAutonomous : LinearOpMode() {
                 turn(hw, drivetrain, hw.getImuHeading() - 135f)
 
                 // Navigate back to crater
-                drive(hw, 2032.0)
+                drive(hw, 80.0)
             }
         }
     }
