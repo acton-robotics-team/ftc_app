@@ -101,7 +101,7 @@ class TankDrive : LinearOpMode() {
             runTankDrive()
             runLifter()
             runArm()
-            runMacros()
+//            runMacros()
 
             // Show the elapsed game time
             telemetry.addData("Status", "Run Time: " + runtime.toString())

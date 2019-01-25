@@ -181,6 +181,8 @@ abstract class BaseAutonomous : LinearOpMode() {
         log("Finished turn.")
     }
 
+    fun getTfData()
+
     override fun runOpMode() {
         telemetry.isAutoClear = false
         log("Wait for initialization! Do not start!")
