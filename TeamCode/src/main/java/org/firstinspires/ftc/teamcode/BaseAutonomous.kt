@@ -58,10 +58,6 @@ abstract class BaseAutonomous : LinearOpMode() {
     protected abstract val startLocation: AutonomousStartLocation
     private val runtime = ElapsedTime()
 
-    private enum class GoldPosition {
-        RIGHT, LEFT, CENTER
-    }
-
     private fun log(entry: String) {
         // Get caller name
         val stacktrace = Thread.currentThread().stackTrace
@@ -181,8 +177,6 @@ abstract class BaseAutonomous : LinearOpMode() {
         log("Finished turn.")
     }
 
-    fun getTfData()
-
     override fun runOpMode() {
         telemetry.isAutoClear = false
         log("Wait for initialization! Do not start!")
@@ -249,7 +243,7 @@ abstract class BaseAutonomous : LinearOpMode() {
         }
         // Reached alignment? Maybe or maybe hit 10s timeout
         // We are aligned
-        log("Found mineral in " + samplingTimeout.toString())
+        log("Found mineral in $samplingTimeout")
         log("X position @ found = " + detector.xPosition)
         log("Phase: Gold driving")
 
