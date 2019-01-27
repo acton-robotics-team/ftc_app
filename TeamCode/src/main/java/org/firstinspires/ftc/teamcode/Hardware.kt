@@ -18,8 +18,8 @@ class Hardware(hwMap: HardwareMap) {
 
     val lifter: DcMotor = hwMap.dcMotor.get("lifter")
 
-    val armRotator1: DcMotor = hwMap.dcMotor.get("arm_rotator1")
-    val armRotator2: DcMotor = hwMap.dcMotor.get("arm_rotator2")
+    val armRotatorLeft: DcMotor = hwMap.dcMotor.get("arm_rotator_left")
+    val armRotatorRight: DcMotor = hwMap.dcMotor.get("arm_rotator_right")
     val armExtender: DcMotor = hwMap.dcMotor.get("arm_extender")
 
     val boxHingeServo1: Servo = hwMap.servo.get("box_hinge1")
@@ -39,17 +39,25 @@ class Hardware(hwMap: HardwareMap) {
             it.mode = DcMotor.RunMode.RUN_USING_ENCODER
         }
 
-        listOf(armRotator1, armRotator2).forEach {
+        listOf(armRotatorLeft, armRotatorRight).forEach {
             it.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
             it.mode = DcMotor.RunMode.RUN_USING_ENCODER
             it.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         }
+        armRotatorLeft.direction = DcMotorSimple.Direction.REVERSE
+
         armExtender.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
         armExtender.direction = DcMotorSimple.Direction.REVERSE
 
         // Zero encoders
         lifter.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        lifter.direction = DcMotorSimple.Direction.REVERSE
         lifter.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+
+        // Reset target positions of all motors (just in case)
+        listOf(lifter, armExtender, armRotatorLeft, armRotatorRight, backLeftDrive, backRightDrive).forEach {
+            it.targetPosition = 0
+        }
 
         val imuParams = BNO055IMU.Parameters().apply {
             angleUnit = BNO055IMU.AngleUnit.DEGREES
@@ -89,8 +97,8 @@ class Hardware(hwMap: HardwareMap) {
     }
 
     fun withArmRotators(action: (DcMotor) -> Unit) {
-        action(armRotator1)
-        action(armRotator2)
+        action(armRotatorLeft)
+        action(armRotatorRight)
     }
 
     companion object {

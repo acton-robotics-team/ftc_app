@@ -220,7 +220,7 @@ abstract class BaseAutonomous : LinearOpMode() {
         while (opModeIsActive() && hw.lifter.isBusy) {}
 
         // Turn to get out of cage
-        turnImprecise(hw, 45f)
+        turn(hw, drivetrain, -90f)
         // Back out
         drive(hw, -3.15)
 
