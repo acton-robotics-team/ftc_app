@@ -2,10 +2,7 @@ package org.firstinspires.ftc.teamcode
 
 import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.hardware.bosch.BNO055IMUImpl
-import com.qualcomm.robotcore.hardware.DcMotor
-import com.qualcomm.robotcore.hardware.DcMotorSimple
-import com.qualcomm.robotcore.hardware.HardwareMap
-import com.qualcomm.robotcore.hardware.Servo
+import com.qualcomm.robotcore.hardware.*
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference
@@ -24,7 +21,7 @@ class Hardware(hwMap: HardwareMap) {
 
     val boxHingeServo1: Servo = hwMap.servo.get("box_hinge1")
     val boxHingeServo2: Servo = hwMap.servo.get("box_hinge2")
-    val boxSweeper: Servo = hwMap.servo.get("box_sweeper")
+    val boxSweeper: CRServo = hwMap.crservo.get("box_sweeper")
 
     val markerReleaser: Servo = hwMap.servo.get("marker")
 

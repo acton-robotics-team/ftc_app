@@ -61,7 +61,7 @@ class TankDrive : LinearOpMode() {
             else -> 0.0
         }
 
-        hw.boxSweeper.position = 1.0
+        hw.boxSweeper.power = 0.7
         hw.boxHingeServo1.position = (gamepad2.right_trigger).toDouble()
         hw.boxHingeServo2.position = (gamepad2.right_trigger).toDouble()
 
