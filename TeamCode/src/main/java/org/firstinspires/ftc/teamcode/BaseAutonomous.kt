@@ -135,7 +135,7 @@ abstract class BaseAutonomous : LinearOpMode() {
      * Turns from X degrees relative to the starting heading
      */
     private fun turnFromStartPosition(hw: Hardware, drivetrain: FourWheelDriveTrain, deg: Float) {
-        turn(hw, drivetrain, hw.getImuHeading() + deg)
+        turn(hw, drivetrain, hw.getImuHeading() + 90f + deg)
     }
 
     private fun turnImprecise(hw: Hardware, deg: Float) {
@@ -220,9 +220,7 @@ abstract class BaseAutonomous : LinearOpMode() {
         while (opModeIsActive() && hw.lifter.isBusy) {}
 
         // Turn to get out of cage
-        turn(hw, drivetrain, -90f)
-        // Back out
-        drive(hw, -3.15)
+        turn(hw, drivetrain, 150f)
 
         // Turn until reaching the detector
         hw.lifter.apply {
@@ -230,8 +228,8 @@ abstract class BaseAutonomous : LinearOpMode() {
             power = 1.0
             targetPosition = Hardware.LIFTER_AUTO_END_POSITION
         }
-        hw.setRightDrivePower(0.16)
-        hw.setLeftDrivePower(-0.16)
+        hw.setRightDrivePower(0.1)
+        hw.setLeftDrivePower(-0.1)
 
         val samplingTimeout = ElapsedTime()
         log("Phase: Gold detection")
@@ -268,7 +266,6 @@ abstract class BaseAutonomous : LinearOpMode() {
                     turnImprecise(hw, 7f)
                 }
                 drive(hw, -32.5) // far enough to always hit the mineral
-                drive(hw, 32.5)
                 
                 // Turn to face the depot
                 when (goldPosition) {

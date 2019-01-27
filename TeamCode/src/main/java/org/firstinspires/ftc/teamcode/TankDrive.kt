@@ -91,8 +91,8 @@ class TankDrive : LinearOpMode() {
 
         // Move back to initial position after autonomous mode has extended it
         hw = Hardware(hardwareMap)
-        armRotatorLeft = PositionHoldingMotor(hw.armRotatorLeft, 0.3)
-        armRotatorRight = PositionHoldingMotor(hw.armRotatorRight, 0.3)
+        armRotatorLeft = PositionHoldingMotor(hw.armRotatorLeft, 0.7)
+        armRotatorRight = PositionHoldingMotor(hw.armRotatorRight, 0.7)
 
         // run until the end of the match (driver presses STOP)
         val loopTime = ElapsedTime()
