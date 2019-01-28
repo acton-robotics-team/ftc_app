@@ -205,9 +205,11 @@ abstract class BaseAutonomous : LinearOpMode() {
         }
         log("Initialized DogeCV.")
 
-        telemetry.addData("Status", "Initialized and ready to start!")
-        telemetry.update()
-        waitForStart()
+        // Not using waitforStart because of bug https://github.com/ftctechnh/ftc_app/wiki/Troubleshooting#motorola-e4-phones-disconnecting-momentarily-reported-102018
+        while (!opModeIsActive() && !isStopRequested()) {
+            telemetry.addData("status", "waiting for start command...")
+            telemetry.update()
+        }
         runtime.reset()
 
         // Drop down
