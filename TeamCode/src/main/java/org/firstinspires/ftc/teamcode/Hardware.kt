@@ -71,7 +71,9 @@ class Hardware(hwMap: HardwareMap) {
     /**
      * Gets the current IMU heading in degrees.
      *
-     * Note: this function takes a while to return.d
+     * Negative = right turn, positive = left turn
+     *
+     * Note: this function takes a while to return.
      */
     fun getImuHeading(): Float {
         return this.imu.getAngularOrientation(AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES)

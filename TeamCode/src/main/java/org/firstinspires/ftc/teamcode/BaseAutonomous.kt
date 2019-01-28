@@ -127,7 +127,6 @@ abstract class BaseAutonomous : LinearOpMode() {
         while (opModeIsActive() && drivetrain.isRotating) {
             doTelemetry(drivetrain)
             drivetrain.updateHeading()
-
         }
     }
 
@@ -223,11 +222,8 @@ abstract class BaseAutonomous : LinearOpMode() {
         turn(hw, drivetrain, 150f)
 
         // Turn until reaching the detector
-        hw.lifter.apply {
-            mode = DcMotor.RunMode.RUN_TO_POSITION
-            power = 1.0
-            targetPosition = Hardware.LIFTER_AUTO_END_POSITION
-        }
+        hw.lifter.targetPosition = Hardware.LIFTER_AUTO_END_POSITION
+
         hw.setRightDrivePower(0.1)
         hw.setLeftDrivePower(-0.1)
 
