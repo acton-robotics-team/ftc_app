@@ -131,10 +131,20 @@ abstract class BaseAutonomous : LinearOpMode() {
     }
 
     /**
+     * @return the heading deviation from the starting position, where 0
+     * degrees = pointing *straight toward the latch*.
+     */
+    private fun getHeadingFromStart(hw: Hardware): Float {
+        // Must add 90 degrees to the IMU heading because our robot is mounted
+        // sideways on the latch, so the start IMU heading is 90 degrees "off".
+        return hw.getImuHeading() + 90f
+    }
+
+    /**
      * Turns from X degrees relative to the starting heading
      */
     private fun turnFromStartPosition(hw: Hardware, drivetrain: FourWheelDriveTrain, deg: Float) {
-        turn(hw, drivetrain, hw.getImuHeading() + 90f + deg)
+        turn(hw, drivetrain, getHeadingFromStart(hw) + 90f + deg)
     }
 
     private fun turnImprecise(hw: Hardware, deg: Float) {
@@ -231,7 +241,7 @@ abstract class BaseAutonomous : LinearOpMode() {
 
         val samplingTimeout = ElapsedTime()
         log("Phase: Gold detection")
-        while (!detector.aligned && opModeIsActive() && hw.getImuHeading() < 45f) {
+        while (!detector.aligned && opModeIsActive() && getHeadingFromStart(hw) < 45f) {
             telemetry.clearAll()
             telemetry.addData("X pos", detector.xPosition)
             telemetry.addData("Lifter position", hw.lifter.currentPosition)
@@ -247,7 +257,7 @@ abstract class BaseAutonomous : LinearOpMode() {
         hw.setDrivePower(0.0)
         detector.disable()
 
-        val heading = hw.getImuHeading()
+        val heading = getHeadingFromStart(hw)
 
         val goldPosition = if (heading > -60 && heading < -10) {
             GoldPosition.LEFT
