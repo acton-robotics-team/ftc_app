@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.Hardware
 @Autonomous(name = "Test PID opmode")
 class TestPid : LinearOpMode() {
     override fun runOpMode() {
-        val hw = Hardware(hardwareMap)
+        val hw = Hardware(hardwareMap, this)
         val pid = PIDController(1.5, 0.05, 0.0)
         pid.maxErrorForIntegral = 0.002
 

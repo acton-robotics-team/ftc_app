@@ -118,7 +118,7 @@ class SensorBNO055IMUCalibration : LinearOpMode() {
         telemetry.log().add("calibration data to a file.")
         telemetry.log().add("")
 
-        val hw = Hardware(hardwareMap)
+        val hw = Hardware(hardwareMap, this)
 
         composeTelemetry(hw)
         telemetry.log().add("Waiting for start...")

@@ -2,12 +2,19 @@ package org.firstinspires.ftc.teamcode
 
 import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.hardware.bosch.BNO055IMUImpl
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.*
+import edu.spa.ftclib.internal.controller.ErrorTimeThresholdFinishingAlgorithm
+import edu.spa.ftclib.internal.controller.FinishableIntegratedController
+import edu.spa.ftclib.internal.controller.PIDController
+import edu.spa.ftclib.internal.drivetrain.HeadingableTankDrivetrain
+import edu.spa.ftclib.internal.sensor.IntegratingGyroscopeSensor
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference
+import kotlin.math.roundToInt
 
-class Hardware(hwMap: HardwareMap) {
+class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
     val frontRightDrive: DcMotor = hwMap.dcMotor.get("front_right")
     val frontLeftDrive: DcMotor = hwMap.dcMotor.get("front_left")
     val backRightDrive: DcMotor = hwMap.dcMotor.get("back_right")
@@ -26,6 +33,13 @@ class Hardware(hwMap: HardwareMap) {
     val markerReleaser: Servo = hwMap.servo.get("marker")
 
     val imu: BNO055IMUImpl = hwMap.get(BNO055IMUImpl::class.java, "imu")
+
+    private val pid = PIDController(2.5, 0.15, 0.0).apply {
+        maxErrorForIntegral = 0.002
+    }
+    private val controller = FinishableIntegratedController(IntegratingGyroscopeSensor(imu), pid, ErrorTimeThresholdFinishingAlgorithm(Math.PI / 12.5, 1.0))
+    private val drivetrain = FourWheelDriveTrain(backLeftDrive, backRightDrive, frontLeftDrive, frontRightDrive, controller)
+
 
     init {
         listOf(frontLeftDrive, frontRightDrive, backRightDrive, backLeftDrive).forEach {
@@ -75,7 +89,7 @@ class Hardware(hwMap: HardwareMap) {
      *
      * Note: this function takes a while to return.
      */
-    fun getImuHeading(): Float {
+    fun getHeading(): Float {
         return this.imu.getAngularOrientation(AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES)
                 .thirdAngle
     }
@@ -98,6 +112,128 @@ class Hardware(hwMap: HardwareMap) {
     fun withArmRotators(action: (DcMotor) -> Unit) {
         action(armRotatorLeft)
         action(armRotatorRight)
+    }
+
+
+    fun drive(inches: Double, speed: Double = Hardware.DRIVE_FAST) {
+        backRightDrive.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        backLeftDrive.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        backRightDrive.mode = DcMotor.RunMode.RUN_TO_POSITION
+        backLeftDrive.mode = DcMotor.RunMode.RUN_TO_POSITION
+
+        val requiredEncoderTicks = (inches * Hardware.DRIVE_ENCODER_TICKS_PER_IN).roundToInt()
+
+        log("Driving $inches in ($requiredEncoderTicks ticks) to end point")
+        val leftEncoderTelemetry = opMode.telemetry.addData("Left drive encoder", 0)
+        val rightEncoderTelemetry = opMode.telemetry.addData("Right drive encoder", 0)
+        opMode.telemetry.update()
+
+        if (inches > 0) {
+            setDrivePower(speed)
+        } else {
+            setDrivePower(-speed)
+        }
+        backLeftDrive.targetPosition = requiredEncoderTicks
+        backRightDrive.targetPosition = requiredEncoderTicks
+
+        while (opMode.opModeIsActive() && backRightDrive.isBusy && backLeftDrive.isBusy) {
+            leftEncoderTelemetry.setValue(backLeftDrive.currentPosition)
+            rightEncoderTelemetry.setValue(backRightDrive.currentPosition)
+            opMode.telemetry.update()
+        }
+
+        setDrivePower(0.0)
+        backLeftDrive.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        backRightDrive.mode = DcMotor.RunMode.RUN_USING_ENCODER
+    }
+
+    private fun doTelemetry(drivetrain: HeadingableTankDrivetrain) {
+        val pid = drivetrain.controller.algorithm as PIDController
+        opMode.telemetry.clear()
+        opMode.telemetry.addData("heading, target",
+                drivetrain.controller.sensorValue.toString() + "," + pid.target)
+        opMode.telemetry.addData("KP", pid.kp)
+        opMode.telemetry.addData("KI", pid.ki)
+        opMode.telemetry.addData("KD", pid.kd)
+        opMode.telemetry.addData("error", pid.error)
+        opMode.telemetry.addData("integral", pid.integral)
+        opMode.telemetry.addData("derivative", pid.derivative)
+        opMode.telemetry.addData("random", Math.random())
+        opMode.telemetry.update()
+    }
+
+    /**
+     * Turns by X degrees relative to the robot's current heading
+     */
+    fun turn(deg: Float) {
+        val rad = deg * Math.PI / 180
+        val initHeadingRad = getHeading() * Math.PI / 180
+        drivetrain.targetHeading = initHeadingRad - rad // magic
+        while (opMode.opModeIsActive() && drivetrain.isRotating) {
+            doTelemetry(drivetrain)
+            drivetrain.updateHeading()
+        }
+    }
+
+    /**
+     * @return the heading deviation from the starting position, where 0
+     * degrees = pointing *straight toward the latch*.
+     */
+    fun getHeadingFromStart(): Float {
+        // Must add 90 degrees to the IMU heading because our robot is mounted
+        // sideways on the latch, so the start IMU heading is 90 degrees "off".
+        return getHeading() + 90f
+    }
+
+    /**
+     * Turns from X degrees relative to the starting heading
+     */
+    fun turnFromStart(deg: Float) {
+        turn(getHeadingFromStart() + deg)
+    }
+
+    fun turnImprecise(deg: Float) {
+        val setTurnPower = { power: Double ->
+            if (deg > 0) {
+                // Turn right (clockwise)
+                setRightDrivePower(-power)
+                setLeftDrivePower(power)
+            } else {
+                // Turn left (counterclockwise)
+                setRightDrivePower(power)
+                setLeftDrivePower(-power)
+            }
+        }
+        val startHeading = getHeading()
+        val targetHeading = startHeading - deg
+        // Drive slowly because reading the IMU is slow and takes a while
+        val reachedTargetCondition: (heading: Float) -> Boolean = when {
+            deg > 0 -> { heading -> heading < targetHeading }
+            else -> { heading -> heading > targetHeading }
+        }
+
+        log("Starting turn of $deg degrees from initial heading $startHeading")
+        log("Target IMU heading: $targetHeading deg")
+
+        setTurnPower(0.45)
+
+        var heading = getHeading()
+        val headingTelemetry = opMode.telemetry.addData("Current heading", heading)
+        while (opMode.opModeIsActive() && !reachedTargetCondition(heading)) {
+            if (Math.abs(heading - targetHeading) < 10) {
+                setTurnPower(Hardware.DRIVE_SLOWEST)
+            }
+            heading = getHeading()
+            headingTelemetry.setValue(heading)
+            opMode.telemetry.update()
+        }
+        setDrivePower(0.0)
+        log("Finished turn.")
+    }
+
+    private fun log(entry: String) {
+        opMode.telemetry.log().add(entry)
+        opMode.telemetry.update()
     }
 
     companion object {

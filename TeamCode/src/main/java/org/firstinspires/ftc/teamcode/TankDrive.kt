@@ -90,7 +90,7 @@ class TankDrive : LinearOpMode() {
         runtime.reset()
 
         // Move back to initial position after autonomous mode has extended it
-        hw = Hardware(hardwareMap)
+        hw = Hardware(hardwareMap, this)
         armRotatorLeft = PositionHoldingMotor(hw.armRotatorLeft, 0.7)
         armRotatorRight = PositionHoldingMotor(hw.armRotatorRight, 0.7)
 

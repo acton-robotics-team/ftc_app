@@ -1,14 +1,11 @@
 package org.firstinspires.ftc.teamcode.external
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled
-import com.qualcomm.robotcore.eventloop.opmode.OpMode
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import edu.spa.ftclib.internal.controller.ErrorTimeThresholdFinishingAlgorithm
 import edu.spa.ftclib.internal.controller.FinishableIntegratedController
-
 import edu.spa.ftclib.internal.controller.PIDController
 import edu.spa.ftclib.internal.sensor.IntegratingGyroscopeSensor
-import edu.spa.ftclib.sample.robot.HeadingablePushbot
 import edu.spa.ftclib.util.PIDTuner
 import org.firstinspires.ftc.teamcode.FourWheelDriveTrain
 import org.firstinspires.ftc.teamcode.Hardware
@@ -18,16 +15,16 @@ import org.firstinspires.ftc.teamcode.Hardware
  */
 
 @TeleOp(name = "Pushbot PID Tuner", group = "sample")
-class PushbotPIDTuner : OpMode() {
+class PushbotPIDTuner : LinearOpMode() {
     private var tuner: PIDTuner? = null
     /**
-     * User defined init method
+     * User defined loop method
      *
      *
-     * This method will be called once when the INIT button is pressed.
+     * This method will be called repeatedly in a loop while this op mode is running
      */
-    override fun init() {
-        val hw = Hardware(hardwareMap)
+    override fun runOpMode() {
+        val hw = Hardware(hardwareMap, this)
         val pid = PIDController(1.5, 0.05, 0.0)
         pid.maxErrorForIntegral = 0.002
 
@@ -35,15 +32,11 @@ class PushbotPIDTuner : OpMode() {
         val drivetrain = FourWheelDriveTrain(hw.backLeftDrive, hw.backRightDrive, hw.frontLeftDrive, hw.frontRightDrive, controller)
 
         tuner = PIDTuner(drivetrain, controller.algorithm as PIDController, gamepad1, telemetry)
-    }
 
-    /**
-     * User defined loop method
-     *
-     *
-     * This method will be called repeatedly in a loop while this op mode is running
-     */
-    override fun loop() {
-        tuner!!.update()
+        waitForStart()
+
+        while (opModeIsActive()) {
+            tuner!!.update()
+        }
     }
 }
