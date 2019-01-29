@@ -29,9 +29,6 @@
 
 package org.firstinspires.ftc.teamcode
 
-import com.disnodeteam.dogecv.CameraViewDisplay
-import com.disnodeteam.dogecv.DogeCV
-import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.util.ElapsedTime
@@ -66,21 +63,9 @@ abstract class BaseAutonomous : LinearOpMode() {
         val hw = Hardware(hardwareMap, this)
         log("Initialized all hardware.")
 
-        val detector = GoldAlignDetector()
-        detector.apply {
-            // Config as taken from https://github.com/MechanicalMemes/DogeCV/blob/master/Examples/GoldAlignExample.java
-            init(hardwareMap.appContext, CameraViewDisplay.getInstance())
-            useDefaults()
-            alignSize = 100.0
-            alignPosOffset = 0.0
-            downscale = 0.4
-            areaScoringMethod = DogeCV.AreaScoringMethod.MAX_AREA
-            maxAreaScorer.weight = 0.005
-            ratioScorer.weight = 5.0
-            ratioScorer.perfectRatio = 1.0
-            enable()
-        }
-        log("Initialized DogeCV.")
+        val tf = TensorflowDetector(hardwareMap.appContext, telemetry)
+        tf.activate()
+        log("Initialized Tensorflow.")
 
         // Not using waitforStart because of bug https://github.com/ftctechnh/ftc_app/wiki/Troubleshooting#motorola-e4-phones-disconnecting-momentarily-reported-102018
         while (!opModeIsActive() && !isStopRequested) {
@@ -88,6 +73,19 @@ abstract class BaseAutonomous : LinearOpMode() {
             telemetry.update()
         }
         runtime.reset()
+
+        // Search for mineral with Tensorflow
+        val samplingTimeout = ElapsedTime()
+        var goldPosition: GoldPosition? = null
+        while (opModeIsActive() && goldPosition == null && samplingTimeout.seconds() <= 10) {
+            goldPosition = tf.getPosition()
+        }
+        if (goldPosition == null) {
+            // Uh oh, we didn't manage to identify the mineral in time.
+            // As a fallback, just go toward the center one.
+            goldPosition = GoldPosition.CENTER
+        }
+        tf.deactivate()
 
         // Drop down
         hw.lifter.apply {
@@ -98,51 +96,25 @@ abstract class BaseAutonomous : LinearOpMode() {
         while (opModeIsActive() && hw.lifter.isBusy) {
         }
 
-        // Turn to get out of cage
-        hw.turn(150f)
+        // Turn to get out of cage; we are currently sideways
+        hw.turn(-90f)
 
-        // Turn until reaching the detector
+        // Begin retracting the lifter
         hw.lifter.targetPosition = Hardware.LIFTER_AUTO_END_POSITION
 
-        hw.setRightDrivePower(0.1)
-        hw.setLeftDrivePower(-0.1)
+        // Back up to gold sampling position
+        hw.drive(-5.0)
+        hw.turnFromStart(when (goldPosition) {
+            GoldPosition.LEFT -> 45f
+            GoldPosition.CENTER -> 0f
+            GoldPosition.RIGHT -> -45f
+        })
 
-        val samplingTimeout = ElapsedTime()
-        log("Phase: Gold detection")
-        while (!detector.aligned && opModeIsActive() && hw.getHeadingFromStart() < 45f) {
-            telemetry.clearAll()
-            telemetry.addData("X pos", detector.xPosition)
-            telemetry.addData("Lifter position", hw.lifter.currentPosition)
-            telemetry.update()
-        }
-        // Reached alignment? Maybe or maybe hit 10s timeout
-        // We are aligned
-        log("Found mineral in $samplingTimeout")
-        log("X position @ found = " + detector.xPosition)
-        log("Phase: Gold driving")
-
-        // Always disable the detector
-        hw.setDrivePower(0.0)
-        detector.disable()
-
-        val heading = hw.getHeadingFromStart()
-
-        val goldPosition = if (heading > -60 && heading < -10) {
-            GoldPosition.LEFT
-        } else if (heading < 30) {
-            GoldPosition.CENTER
-        } else {
-            GoldPosition.RIGHT
-        }
-        log("Inferred gold position at $goldPosition")
+        // Hit the gold mineral
+        hw.drive(-32.5) // far enough to always hit the mineral
 
         when (startLocation) {
             AutonomousStartLocation.FACING_DEPOT -> {
-                if (goldPosition != GoldPosition.RIGHT) {
-                    hw.turnImprecise(7f)
-                }
-                hw.drive(-32.5) // far enough to always hit the mineral
-
                 // Turn to face the depot
                 when (goldPosition) {
                     // turn back to center
@@ -172,11 +144,6 @@ abstract class BaseAutonomous : LinearOpMode() {
                 hw.drive(51.2)
             }
             AutonomousStartLocation.FACING_CRATER -> {
-                hw.drive(when (goldPosition) {
-                    GoldPosition.LEFT -> -26.0
-                    GoldPosition.CENTER -> -23.6
-                    GoldPosition.RIGHT -> -32.0
-                })
                 if (goldPosition == GoldPosition.RIGHT || goldPosition == GoldPosition.LEFT) {
                     hw.turnFromStart(0f) // turn back toward rover
                 }
