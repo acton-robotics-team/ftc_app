@@ -45,8 +45,12 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
         listOf(frontLeftDrive, frontRightDrive, backRightDrive, backLeftDrive).forEach {
             it.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         }
+        // Set left motors in reverse
         listOf(frontLeftDrive, backLeftDrive).forEach {
             it.direction = DcMotorSimple.Direction.REVERSE
+        }
+        // Let back motors use the encoder (front wheels do not have them)
+        listOf(backLeftDrive, backRightDrive).forEach {
             it.mode = DcMotor.RunMode.RUN_USING_ENCODER
         }
 
@@ -247,7 +251,7 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
         const val DRIVE_FAST = 1.0
 
         const val LIFTER_BOTTOM_POSITION = 0
-        const val LIFTER_TOP_POSITION = 14700
+        const val LIFTER_TOP_POSITION = 14196
         const val LIFTER_AUTO_DROP_DOWN_POSITION = LIFTER_TOP_POSITION
         const val LIFTER_AUTO_END_POSITION = LIFTER_BOTTOM_POSITION
 
