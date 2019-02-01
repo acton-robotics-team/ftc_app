@@ -29,12 +29,23 @@
 
 package org.firstinspires.ftc.teamcode
 
-import android.util.Log
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.util.ElapsedTime
 
-abstract class BaseAutonomous : LinearOpMode() {
+/**
+ * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
+ * the autonomous or the teleop period of an FTC match. The names of OpModes appear on the menu
+ * of the FTC Driver Station. When an selection is made from the menu, the corresponding OpMode
+ * class is instantiated on the Robot Controller and executed.
+ *
+ * This particular OpMode just executes a basic Tank Drive Teleop for a two wheeled robot
+ * It includes all the skeletal structure that all linear OpModes contain.
+ *
+ * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
+ * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
+ */
+abstract class BaseAutonomousWithArm : LinearOpMode() {
     protected abstract val startLocation: AutonomousStartLocation
     private val runtime = ElapsedTime()
 
@@ -102,21 +113,35 @@ abstract class BaseAutonomous : LinearOpMode() {
         }
 
         // Turn to get out of cage; we are currently sideways
-        hw.turnFromStart(180f)
+        // And point toward the detected mineral.
+        hw.turnFromStart(180f + when (goldPosition) {
+            GoldPosition.RIGHT -> 45f
+            GoldPosition.CENTER -> 0f
+            GoldPosition.LEFT -> -45f
+        })
 
         // Begin retracting the lifter
         hw.lifter.targetPosition = Hardware.LIFTER_AUTO_END_POSITION
 
-        // Back up to gold sampling position
-        hw.drive(5.0)
-        hw.turnFromStart(180f + when (goldPosition) {
-            GoldPosition.LEFT -> -45f
-            GoldPosition.CENTER -> 0f
-            GoldPosition.RIGHT -> 45f
-        })
+        // Move arm to the extended position for sampling
+        hw.rotateArm(180f)
+        hw.armExtender.apply {
+            mode = DcMotor.RunMode.RUN_TO_POSITION
+            power = 0.5
+            targetPosition = 1120 // TODO
 
-        // Hit the gold mineral
-        hw.drive(32.5) // far enough to always hit the mineral
+            while (opModeIsActive() && isBusy) {
+            }
+
+            // Okay, we must've hit the mineral now. Retract.
+            targetPosition = 0
+
+            while (opModeIsActive() && isBusy) {
+            }
+        }
+        hw.rotateArm(0f)
+
+        return
 
         when (startLocation) {
             AutonomousStartLocation.FACING_DEPOT -> {

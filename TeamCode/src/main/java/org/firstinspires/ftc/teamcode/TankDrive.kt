@@ -62,11 +62,11 @@ class TankDrive : LinearOpMode() {
         }
 
         hw.boxSweeper.power = 0.7
-        hw.boxHingeServo1.position = (gamepad2.right_trigger).toDouble()
-        hw.boxHingeServo2.position = (gamepad2.right_trigger).toDouble()
+        hw.leftBoxHingeServo.position = (gamepad2.right_trigger).toDouble()
+        hw.rightBoxHingeServo.position = (gamepad2.right_trigger).toDouble()
 
-        telemetry.addData("Arm encoder value", hw.armRotatorLeft.currentPosition)
-        telemetry.addData("Arm target position", hw.armRotatorLeft.targetPosition)
+        telemetry.addData("Arm encoder value", hw.leftArmRotator.currentPosition)
+        telemetry.addData("Arm target position", hw.leftArmRotator.targetPosition)
     }
 
     private fun runMacros() {
@@ -83,16 +83,15 @@ class TankDrive : LinearOpMode() {
     }
 
     override fun runOpMode() {
+        hw = Hardware(hardwareMap, this)
+        armRotatorLeft = PositionHoldingMotor(hw.leftArmRotator)
+        armRotatorRight = PositionHoldingMotor(hw.rightArmRotator)
+
         telemetry.addData("Status", "Initialized")
         telemetry.update()
 
         waitForStart()
         runtime.reset()
-
-        // Move back to initial position after autonomous mode has extended it
-        hw = Hardware(hardwareMap, this)
-        armRotatorLeft = PositionHoldingMotor(hw.armRotatorLeft, 0.7)
-        armRotatorRight = PositionHoldingMotor(hw.armRotatorRight, 0.7)
 
         // run until the end of the match (driver presses STOP)
         val loopTime = ElapsedTime()

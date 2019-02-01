@@ -22,12 +22,12 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
 
     val lifter: DcMotor = hwMap.dcMotor.get("lifter")
 
-    val armRotatorLeft: DcMotor = hwMap.dcMotor.get("arm_rotator_left")
-    val armRotatorRight: DcMotor = hwMap.dcMotor.get("arm_rotator_right")
+    val leftArmRotator: DcMotor = hwMap.dcMotor.get("arm_rotator_left")
+    val rightArmRotator: DcMotor = hwMap.dcMotor.get("arm_rotator_right")
     val armExtender: DcMotor = hwMap.dcMotor.get("arm_extender")
 
-    val boxHingeServo1: Servo = hwMap.servo.get("box_hinge1")
-    val boxHingeServo2: Servo = hwMap.servo.get("box_hinge2")
+    val leftBoxHingeServo: Servo = hwMap.servo.get("box_hinge1")
+    val rightBoxHingeServo: Servo = hwMap.servo.get("box_hinge2")
     val boxSweeper: CRServo = hwMap.crservo.get("box_sweeper")
 
     val markerReleaser: Servo = hwMap.servo.get("marker")
@@ -54,12 +54,12 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
             it.mode = DcMotor.RunMode.RUN_USING_ENCODER
         }
 
-        listOf(armRotatorLeft, armRotatorRight).forEach {
+        listOf(leftArmRotator, rightArmRotator).forEach {
             it.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
             it.mode = DcMotor.RunMode.RUN_USING_ENCODER
             it.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         }
-        armRotatorLeft.direction = DcMotorSimple.Direction.REVERSE
+        leftArmRotator.direction = DcMotorSimple.Direction.REVERSE
 
         armExtender.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
         armExtender.direction = DcMotorSimple.Direction.REVERSE
@@ -70,9 +70,12 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
         lifter.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
         // Reset target positions of all motors (just in case)
-        listOf(lifter, armExtender, armRotatorLeft, armRotatorRight, backLeftDrive, backRightDrive).forEach {
+        listOf(lifter, armExtender, leftArmRotator, rightArmRotator, backLeftDrive, backRightDrive).forEach {
             it.targetPosition = 0
         }
+
+        leftBoxHingeServo.direction = Servo.Direction.REVERSE
+        boxSweeper.direction = DcMotorSimple.Direction.REVERSE
 
         val imuParams = BNO055IMU.Parameters().apply {
             angleUnit = BNO055IMU.AngleUnit.DEGREES
@@ -113,11 +116,21 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
         backRightDrive.power = TETRIX_TO_NEVEREST_POWER * power
     }
 
-    fun withArmRotators(action: (DcMotor) -> Unit) {
-        action(armRotatorLeft)
-        action(armRotatorRight)
-    }
+    /**
+     * Rotates the arm by X degrees from the original position of the arm
+     * (aka stowed away; horizontal)
+     *
+     * Blocks (it will wait until the movement is complete)
+     */
+    fun rotateArm(degrees: Float) {
+        listOf(leftArmRotator, rightArmRotator).forEach {
+            it.mode = DcMotor.RunMode.RUN_TO_POSITION
+            it.power = 0.5
+            it.targetPosition = (NEVEREST_40_TICKS_PER_REV * (degrees / 360)).roundToInt()
+        }
 
+        while (opMode.opModeIsActive() && leftArmRotator.isBusy && rightArmRotator.isBusy) {}
+    }
 
     fun drive(inches: Double, speed: Double = Hardware.DRIVE_FAST) {
         backRightDrive.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
@@ -177,6 +190,7 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
             doTelemetry(drivetrain)
             drivetrain.updateHeading()
         }
+        setDrivePower(0.0)
     }
 
     /**
