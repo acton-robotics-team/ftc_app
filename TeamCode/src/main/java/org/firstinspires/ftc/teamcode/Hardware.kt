@@ -187,6 +187,7 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
             doTelemetry(drivetrain)
             drivetrain.updateHeading()
         }
+        setDrivePower(0.0)
     }
 
     /**
