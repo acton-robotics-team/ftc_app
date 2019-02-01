@@ -166,7 +166,7 @@ abstract class BaseAutonomous : LinearOpMode() {
                     hw.turnFromStart(0f) // turn back toward rover
                 }
                 // Go forward after hitting jewel (back toward lander)
-                hw.drive(10.0) // change the amount as needed
+                hw.drive(-10.0) // change the amount as needed
                 // Navigate toward depot (turn toward depot) and drive into wall
                 hw.turnFromStart(85f)
                 hw.drive(when (goldPosition) {
