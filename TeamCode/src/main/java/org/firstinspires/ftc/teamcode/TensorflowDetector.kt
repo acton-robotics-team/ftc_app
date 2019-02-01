@@ -33,6 +33,7 @@ import android.content.Context
 import org.firstinspires.ftc.robotcore.external.ClassFactory
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector
 
 /**
@@ -61,23 +62,23 @@ class TensorflowDetector(private val context: Context, private val telemetry: Te
      */
     private lateinit var tfod: TFObjectDetector
 
+    private fun inDetectionArea(mineral: Recognition): Boolean {
+        return mineral.top > 350 && mineral.right < 1000
+    }
+
     fun getPosition(): GoldPosition? {
         // Remove minerals detected above a certain height; they are likely to
         // be in the crater.
         // Then sort them so that the first mineral is the leftmost one.
         val minerals = tfod.recognitions
-                .filter { it.bottom > MIN_DETECTION_TOP_HEIGHT }
+                .filter { inDetectionArea(it) }
                 .sortedBy { it.left }
-        telemetry.logEx("Got ${minerals.size} minerals")
         if (minerals.size != 2) {
-            telemetry.logEx("Rip, not exactly two minerals. I guess we lose.")
             return null
         }
 
         val leftMineral = minerals[0]
         val rightMineral = minerals[1]
-        telemetry.logEx("Left mineral: ${leftMineral.label}")
-        telemetry.logEx("Right mineral: ${rightMineral.label}")
 
         return when {
             leftMineral.label == LABEL_GOLD_MINERAL && rightMineral.label == LABEL_SILVER_MINERAL ->
@@ -154,7 +155,5 @@ class TensorflowDetector(private val context: Context, private val telemetry: Te
          * and paste it in to your code on the next line, between the double quotes.
          */
         private val VUFORIA_KEY = "AWbfTmn/////AAABmY0xuIe3C0RHvL3XuzRxyEmOT2OekXBSbqN2jot1si3OGBObwWadfitJR/D6Vk8VEBiW0HG2Q8UAEd0//OliF9aWCRmyDJ1mMqKCJZxpZemfT5ELFuWnJIZWUkKyjQfDNe2RIaAh0ermSxF4Bq77IDFirgggdYJoRIyi2Ys7Gl9lD/tSonV8OnldIN/Ove4/MtEBJTKHqjUEjC5U2khV+26AqkeqbxhFTNiIMl0LcmSSfugGhmWFGFtuPtp/+flPBRGoBO+tSl9P2sV4mSUBE/WrpHqB0Jd/tAmeNvbtgQXtZEGYc/9NszwRLVNl9k13vrBcgsiNxs2UY5xAvA4Wb6LN7Yu+tChwc+qBiVKAQe09\n"
-
-        private val MIN_DETECTION_TOP_HEIGHT = 450
     }
 }

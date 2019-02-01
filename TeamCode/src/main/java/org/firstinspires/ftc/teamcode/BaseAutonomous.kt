@@ -56,6 +56,33 @@ abstract class BaseAutonomous : LinearOpMode() {
         telemetry.logEx("$logHeader $entry")
     }
 
+    private fun detectMineral(tf: TensorflowDetector): GoldPosition {
+        // Search for mineral with Tensorflow
+        val samplingTimeout = ElapsedTime()
+        var goldPosition: GoldPosition? = null
+        while (opModeIsActive() && goldPosition == null && samplingTimeout.seconds() <= 10) {
+            goldPosition = tf.getPosition()
+        }
+
+        telemetry.logEx("Found (preliminary) $goldPosition")
+
+        // Spend at least three seconds detecting (sometimes Tensorflow does
+        // not detect all minerals in the beginning)
+        val timeSpentDetecting = ElapsedTime()
+        while (opModeIsActive() && timeSpentDetecting.seconds() <= 2) {
+            goldPosition = tf.getPosition()
+        }
+
+        if (goldPosition == null) {
+            // Uh oh, we didn't manage to identify the mineral in time.
+            // As a fallback, just go toward the center one.
+            telemetry.logEx("Not found; had to fall back to CENTER mineral.")
+            goldPosition = GoldPosition.CENTER
+        }
+        telemetry.logEx("Got gold position $goldPosition")
+        return goldPosition
+    }
+
     override fun runOpMode() {
         telemetry.isAutoClear = false
         log("Wait for initialization! Do not start!")
@@ -74,18 +101,7 @@ abstract class BaseAutonomous : LinearOpMode() {
         }
         runtime.reset()
 
-        // Search for mineral with Tensorflow
-        val samplingTimeout = ElapsedTime()
-        var goldPosition: GoldPosition? = null
-        while (opModeIsActive() && goldPosition == null && samplingTimeout.seconds() <= 10) {
-            goldPosition = tf.getPosition()
-        }
-        if (goldPosition == null) {
-            // Uh oh, we didn't manage to identify the mineral in time.
-            // As a fallback, just go toward the center one.
-            goldPosition = GoldPosition.CENTER
-        }
-        Log.e("ftc", "Got gold position $goldPosition")
+        val goldPosition = detectMineral(tf)
         tf.deactivate()
         return
 

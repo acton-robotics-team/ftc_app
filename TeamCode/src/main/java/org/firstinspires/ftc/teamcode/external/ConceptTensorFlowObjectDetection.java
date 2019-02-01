@@ -117,9 +117,11 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
                             if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
                                 telemetry.addLine("Gold mineral X " + recognition.getLeft());
                                 telemetry.addLine("Gold mineral bottom " + recognition.getBottom());
+                                telemetry.addLine("Gold mineral top " + recognition.getTop());
                             } else {
                                 telemetry.addLine("Silver mineral X " + recognition.getLeft());
                                 telemetry.addLine("Silver mineral bottom " + recognition.getBottom());
+                                telemetry.addLine("Silver mineral top " + recognition.getTop());
                             }
                         }
                         telemetry.update();
