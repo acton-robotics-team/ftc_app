@@ -113,11 +113,21 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
         backRightDrive.power = TETRIX_TO_NEVEREST_POWER * power
     }
 
-    fun withArmRotators(action: (DcMotor) -> Unit) {
-        action(armRotatorLeft)
-        action(armRotatorRight)
-    }
+    /**
+     * Rotates the arm by X degrees from the original position of the arm
+     * (aka stowed away; horizontal)
+     *
+     * Blocks (it will wait until the movement is complete)
+     */
+    fun rotateArm(degrees: Float) {
+        listOf(armRotatorLeft, armRotatorRight).forEach {
+            it.mode = DcMotor.RunMode.RUN_TO_POSITION
+            it.power = 0.5
+            it.targetPosition = (NEVEREST_40_TICKS_PER_REV * (degrees / 360)).roundToInt()
+        }
 
+        while (opMode.opModeIsActive() && armRotatorLeft.isBusy && armRotatorRight.isBusy) {}
+    }
 
     fun drive(inches: Double, speed: Double = Hardware.DRIVE_FAST) {
         backRightDrive.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
