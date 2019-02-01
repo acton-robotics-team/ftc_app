@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode
 
+import android.util.Log
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.util.ElapsedTime
@@ -52,8 +53,7 @@ abstract class BaseAutonomous : LinearOpMode() {
     private fun log(entry: String) {
         val logHeader = "[${String.format("%.2f", runtime.seconds())}]"
 
-        telemetry.log().add("$logHeader $entry")
-        telemetry.update()
+        telemetry.logEx("$logHeader $entry")
     }
 
     override fun runOpMode() {
@@ -85,7 +85,9 @@ abstract class BaseAutonomous : LinearOpMode() {
             // As a fallback, just go toward the center one.
             goldPosition = GoldPosition.CENTER
         }
+        Log.e("ftc", "Got gold position $goldPosition")
         tf.deactivate()
+        return
 
         // Drop down
         hw.lifter.apply {

@@ -236,8 +236,7 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
     }
 
     private fun log(entry: String) {
-        opMode.telemetry.log().add(entry)
-        opMode.telemetry.update()
+        opMode.telemetry.logEx(entry)
     }
 
     companion object {
