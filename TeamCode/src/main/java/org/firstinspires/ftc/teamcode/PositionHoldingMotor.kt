@@ -8,9 +8,9 @@ class PositionHoldingMotor(private val motor: DcMotor) {
         motor.apply {
             mode = DcMotor.RunMode.RUN_TO_POSITION
             power = 0.5
-            if (input > 0) {
+            if (input > 0.1) {
                 targetPosition = currentPosition + 50
-            } else if (input < 0) {
+            } else if (input < 0.1) {
                 targetPosition = currentPosition - 50
             }
         }
