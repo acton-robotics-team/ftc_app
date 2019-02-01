@@ -3,31 +3,20 @@ package org.firstinspires.ftc.teamcode
 import com.qualcomm.robotcore.hardware.DcMotor
 
 
-class PositionHoldingMotor(motor: DcMotor, power: Double) {
-    private val motor = motor
-    private val power = power
-    private var lastTargetPosition = 0
-    private var previouslyOnManualControl = false
-
+class PositionHoldingMotor(private val motor: DcMotor) {
     fun processInput(input: Float) {
-        if (Math.abs(input) > 0.1) {
-            previouslyOnManualControl = true
-            motor.mode = DcMotor.RunMode.RUN_USING_ENCODER
-            motor.power = power * input
-        } else {
-            motor.mode = DcMotor.RunMode.RUN_TO_POSITION
-            motor.power = power
-
-            if (previouslyOnManualControl) {
-                previouslyOnManualControl = false
-                lastTargetPosition = motor.currentPosition
+        motor.apply {
+            mode = DcMotor.RunMode.RUN_TO_POSITION
+            power = 0.5
+            if (input > 0) {
+                targetPosition = currentPosition + 50
+            } else if (input < 0) {
+                targetPosition = currentPosition - 50
             }
-
-            motor.targetPosition = lastTargetPosition
         }
     }
 
     fun setTargetPosition(targetPosition: Int) {
-        lastTargetPosition = targetPosition
+        motor.targetPosition = targetPosition
     }
 }

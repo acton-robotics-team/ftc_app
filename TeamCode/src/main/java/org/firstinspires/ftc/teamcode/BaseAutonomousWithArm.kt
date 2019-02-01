@@ -141,28 +141,31 @@ abstract class BaseAutonomousWithArm : LinearOpMode() {
         }
         hw.rotateArm(0f)
 
+        return
+
         when (startLocation) {
             AutonomousStartLocation.FACING_DEPOT -> {
                 // Turn to face the depot
                 when (goldPosition) {
                     // turn back to center
-                    GoldPosition.LEFT -> hw.turnFromStart(0f)
+                    GoldPosition.RIGHT -> hw.turnFromStart(180f)
                     // turn 45 degrees from initial position to aim toward wall
-                    GoldPosition.CENTER -> hw.turnFromStart(45f)
-                    GoldPosition.RIGHT -> {
-                        hw.turnFromStart(45f)
+                    GoldPosition.CENTER -> hw.turnFromStart(180f + 45f)
+                    GoldPosition.LEFT -> {
+                        hw.turnFromStart(180f + 45f)
                         // Drive extra back
-                        hw.drive(-17.7)
+                        hw.drive(17.7)
                     }
                 }
                 // Reverse into the depot
-                hw.drive(-35.0)
+                hw.drive(35.0)
+                return
                 // Release the marker
                 hw.markerReleaser.position = Hardware.MARKER_RELEASED
                 sleep(250)
                 hw.markerReleaser.position = Hardware.MARKER_RETRACTED
                 // Turn toward the crater (enemy side)
-                hw.turn(50f)
+                hw.turn(-130f)
                 hw.drive(33.5)
                 // Do like a 5 point turn
                 hw.turnFromStart(65f)
@@ -176,7 +179,7 @@ abstract class BaseAutonomousWithArm : LinearOpMode() {
                     hw.turnFromStart(0f) // turn back toward rover
                 }
                 // Go forward after hitting jewel (back toward lander)
-                hw.drive(10.0) // change the amount as needed
+                hw.drive(-10.0) // change the amount as needed
                 // Navigate toward depot (turn toward depot) and drive into wall
                 hw.turnFromStart(85f)
                 hw.drive(when (goldPosition) {
