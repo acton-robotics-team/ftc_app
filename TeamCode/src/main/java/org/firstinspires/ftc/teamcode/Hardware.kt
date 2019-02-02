@@ -125,7 +125,7 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
      *
      * Blocks (it will wait until the movement is complete)
      */
-    fun rotateArm(degrees: Float) {
+    fun rotateArmFromStartPosition(degrees: Float) {
         listOf(leftArmRotator, rightArmRotator).forEach {
             it.mode = DcMotor.RunMode.RUN_TO_POSITION
             it.power = 0.5

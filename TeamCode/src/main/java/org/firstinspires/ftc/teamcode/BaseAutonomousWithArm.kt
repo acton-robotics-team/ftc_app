@@ -87,6 +87,7 @@ abstract class BaseAutonomousWithArm : LinearOpMode() {
         log("Wait for initialization! Do not start!")
 
         val hw = Hardware(hardwareMap, this)
+        hw.setHingeServoPosition(1.0)
         log("Initialized all hardware.")
 
         val tf = TensorflowDetector(hardwareMap.appContext, telemetry)
@@ -112,20 +113,29 @@ abstract class BaseAutonomousWithArm : LinearOpMode() {
         while (opModeIsActive() && hw.lifter.isBusy) {
         }
 
-        /*
-         * Extend arm to the depot to drop off marker
-         */
-        hw.rotateArm(180f);
-        hw.armExtender.apply {
-            mode = DcMotor.RunMode.RUN_TO_POSITION
-            power = 1.0
-            targetPosition = 1120
+        // Drop off marker if facing depot
+        // This will be done later if facing crater
+        if (startLocation == AutonomousStartLocation.FACING_DEPOT) {
+            hw.turnFromStart(180f) // Turn toward the depot
+            hw.rotateArmFromStartPosition(150f)
+            hw.armExtender.apply {
+                mode = DcMotor.RunMode.RUN_TO_POSITION
+                power = 1.0
+                targetPosition = 1120
 
-            while (opModeIsActive() && isBusy) {}
+                while (opModeIsActive() && isBusy) {
+                }
+            }
+
+            hw.setHingeServoPosition(0.0) // release team marker
+            sleep(250)
+
+            hw.armExtender.targetPosition = 0 // Retract le arm
+            while (opModeIsActive() && hw.armExtender.isBusy) {
+            }
         }
 
-        // Turn to get out of cage; we are currently sideways
-        // And point toward the detected mineral.
+        // Point toward the proper mineral
         hw.turnFromStart(180f + when (goldPosition) {
             GoldPosition.RIGHT -> 45f
             GoldPosition.CENTER -> 0f
@@ -136,11 +146,13 @@ abstract class BaseAutonomousWithArm : LinearOpMode() {
         hw.lifter.targetPosition = Hardware.LIFTER_AUTO_END_POSITION
 
         // Move arm to the extended position for sampling
-        hw.rotateArm(180f)
+        hw.rotateArmFromStartPosition(150f)
+        return
+        // Hit the proper mineral
         hw.armExtender.apply {
             mode = DcMotor.RunMode.RUN_TO_POSITION
             power = 0.5
-            targetPosition = 1120 // TODO
+            targetPosition = 1120 // TODO find actual position to hit mineral
 
             while (opModeIsActive() && isBusy) {
             }
@@ -151,31 +163,10 @@ abstract class BaseAutonomousWithArm : LinearOpMode() {
             while (opModeIsActive() && isBusy) {
             }
         }
-        hw.rotateArm(0f)
-
-        return
+        hw.rotateArmFromStartPosition(0f) // Retract arm
 
         when (startLocation) {
             AutonomousStartLocation.FACING_DEPOT -> {
-                // Turn to face the depot
-                when (goldPosition) {
-                    // turn back to center
-                    GoldPosition.RIGHT -> hw.turnFromStart(180f)
-                    // turn 45 degrees from initial position to aim toward wall
-                    GoldPosition.CENTER -> hw.turnFromStart(180f + 45f)
-                    GoldPosition.LEFT -> {
-                        hw.turnFromStart(180f + 45f)
-                        // Drive extra back
-                        hw.drive(17.7)
-                    }
-                }
-                // Reverse into the depot
-                hw.drive(35.0)
-                return
-                // Release the marker
-                hw.markerReleaser.position = Hardware.MARKER_RELEASED
-                sleep(250)
-                hw.markerReleaser.position = Hardware.MARKER_RETRACTED
                 // Turn toward the crater (enemy side)
                 hw.turn(-130f)
                 hw.drive(33.5)
@@ -187,26 +178,33 @@ abstract class BaseAutonomousWithArm : LinearOpMode() {
                 hw.drive(51.2)
             }
             AutonomousStartLocation.FACING_CRATER -> {
-                if (goldPosition == GoldPosition.RIGHT || goldPosition == GoldPosition.LEFT) {
-                    hw.turnFromStart(0f) // turn back toward rover
-                }
-                // Go forward after hitting jewel (back toward lander)
-                hw.drive(-10.0) // change the amount as needed
                 // Navigate toward depot (turn toward depot) and drive into wall
                 hw.turnFromStart(85f)
-                hw.drive(when (goldPosition) {
-                    GoldPosition.RIGHT -> 11.8
-                    GoldPosition.CENTER -> 38.2
-                    GoldPosition.LEFT -> 47.25
-                })
-                hw.drive(14.8)
+                // TODO Remeasure
+                hw.drive(53.0)
+                // Turn toward the depot
                 hw.turnFromStart(45f)
                 // Drive until depot and release the object
                 hw.drive(27.6)
-                hw.turnImprecise(-90f)
-                hw.markerReleaser.position = Hardware.MARKER_RELEASED
-                sleep(500)
-                hw.markerReleaser.position = Hardware.MARKER_RETRACTED
+                // Release the arm
+                hw.rotateArmFromStartPosition(150f)
+                hw.armExtender.apply {
+                    mode = DcMotor.RunMode.RUN_TO_POSITION
+                    power = 1.0
+                    targetPosition = 1120
+
+                    while (opModeIsActive() && isBusy) {
+                    }
+                }
+
+                hw.setHingeServoPosition(0.0) // release team marker
+                sleep(250)
+                hw.armExtender.targetPosition = 0 // Retract le arm
+                while (opModeIsActive() && hw.armExtender.isBusy) {
+                }
+                hw.rotateArmFromStartPosition(0f) // Put arm back ty
+
+                // Turn toward crater
                 hw.turnFromStart(-135f)
 
                 // Navigate back to crater
