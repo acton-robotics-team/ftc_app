@@ -23,8 +23,8 @@ import com.qualcomm.robotcore.util.ElapsedTime
 class TankDrive : LinearOpMode() {
     private val runtime = ElapsedTime()
     private lateinit var hw: Hardware
-    private lateinit var armRotatorLeft: PositionHoldingMotor
-    private lateinit var armRotatorRight: PositionHoldingMotor
+    private lateinit var leftArmRotator: PositionHoldingMotor
+    private lateinit var rightArmRotator: PositionHoldingMotor
 
     private fun runTankDrive() {
         val powerModifier = if (gamepad1.a) Hardware.DRIVE_SLOW else Hardware.DRIVE_FAST
@@ -53,8 +53,8 @@ class TankDrive : LinearOpMode() {
     }
 
     private fun runArm() {
-        armRotatorLeft.processInput(-gamepad2.right_stick_y)
-        armRotatorRight.processInput(-gamepad2.right_stick_y)
+        leftArmRotator.processInput(-gamepad2.right_stick_y)
+        rightArmRotator.processInput(-gamepad2.right_stick_y)
         hw.armExtender.power = when {
             gamepad2.dpad_up -> 0.5
             gamepad2.dpad_down -> -0.5
@@ -72,20 +72,20 @@ class TankDrive : LinearOpMode() {
     private fun runMacros() {
         // Gamepad 2, A btn
         if (gamepad2.a) {
-            armRotatorLeft.setTargetPosition(Hardware.ARM_GRABBING_POSITION)
-            armRotatorRight.setTargetPosition(Hardware.ARM_GRABBING_POSITION)
+            leftArmRotator.setTargetPosition(Hardware.ARM_GRABBING_POSITION)
+            rightArmRotator.setTargetPosition(Hardware.ARM_GRABBING_POSITION)
         }
         // Gamepad 2, X btn
         else if (gamepad2.x) {
-            armRotatorLeft.setTargetPosition(Hardware.ARM_SCORING_POSITION)
-            armRotatorRight.setTargetPosition(Hardware.ARM_GRABBING_POSITION)
+            leftArmRotator.setTargetPosition(Hardware.ARM_SCORING_POSITION)
+            rightArmRotator.setTargetPosition(Hardware.ARM_GRABBING_POSITION)
         }
     }
 
     override fun runOpMode() {
         hw = Hardware(hardwareMap, this)
-        armRotatorLeft = PositionHoldingMotor(hw.leftArmRotator)
-        armRotatorRight = PositionHoldingMotor(hw.rightArmRotator)
+        leftArmRotator = PositionHoldingMotor(hw.leftArmRotator)
+        rightArmRotator = PositionHoldingMotor(hw.rightArmRotator)
 
         telemetry.addData("Status", "Initialized")
         telemetry.update()
