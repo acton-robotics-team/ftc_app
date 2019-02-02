@@ -112,6 +112,16 @@ abstract class BaseAutonomousWithArm : LinearOpMode() {
         while (opModeIsActive() && hw.lifter.isBusy) {
         }
 
+        /*
+         * Extend arm to the depot to drop off marker
+         */
+        hw.rotateArm(180f);
+        hw.armExtender.apply {
+            mode = DcMotor.RunMode.RUN_TO_POSITION
+            power = 1.0
+            targetPosition = 1120
+        }
+
         // Turn to get out of cage; we are currently sideways
         // And point toward the detected mineral.
         hw.turnFromStart(180f + when (goldPosition) {
