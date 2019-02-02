@@ -271,13 +271,8 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
         const val LIFTER_AUTO_DROP_DOWN_POSITION = LIFTER_TOP_POSITION
         const val LIFTER_AUTO_END_POSITION = LIFTER_BOTTOM_POSITION
 
-        const val ARM_GRABBING_POSITION = -600
-        const val ARM_SCORING_POSITION = -1600
-        const val ARM_RETRACTED = 0
-        const val ARM_EXTENDED = 11253
-
-        const val WRIST_GRABBING_POSITION = 466
-        const val WRIST_SCORING_POSITION = 384
+        const val ARM_ROTATION_BOTTOM_LIMIT = 0
+        const val ARM_ROTATION_UPPER_LIMIT = 500
 
         const val MARKER_RELEASED = 0.1
         const val MARKER_RETRACTED = 1.0

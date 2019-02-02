@@ -58,9 +58,9 @@ class TankDrive : LinearOpMode() {
                 mode = DcMotor.RunMode.RUN_TO_POSITION
                 power = 0.5
                 if (armPower > 0.1) {
-                    targetPosition = Math.min(500, currentPosition + (50 * Math.abs(armPower)).roundToInt())
+                    targetPosition = Math.min(Hardware.ARM_ROTATION_UPPER_LIMIT, currentPosition + (50 * Math.abs(armPower)).roundToInt())
                 } else if (armPower < -0.1) {
-                    targetPosition = Math.max(0, currentPosition - (50 * Math.abs(armPower)).roundToInt())
+                    targetPosition = Math.max(Hardware.ARM_ROTATION_BOTTOM_LIMIT, currentPosition - (50 * Math.abs(armPower)).roundToInt())
                 }
             }
         }
