@@ -59,10 +59,9 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
             it.mode = DcMotor.RunMode.RUN_USING_ENCODER
             it.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         }
-        leftArmRotator.direction = DcMotorSimple.Direction.REVERSE
+        rightArmRotator.direction = DcMotorSimple.Direction.REVERSE
 
         armExtender.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
-        armExtender.direction = DcMotorSimple.Direction.REVERSE
 
         // Zero encoders
         lifter.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
@@ -74,7 +73,6 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
             it.targetPosition = 0
         }
 
-        leftBoxHingeServo.direction = Servo.Direction.REVERSE
         boxSweeper.direction = DcMotorSimple.Direction.REVERSE
 
         val imuParams = BNO055IMU.Parameters().apply {
@@ -99,6 +97,11 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
     fun getHeading(): Float {
         return this.imu.getAngularOrientation(AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES)
                 .thirdAngle
+    }
+
+    fun setHingeServoPosition(position: Double) {
+        leftBoxHingeServo.position = position
+//        rightBoxHingeServo.position = position
     }
 
     fun setDrivePower(power: Double) {

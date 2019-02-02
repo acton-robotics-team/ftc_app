@@ -120,6 +120,8 @@ abstract class BaseAutonomousWithArm : LinearOpMode() {
             mode = DcMotor.RunMode.RUN_TO_POSITION
             power = 1.0
             targetPosition = 1120
+
+            while (opModeIsActive() && isBusy) {}
         }
 
         // Turn to get out of cage; we are currently sideways

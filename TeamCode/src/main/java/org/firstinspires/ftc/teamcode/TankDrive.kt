@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.util.ElapsedTime
+import kotlin.math.roundToInt
 
 
 /**
@@ -23,8 +24,6 @@ import com.qualcomm.robotcore.util.ElapsedTime
 class TankDrive : LinearOpMode() {
     private val runtime = ElapsedTime()
     private lateinit var hw: Hardware
-    private lateinit var leftArmRotator: PositionHoldingMotor
-    private lateinit var rightArmRotator: PositionHoldingMotor
 
     private fun runTankDrive() {
         val powerModifier = if (gamepad1.a) Hardware.DRIVE_SLOW else Hardware.DRIVE_FAST
@@ -53,39 +52,55 @@ class TankDrive : LinearOpMode() {
     }
 
     private fun runArm() {
-        leftArmRotator.processInput(-gamepad2.right_stick_y)
-        rightArmRotator.processInput(-gamepad2.right_stick_y)
+        val armPower = -gamepad2.right_stick_y
+        listOf(hw.leftArmRotator, hw.rightArmRotator).forEach {
+            it.apply {
+                mode = DcMotor.RunMode.RUN_TO_POSITION
+                power = 0.5
+                if (armPower > 0.1) {
+                    targetPosition = Math.min(500, currentPosition + (50 * Math.abs(armPower)).roundToInt())
+                } else if (armPower < -0.1) {
+                    targetPosition = Math.max(0, currentPosition - (50 * Math.abs(armPower)).roundToInt())
+                }
+            }
+        }
         hw.armExtender.power = when {
             gamepad2.dpad_up -> 0.5
             gamepad2.dpad_down -> -0.5
             else -> 0.0
         }
 
-        hw.boxSweeper.power = 0.7
-        hw.leftBoxHingeServo.position = (gamepad2.right_trigger).toDouble()
-        hw.rightBoxHingeServo.position = 1-(gamepad2.right_trigger).toDouble()
+        telemetry.addData("Left arm encoder value", hw.leftArmRotator.currentPosition)
+        telemetry.addData("Left arm target position", hw.leftArmRotator.targetPosition)
+        telemetry.addData("Right arm encoder value", hw.rightArmRotator.currentPosition)
+        telemetry.addData("Right arm target position", hw.rightArmRotator.targetPosition)
+        telemetry.addData("Arm extender encoder value", hw.armExtender.currentPosition)
+        telemetry.addData("Arm extender target position", hw.armExtender.targetPosition)
+    }
 
-        telemetry.addData("Arm encoder value", hw.leftArmRotator.currentPosition)
-        telemetry.addData("Arm target position", hw.leftArmRotator.targetPosition)
+    private fun runBox() {
+        hw.boxSweeper.power = when (hw.leftBoxHingeServo.position) {
+            0.0 -> 0.7
+            else -> 0.0
+        }
+        hw.setHingeServoPosition((gamepad2.right_trigger).toDouble())
     }
 
     private fun runMacros() {
         // Gamepad 2, A btn
-        if (gamepad2.a) {
-            leftArmRotator.setTargetPosition(Hardware.ARM_GRABBING_POSITION)
-            rightArmRotator.setTargetPosition(Hardware.ARM_GRABBING_POSITION)
-        }
-        // Gamepad 2, X btn
-        else if (gamepad2.x) {
-            leftArmRotator.setTargetPosition(Hardware.ARM_SCORING_POSITION)
-            rightArmRotator.setTargetPosition(Hardware.ARM_GRABBING_POSITION)
-        }
+//        if (gamepad2.a) {
+//            leftArmRotator.setTargetPosition(Hardware.ARM_GRABBING_POSITION)
+//            rightArmRotator.setTargetPosition(Hardware.ARM_GRABBING_POSITION)
+//        }
+//        // Gamepad 2, X btn
+//        else if (gamepad2.x) {
+//            leftArmRotator.setTargetPosition(Hardware.ARM_SCORING_POSITION)
+//            rightArmRotator.setTargetPosition(Hardware.ARM_GRABBING_POSITION)
+//        }
     }
 
     override fun runOpMode() {
         hw = Hardware(hardwareMap, this)
-        leftArmRotator = PositionHoldingMotor(hw.leftArmRotator)
-        rightArmRotator = PositionHoldingMotor(hw.rightArmRotator)
 
         telemetry.addData("Status", "Initialized")
         telemetry.update()
@@ -100,6 +115,7 @@ class TankDrive : LinearOpMode() {
             runTankDrive()
             runLifter()
             runArm()
+            runBox()
 //            runMacros()
 
             // Show the elapsed game time
