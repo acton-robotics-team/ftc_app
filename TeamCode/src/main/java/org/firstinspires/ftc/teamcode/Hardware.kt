@@ -12,6 +12,7 @@ import edu.spa.ftclib.internal.sensor.IntegratingGyroscopeSensor
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference
+import java.lang.IllegalArgumentException
 import kotlin.math.roundToInt
 
 class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
@@ -60,8 +61,10 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
             it.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         }
         rightArmRotator.direction = DcMotorSimple.Direction.REVERSE
+        rightBoxHingeServo.direction = Servo.Direction.REVERSE
 
         armExtender.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+        armExtender.direction = DcMotorSimple.Direction.REVERSE
 
         // Zero encoders
         lifter.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
@@ -126,13 +129,21 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
      * Blocks (it will wait until the movement is complete)
      */
     fun rotateArmFromStartPosition(degrees: Float) {
+        val ticks = (NEVEREST_40_TICKS_PER_REV * (degrees / 360)).roundToInt()
+        if (degrees < 0 || degrees > 200) {
+            throw IllegalArgumentException("wtf are you doing that's an unsafe arm value")
+        }
+
+        opMode.telemetry.logEx("Moving both arm motors to $ticks ticks")
+
         listOf(leftArmRotator, rightArmRotator).forEach {
             it.mode = DcMotor.RunMode.RUN_TO_POSITION
-            it.power = 0.5
-            it.targetPosition = (NEVEREST_40_TICKS_PER_REV * (degrees / 360)).roundToInt()
+            it.power = 0.1
+            it.targetPosition = ticks
         }
 
         while (opMode.opModeIsActive() && leftArmRotator.isBusy && rightArmRotator.isBusy) {}
+        opMode.telemetry.logEx("Finished arm rotation of $degrees degrees")
     }
 
     fun drive(inches: Double, speed: Double = Hardware.DRIVE_FAST) {
@@ -272,7 +283,7 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
         const val LIFTER_AUTO_END_POSITION = LIFTER_BOTTOM_POSITION
 
         const val ARM_ROTATION_BOTTOM_LIMIT = 0
-        const val ARM_ROTATION_UPPER_LIMIT = 500
+        const val ARM_ROTATION_UPPER_LIMIT = 600
 
         const val MARKER_RELEASED = 0.1
         const val MARKER_RETRACTED = 1.0

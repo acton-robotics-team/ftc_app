@@ -82,11 +82,17 @@ abstract class BaseAutonomousWithArm : LinearOpMode() {
         return goldPosition
     }
 
+    private fun waitUntil(predicate: () -> Boolean) {
+        while (opModeIsActive() && !predicate()) {
+        }
+    }
+
     override fun runOpMode() {
         telemetry.isAutoClear = false
         log("Wait for initialization! Do not start!")
 
         val hw = Hardware(hardwareMap, this)
+        hw.armExtender.mode = DcMotor.RunMode.RUN_TO_POSITION
         hw.setHingeServoPosition(1.0)
         log("Initialized all hardware.")
 
@@ -110,30 +116,37 @@ abstract class BaseAutonomousWithArm : LinearOpMode() {
             power = 1.0
             targetPosition = Hardware.LIFTER_AUTO_DROP_DOWN_POSITION
         }
-        while (opModeIsActive() && hw.lifter.isBusy) {
-        }
+        waitUntil { !hw.lifter.isBusy }
+
+        hw.drive(-4.0)
+
+        // Begin retracting the lifter
+        hw.lifter.targetPosition = Hardware.LIFTER_AUTO_END_POSITION
+
+        hw.turn(-45f)
+        hw.drive(4 * 1.41) // Hopefully move back to center
 
         // Drop off marker if facing depot
         // This will be done later if facing crater
-        if (startLocation == AutonomousStartLocation.FACING_DEPOT) {
-            hw.turnFromStart(180f) // Turn toward the depot
-            hw.rotateArmFromStartPosition(150f)
-            hw.armExtender.apply {
-                mode = DcMotor.RunMode.RUN_TO_POSITION
-                power = 1.0
-                targetPosition = 1120
-
-                while (opModeIsActive() && isBusy) {
-                }
-            }
-
-            hw.setHingeServoPosition(0.0) // release team marker
-            sleep(250)
-
-            hw.armExtender.targetPosition = 0 // Retract le arm
-            while (opModeIsActive() && hw.armExtender.isBusy) {
-            }
-        }
+//        if (startLocation == AutonomousStartLocation.FACING_DEPOT) {
+//            hw.turnFromStart(180f)
+//            hw.rotateArmFromStartPosition(110f)
+//            hw.armExtender.apply {
+//                power = 1.0
+//                targetPosition = 7000
+//                waitUntil { !isBusy }
+//            }
+//
+//            hw.rotateArmFromStartPosition(140f)
+//
+//            hw.setHingeServoPosition(0.0) // release team marker
+//            sleep(250)
+//
+//            hw.rotateArmFromStartPosition(100f)
+//
+//            hw.armExtender.targetPosition = 0 // Retract le arm in background
+//            hw.rotateArmFromStartPosition(80f)
+//        }
 
         // Point toward the proper mineral
         hw.turnFromStart(180f + when (goldPosition) {
@@ -142,73 +155,49 @@ abstract class BaseAutonomousWithArm : LinearOpMode() {
             GoldPosition.LEFT -> -45f
         })
 
-        // Begin retracting the lifter
-        hw.lifter.targetPosition = Hardware.LIFTER_AUTO_END_POSITION
-
-        // Move arm to the extended position for sampling
-        hw.rotateArmFromStartPosition(150f)
-        return
-        // Hit the proper mineral
-        hw.armExtender.apply {
-            mode = DcMotor.RunMode.RUN_TO_POSITION
-            power = 0.5
-            targetPosition = 1120 // TODO find actual position to hit mineral
-
-            while (opModeIsActive() && isBusy) {
-            }
-
-            // Okay, we must've hit the mineral now. Retract.
-            targetPosition = 0
-
-            while (opModeIsActive() && isBusy) {
-            }
-        }
-        hw.rotateArmFromStartPosition(0f) // Retract arm
+        hw.drive(32.5)
 
         when (startLocation) {
             AutonomousStartLocation.FACING_DEPOT -> {
-                // Turn toward the crater (enemy side)
-                hw.turn(-130f)
-                hw.drive(33.5)
-                // Do like a 5 point turn
-                hw.turnFromStart(65f)
-                hw.drive(5.9)
-                hw.turnFromStart(50f)
-                // Drive toward the crater
-                hw.drive(51.2)
+                // Turn toward alliance crater
+//                hw.turnFromStart(135f) // Face wall
+//                hw.drive(10.0)
+//                hw.turn(-90f)
+//                hw.drive(33.6) // Drive into crater
             }
             AutonomousStartLocation.FACING_CRATER -> {
-                // Navigate toward depot (turn toward depot) and drive into wall
-                hw.turnFromStart(85f)
-                // TODO Remeasure
-                hw.drive(53.0)
-                // Turn toward the depot
-                hw.turnFromStart(45f)
-                // Drive until depot and release the object
-                hw.drive(27.6)
-                // Release the arm
-                hw.rotateArmFromStartPosition(150f)
-                hw.armExtender.apply {
-                    mode = DcMotor.RunMode.RUN_TO_POSITION
-                    power = 1.0
-                    targetPosition = 1120
-
-                    while (opModeIsActive() && isBusy) {
-                    }
-                }
-
-                hw.setHingeServoPosition(0.0) // release team marker
-                sleep(250)
-                hw.armExtender.targetPosition = 0 // Retract le arm
-                while (opModeIsActive() && hw.armExtender.isBusy) {
-                }
-                hw.rotateArmFromStartPosition(0f) // Put arm back ty
-
-                // Turn toward crater
-                hw.turnFromStart(-135f)
-
-                // Navigate back to crater
-                hw.drive(80.0)
+//                // Navigate toward depot (turn toward depot) and drive into wall
+//                hw.turnFromStart(85f)
+//                // TODO Remeasure
+//                hw.drive(53.0)
+//                // Turn toward the depot
+//                hw.turnFromStart(45f)
+//                // Drive until depot and release the object
+//                hw.drive(27.6)
+//                // Release the arm
+//                hw.rotateArmFromStartPosition(150f)
+//                hw.armExtender.apply {
+//                    mode = DcMotor.RunMode.RUN_TO_POSITION
+//                    power = 1.0
+//                    targetPosition = 1120
+//
+//                    while (opModeIsActive() && isBusy) {
+//                    }
+//                }
+//
+//                hw.setHingeServoPosition(0.0) // release team marker
+//                sleep(250)
+//                hw.armExtender.targetPosition = 0 // Retract le arm
+//                while (opModeIsActive() && hw.armExtender.isBusy) {
+//                }
+//                hw.rotateArmFromStartPosition(0f) // Put arm back ty
+//
+//                // Turn toward crater
+//                hw.turnFromStart(-135f)
+//
+//                // Navigate back to crater
+//                hw.drive(80.0)
+                hw.drive(10.0)
             }
         }
     }

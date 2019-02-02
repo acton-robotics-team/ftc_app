@@ -102,7 +102,7 @@ abstract class BaseAutonomous : LinearOpMode() {
         }
 
         // Turn to get out of cage; we are currently sideways
-        hw.turnFromStart(180f)
+        hw.turnFromStart(180f) // turn to face center mineral
 
         // Begin retracting the lifter
         hw.lifter.targetPosition = Hardware.LIFTER_AUTO_END_POSITION
@@ -136,6 +136,8 @@ abstract class BaseAutonomous : LinearOpMode() {
                 hw.drive(35.0)
                 return
                 // Release the marker
+
+
                 hw.markerReleaser.position = Hardware.MARKER_RELEASED
                 sleep(250)
                 hw.markerReleaser.position = Hardware.MARKER_RETRACTED

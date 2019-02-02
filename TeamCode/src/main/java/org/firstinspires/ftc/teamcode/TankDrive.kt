@@ -32,6 +32,10 @@ class TankDrive : LinearOpMode() {
         hw.setRightDrivePower(-gamepad1.right_stick_y * powerModifier)
     }
 
+    private fun limitValue(value: Int, min: Int, max: Int): Int {
+        return Math.min(Math.max(value, min), max)
+    }
+
     /**
      * Left bumper = manual control, you're on your own
      */
@@ -56,11 +60,15 @@ class TankDrive : LinearOpMode() {
         listOf(hw.leftArmRotator, hw.rightArmRotator).forEach {
             it.apply {
                 mode = DcMotor.RunMode.RUN_TO_POSITION
-                power = 0.5
-                if (armPower > 0.1) {
-                    targetPosition = Math.min(Hardware.ARM_ROTATION_UPPER_LIMIT, currentPosition + (50 * Math.abs(armPower)).roundToInt())
-                } else if (armPower < -0.1) {
-                    targetPosition = Math.max(Hardware.ARM_ROTATION_BOTTOM_LIMIT, currentPosition - (50 * Math.abs(armPower)).roundToInt())
+                power = 0.7
+                if (Math.abs(armPower) > 0.1) {
+                    val newPosition = (currentPosition + (50 * armPower)).roundToInt()
+                    targetPosition = when {
+                        // Let left bumper override limits on arm position
+                        gamepad2.left_bumper -> newPosition
+                        else -> limitValue(newPosition,
+                                Hardware.ARM_ROTATION_BOTTOM_LIMIT, Hardware.ARM_ROTATION_UPPER_LIMIT)
+                    }
                 }
             }
         }
@@ -101,6 +109,8 @@ class TankDrive : LinearOpMode() {
 
     override fun runOpMode() {
         hw = Hardware(hardwareMap, this)
+        hw.leftBoxHingeServo.scaleRange(0.4, 1.0)
+        hw.rightBoxHingeServo.scaleRange(0.4, 1.0)
 
         telemetry.addData("Status", "Initialized")
         telemetry.update()
