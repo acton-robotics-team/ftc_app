@@ -63,7 +63,7 @@ class TankDrive : LinearOpMode() {
 
         hw.boxSweeper.power = 0.7
         hw.leftBoxHingeServo.position = (gamepad2.right_trigger).toDouble()
-        hw.rightBoxHingeServo.position = (gamepad2.right_trigger).toDouble()
+        hw.rightBoxHingeServo.position = 1-(gamepad2.right_trigger).toDouble()
 
         telemetry.addData("Arm encoder value", hw.leftArmRotator.currentPosition)
         telemetry.addData("Arm target position", hw.leftArmRotator.targetPosition)
