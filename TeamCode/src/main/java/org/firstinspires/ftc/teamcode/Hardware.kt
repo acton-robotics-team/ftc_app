@@ -67,7 +67,6 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
 
         // Zero encoders
         lifter.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        lifter.direction = DcMotorSimple.Direction.REVERSE
         lifter.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
         // Reset target positions of all motors (just in case)
@@ -288,7 +287,7 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
         const val DRIVE_FAST = 1.0
 
         const val LIFTER_BOTTOM_POSITION = 0
-        const val LIFTER_TOP_POSITION = 13388
+        const val LIFTER_TOP_POSITION = 12500
         const val LIFTER_AUTO_DROP_DOWN_POSITION = LIFTER_TOP_POSITION
         const val LIFTER_AUTO_END_POSITION = LIFTER_BOTTOM_POSITION
 
