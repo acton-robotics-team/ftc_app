@@ -86,9 +86,6 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
                     'proguard-rules.pro'
-            debuggable true
-            jniDebuggable true
-            renderscriptDebuggable true
             ndk {
                 abiFilters "armeabi-v7a"
             }
