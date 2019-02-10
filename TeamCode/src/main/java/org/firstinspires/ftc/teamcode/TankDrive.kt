@@ -94,19 +94,6 @@ class TankDrive : LinearOpMode() {
         hw.setHingeServoPosition((gamepad2.right_trigger).toDouble())
     }
 
-    private fun runMacros() {
-        // Gamepad 2, A btn
-//        if (gamepad2.a) {
-//            leftArmRotator.setTargetPosition(Hardware.ARM_GRABBING_POSITION)
-//            rightArmRotator.setTargetPosition(Hardware.ARM_GRABBING_POSITION)
-//        }
-//        // Gamepad 2, X btn
-//        else if (gamepad2.x) {
-//            leftArmRotator.setTargetPosition(Hardware.ARM_SCORING_POSITION)
-//            rightArmRotator.setTargetPosition(Hardware.ARM_GRABBING_POSITION)
-//        }
-    }
-
     override fun runOpMode() {
         hw = Hardware(hardwareMap, this)
         hw.leftBoxHingeServo.scaleRange(0.4, 1.0)
@@ -126,7 +113,6 @@ class TankDrive : LinearOpMode() {
             runLifter()
             runArm()
             runBox()
-//            runMacros()
 
             // Show the elapsed game time
             telemetry.addData("Status", "Run Time: $runtime")
