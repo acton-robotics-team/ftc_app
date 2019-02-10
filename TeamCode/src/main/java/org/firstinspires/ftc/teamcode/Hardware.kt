@@ -39,7 +39,7 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
         maxErrorForIntegral = 0.002
     }
     private val controller = FinishableIntegratedController(IntegratingGyroscopeSensor(imu), pid, ErrorTimeThresholdFinishingAlgorithm(Math.PI / 12.5, 1.0))
-    private val drivetrain = FourWheelDriveTrain(backLeftDrive, backRightDrive, frontLeftDrive, frontRightDrive, controller)
+    val drivetrain = FourWheelDriveTrain(backLeftDrive, backRightDrive, frontLeftDrive, frontRightDrive, controller)
 
 
     init {
@@ -64,7 +64,6 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
         rightBoxHingeServo.direction = Servo.Direction.REVERSE
 
         armExtender.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
-        armExtender.direction = DcMotorSimple.Direction.REVERSE
 
         // Zero encoders
         lifter.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
@@ -93,7 +92,7 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
     /**
      * Gets the current IMU heading in degrees.
      *
-     * Negative = right turn, positive = left turn
+     * Negative = left turn, positive = right turn
      *
      * Note: this function takes a while to return.
      */
@@ -197,14 +196,7 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
      * Turns by X degrees relative to the robot's current heading
      */
     fun turn(deg: Float) {
-        val rad = deg * Math.PI / 180
-        val initHeadingRad = getHeading() * Math.PI / 180
-        drivetrain.targetHeading = initHeadingRad - rad // magic
-        while (opMode.opModeIsActive() && drivetrain.isRotating) {
-            doTelemetry(drivetrain)
-            drivetrain.updateHeading()
-        }
-        setDrivePower(0.0)
+        turnFromStart(deg + getHeadingFromStart())
     }
 
     /**
@@ -214,14 +206,29 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
     fun getHeadingFromStart(): Float {
         // Must add 90 degrees to the IMU heading because our robot is mounted
         // sideways on the latch, so the start IMU heading is 90 degrees "off".
-        return getHeading() + 90f
+        return getHeading() - 90f
     }
 
     /**
      * Turns from X degrees relative to the starting heading
+     *
+     * Right = negative, left = position
      */
     fun turnFromStart(deg: Float) {
-        turn(getHeadingFromStart() + deg)
+        var rad = (deg + 90f) * Math.PI / 180
+        while (rad > Math.PI || rad < -Math.PI){
+            if (rad > Math.PI) {
+                rad -= 2 * Math.PI
+            } else if (rad < -Math.PI) {
+                rad += 2 * Math.PI
+            }
+        }
+        drivetrain.targetHeading = rad
+        while (opMode.opModeIsActive() && drivetrain.isRotating) {
+            doTelemetry(drivetrain)
+            drivetrain.updateHeading()
+        }
+        setDrivePower(0.0)
     }
 
     fun turnImprecise(deg: Float) {
@@ -236,12 +243,15 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
                 setLeftDrivePower(-power)
             }
         }
+        // E.g. 45 deg
         val startHeading = getHeading()
-        val targetHeading = startHeading - deg
+        // E.g. 45 deg + 25 deg = 65 deg
+        val targetHeading = startHeading + deg
         // Drive slowly because reading the IMU is slow and takes a while
         val reachedTargetCondition: (heading: Float) -> Boolean = when {
-            deg > 0 -> { heading -> heading < targetHeading }
-            else -> { heading -> heading > targetHeading }
+            // Gone past target heading conditions
+            deg > 0 -> { heading -> heading > targetHeading }
+            else -> { heading -> heading < targetHeading }
         }
 
         log("Starting turn of $deg degrees from initial heading $startHeading")
@@ -278,12 +288,12 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
         const val DRIVE_FAST = 1.0
 
         const val LIFTER_BOTTOM_POSITION = 0
-        const val LIFTER_TOP_POSITION = 14196
+        const val LIFTER_TOP_POSITION = 13388
         const val LIFTER_AUTO_DROP_DOWN_POSITION = LIFTER_TOP_POSITION
         const val LIFTER_AUTO_END_POSITION = LIFTER_BOTTOM_POSITION
 
         const val ARM_ROTATION_BOTTOM_LIMIT = 0
-        const val ARM_ROTATION_UPPER_LIMIT = 600
+        const val ARM_ROTATION_UPPER_LIMIT = 1120
 
         const val MARKER_RELEASED = 0.1
         const val MARKER_RETRACTED = 1.0

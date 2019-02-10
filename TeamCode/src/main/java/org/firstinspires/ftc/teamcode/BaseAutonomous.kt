@@ -29,7 +29,6 @@
 
 package org.firstinspires.ftc.teamcode
 
-import android.util.Log
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.util.ElapsedTime
@@ -102,17 +101,17 @@ abstract class BaseAutonomous : LinearOpMode() {
         }
 
         // Turn to get out of cage; we are currently sideways
-        hw.turnFromStart(180f) // turn to face center mineral
+        hw.turnFromStart(-180f) // turn to face center mineral
 
         // Begin retracting the lifter
         hw.lifter.targetPosition = Hardware.LIFTER_AUTO_END_POSITION
 
         // Back up to gold sampling position
         hw.drive(5.0)
-        hw.turnFromStart(180f + when (goldPosition) {
-            GoldPosition.LEFT -> -45f
+        hw.turnFromStart(-180f + when (goldPosition) {
+            GoldPosition.LEFT -> 45f
             GoldPosition.CENTER -> 0f
-            GoldPosition.RIGHT -> 45f
+            GoldPosition.RIGHT -> -45f
         })
 
         // Hit the gold mineral
@@ -123,11 +122,11 @@ abstract class BaseAutonomous : LinearOpMode() {
                 // Turn to face the depot
                 when (goldPosition) {
                     // turn back to center
-                    GoldPosition.RIGHT -> hw.turnFromStart(180f)
+                    GoldPosition.RIGHT -> hw.turnFromStart(-180f)
                     // turn 45 degrees from initial position to aim toward wall
-                    GoldPosition.CENTER -> hw.turnFromStart(180f + 45f)
+                    GoldPosition.CENTER -> hw.turnFromStart(-180f - 45f)
                     GoldPosition.LEFT -> {
-                        hw.turnFromStart(180f + 45f)
+                        hw.turnFromStart(-180f - 45f)
                         // Drive extra back
                         hw.drive(17.7)
                     }
@@ -142,12 +141,12 @@ abstract class BaseAutonomous : LinearOpMode() {
                 sleep(250)
                 hw.markerReleaser.position = Hardware.MARKER_RETRACTED
                 // Turn toward the crater (enemy side)
-                hw.turn(-130f)
+                hw.turn(130f)
                 hw.drive(33.5)
                 // Do like a 5 point turn
-                hw.turnFromStart(65f)
+                hw.turnFromStart(-65f)
                 hw.drive(5.9)
-                hw.turnFromStart(50f)
+                hw.turnFromStart(-50f)
                 // Drive toward the crater
                 hw.drive(51.2)
             }
@@ -158,21 +157,21 @@ abstract class BaseAutonomous : LinearOpMode() {
                 // Go forward after hitting jewel (back toward lander)
                 hw.drive(-10.0) // change the amount as needed
                 // Navigate toward depot (turn toward depot) and drive into wall
-                hw.turnFromStart(85f)
+                hw.turnFromStart(-85f)
                 hw.drive(when (goldPosition) {
                     GoldPosition.RIGHT -> 11.8
                     GoldPosition.CENTER -> 38.2
                     GoldPosition.LEFT -> 47.25
                 })
                 hw.drive(14.8)
-                hw.turnFromStart(45f)
+                hw.turnFromStart(-45f)
                 // Drive until depot and release the object
                 hw.drive(27.6)
-                hw.turnImprecise(-90f)
+                hw.turnImprecise(90f)
                 hw.markerReleaser.position = Hardware.MARKER_RELEASED
                 sleep(500)
                 hw.markerReleaser.position = Hardware.MARKER_RETRACTED
-                hw.turnFromStart(-135f)
+                hw.turnFromStart(135f)
 
                 // Navigate back to crater
                 hw.drive(80.0)
