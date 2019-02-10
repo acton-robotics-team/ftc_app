@@ -58,20 +58,19 @@ class TankDrive : LinearOpMode() {
     private fun runArm() {
         val armPower = -gamepad2.right_stick_y
         listOf(hw.leftArmRotator, hw.rightArmRotator).forEach {
-            it.apply {
-                mode = DcMotor.RunMode.RUN_TO_POSITION
-                power = 0.7
-                if (Math.abs(armPower) > 0.1) {
-                    val newPosition = (currentPosition + (50 * armPower)).roundToInt()
-                    targetPosition = when {
-                        // Let left bumper override limits on arm position
-                        gamepad2.left_bumper -> newPosition
-                        else -> limitValue(newPosition,
-                                Hardware.ARM_ROTATION_BOTTOM_LIMIT, Hardware.ARM_ROTATION_UPPER_LIMIT)
-                    }
+            it.mode = DcMotor.RunMode.RUN_TO_POSITION
+            it.power = 0.7
+            if (Math.abs(armPower) > 0.1) {
+                val newPosition = (it.currentPosition + (50 * armPower)).roundToInt()
+                it.targetPosition = when {
+                    // Let left bumper override limits on arm position
+                    gamepad2.left_bumper -> newPosition
+                    else -> limitValue(newPosition,
+                            Hardware.ARM_ROTATION_BOTTOM_LIMIT, Hardware.ARM_ROTATION_UPPER_LIMIT)
                 }
             }
         }
+
         hw.armExtender.power = when {
             gamepad2.dpad_up -> 0.5
             gamepad2.dpad_down -> -0.5
@@ -107,6 +106,7 @@ class TankDrive : LinearOpMode() {
 
         // run until the end of the match (driver presses STOP)
         val loopTime = ElapsedTime()
+
         while (opModeIsActive()) {
             loopTime.reset()
             runTankDrive()
@@ -117,6 +117,14 @@ class TankDrive : LinearOpMode() {
             // Show the elapsed game time
             telemetry.addData("Status", "Run Time: $runtime")
             telemetry.addData("Loop time", loopTime.milliseconds().toString() + "ms")
+            telemetry.addData("Encoder distance traveled (in.)",
+                    hw.backRightDrive.currentPosition / Hardware.DRIVE_ENCODER_TICKS_PER_IN)
+            telemetry.addData("IMU heading", hw.getHeading())
+            telemetry.addData("Heading from start", hw.getHeadingFromStart())
+            if (gamepad1.a) {
+                hw.backRightDrive.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+                hw.backRightDrive.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+            }
             telemetry.update()
         }
     }
