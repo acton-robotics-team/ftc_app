@@ -27,8 +27,7 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
     val rightArmRotator: DcMotor = hwMap.dcMotor.get("arm_rotator_right")
     val armExtender: DcMotor = hwMap.dcMotor.get("arm_extender")
 
-    val leftBoxHingeServo: Servo = hwMap.servo.get("box_hinge1")
-    val rightBoxHingeServo: Servo = hwMap.servo.get("box_hinge2")
+    val boxHingeServo: Servo = hwMap.servo.get("box_hinge")
     val boxSweeper: CRServo = hwMap.crservo.get("box_sweeper")
 
     val markerReleaser: Servo = hwMap.servo.get("marker")
@@ -61,7 +60,7 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
             it.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         }
         rightArmRotator.direction = DcMotorSimple.Direction.REVERSE
-        rightBoxHingeServo.direction = Servo.Direction.REVERSE
+        boxHingeServo.direction = Servo.Direction.REVERSE
 
         armExtender.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
 
@@ -98,11 +97,6 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
     fun getHeading(): Float {
         return this.imu.getAngularOrientation(AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES)
                 .thirdAngle
-    }
-
-    fun setHingeServoPosition(position: Double) {
-        leftBoxHingeServo.position = position
-//        rightBoxHingeServo.position = position
     }
 
     fun setDrivePower(power: Double) {
@@ -292,7 +286,8 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
         const val LIFTER_AUTO_END_POSITION = LIFTER_BOTTOM_POSITION
 
         const val ARM_ROTATION_BOTTOM_LIMIT = 0
-        const val ARM_ROTATION_UPPER_LIMIT = 1120
+        const val ARM_ROTATION_UPPER_LIMIT = 1000
+
 
         const val MARKER_RELEASED = 0.1
         const val MARKER_RETRACTED = 1.0
