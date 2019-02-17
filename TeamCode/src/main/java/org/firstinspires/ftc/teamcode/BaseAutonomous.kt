@@ -106,7 +106,7 @@ abstract class BaseAutonomous : LinearOpMode() {
         // Begin retracting the lifter
         hw.lifter.targetPosition = Hardware.LIFTER_AUTO_END_POSITION
 
-        // Back up to gold sampling position
+        // Drive up to gold sampling position
         hw.drive(5.0)
         hw.turnFromStart(-180f + when (goldPosition) {
             GoldPosition.LEFT -> 45f
@@ -117,6 +117,7 @@ abstract class BaseAutonomous : LinearOpMode() {
         // Hit the gold mineral
         hw.drive(32.5) // far enough to always hit the mineral
 
+        return
         when (startLocation) {
             AutonomousStartLocation.FACING_DEPOT -> {
                 // Turn to face the depot
@@ -154,7 +155,6 @@ abstract class BaseAutonomous : LinearOpMode() {
                 if (goldPosition == GoldPosition.RIGHT || goldPosition == GoldPosition.LEFT) {
                     hw.turnFromStart(0f) // turn back toward rover
                 }
-                // Go forward after hitting jewel (back toward lander)
                 hw.drive(-10.0) // change the amount as needed
                 // Navigate toward depot (turn toward depot) and drive into wall
                 hw.turnFromStart(-85f)
