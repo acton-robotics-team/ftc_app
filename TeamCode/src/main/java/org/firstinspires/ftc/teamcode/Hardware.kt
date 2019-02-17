@@ -12,7 +12,6 @@ import edu.spa.ftclib.internal.sensor.IntegratingGyroscopeSensor
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference
-import java.lang.IllegalArgumentException
 import kotlin.math.roundToInt
 
 class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
@@ -39,7 +38,6 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
     }
     private val controller = FinishableIntegratedController(IntegratingGyroscopeSensor(imu), pid, ErrorTimeThresholdFinishingAlgorithm(Math.PI / 12.5, 1.0))
     val drivetrain = FourWheelDriveTrain(backLeftDrive, backRightDrive, frontLeftDrive, frontRightDrive, controller)
-
 
     init {
         listOf(frontLeftDrive, frontRightDrive, backRightDrive, backLeftDrive).forEach {
@@ -69,7 +67,8 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
         lifter.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
         // Reset target positions of all motors (just in case)
-        listOf(lifter, armExtender, leftArmRotator, rightArmRotator, backLeftDrive, backRightDrive).forEach {
+        listOf(lifter, armExtender, leftArmRotator,
+                rightArmRotator, backLeftDrive, backRightDrive).forEach {
             it.targetPosition = 0
         }
 
@@ -134,7 +133,8 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
             it.targetPosition = ticks
         }
 
-        while (opMode.opModeIsActive() && leftArmRotator.isBusy && rightArmRotator.isBusy) {}
+        while (opMode.opModeIsActive() && leftArmRotator.isBusy && rightArmRotator.isBusy) {
+        }
         opMode.telemetry.logEx("Finished arm rotation of $degrees degrees")
     }
 
@@ -209,7 +209,7 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
      */
     fun turnFromStart(deg: Float) {
         var rad = (deg + 90f) * Math.PI / 180
-        while (rad > Math.PI || rad < -Math.PI){
+        while (rad > Math.PI || rad < -Math.PI) {
             if (rad > Math.PI) {
                 rad -= 2 * Math.PI
             } else if (rad < -Math.PI) {
@@ -281,7 +281,7 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
         const val DRIVE_FAST = 1.0
 
         const val LIFTER_BOTTOM_POSITION = 0
-        const val LIFTER_TOP_POSITION = 12500
+        const val LIFTER_TOP_POSITION = 15000
         const val LIFTER_AUTO_DROP_DOWN_POSITION = LIFTER_TOP_POSITION
         const val LIFTER_AUTO_END_POSITION = LIFTER_BOTTOM_POSITION
 
