@@ -88,6 +88,11 @@ abstract class BaseAutonomous : LinearOpMode() {
         }
         runtime.reset()
 
+        hw.turnFromStart(-270f) // right turn to face crater
+        // This weirdo turns more than 360 degrees (below)
+        hw.turn(90f) // left turn 90 degrees
+        hw.turn(-180f) // right turn 180 degrees
+
         val goldPosition = detectMineral(tf)
         tf.deactivate()
 

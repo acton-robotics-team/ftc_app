@@ -182,7 +182,6 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
         opMode.telemetry.addData("error", pid.error)
         opMode.telemetry.addData("integral", pid.integral)
         opMode.telemetry.addData("derivative", pid.derivative)
-        opMode.telemetry.addData("random", Math.random())
         opMode.telemetry.update()
     }
 
@@ -190,17 +189,7 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
      * Turns by X degrees relative to the robot's current heading
      */
     fun turn(deg: Float) {
-        turnFromStart(deg + getHeadingFromStart())
-    }
-
-    /**
-     * @return the heading deviation from the starting position, where 0
-     * degrees = pointing *straight toward the latch*.
-     */
-    fun getHeadingFromStart(): Float {
-        // Must add 90 degrees to the IMU heading because our robot is mounted
-        // sideways on the latch, so the start IMU heading is 90 degrees "off".
-        return getHeading() - 90f
+        turnFromStart(deg + getHeading())
     }
 
     /**
@@ -209,14 +198,14 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
      * Right = negative, left = position
      */
     fun turnFromStart(deg: Float) {
-        var rad = (deg + 90f) * Math.PI / 180
-        while (rad > Math.PI || rad < -Math.PI) {
-            if (rad > Math.PI) {
-                rad -= 2 * Math.PI
-            } else if (rad < -Math.PI) {
-                rad += 2 * Math.PI
-            }
-        }
+        var rad = deg * Math.PI / 180
+//        while (rad > Math.PI || rad < -Math.PI) {
+//            if (rad > Math.PI) {
+//                rad -= 2 * Math.PI
+//            } else if (rad < -Math.PI) {
+//                rad += 2 * Math.PI
+//            }
+//        }
         drivetrain.targetHeading = rad
         while (opMode.opModeIsActive() && drivetrain.isRotating) {
             doTelemetry(drivetrain)

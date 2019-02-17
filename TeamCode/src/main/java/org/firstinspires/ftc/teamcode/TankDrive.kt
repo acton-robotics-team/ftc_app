@@ -154,7 +154,6 @@ class TankDrive : LinearOpMode() {
             telemetry.addData("Encoder distance traveled (in.)",
                     hw.backRightDrive.currentPosition / Hardware.DRIVE_ENCODER_TICKS_PER_IN)
             telemetry.addData("IMU heading", hw.getHeading())
-            telemetry.addData("Heading from start", hw.getHeadingFromStart())
             if (gamepad1.a) {
                 hw.backRightDrive.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
                 hw.backRightDrive.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
