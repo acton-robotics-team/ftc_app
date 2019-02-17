@@ -58,6 +58,7 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
             it.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         }
         rightArmRotator.direction = DcMotorSimple.Direction.REVERSE
+        boxSweeper.direction = DcMotorSimple.Direction.REVERSE
         boxHingeServo.direction = Servo.Direction.REVERSE
 
         armExtender.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
