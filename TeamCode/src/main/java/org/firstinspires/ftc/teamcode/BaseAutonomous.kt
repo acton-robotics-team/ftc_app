@@ -71,13 +71,13 @@ abstract class BaseAutonomous : LinearOpMode() {
 
         // Not using waitforStart because of bug https://github.com/ftctechnh/ftc_app/wiki/Troubleshooting#motorola-e4-phones-disconnecting-momentarily-reported-102018
         while (!opModeIsActive() && !isStopRequested) {
-            telemetry.addData("status", "waiting for start command...")
+            telemetry.addData("Status", "Waiting for start command...")
+            telemetry.addData("Detected gold position (wait until correct)", tf.getPosition())
             telemetry.update()
         }
         runtime.reset()
 
         val goldPosition = detectMineral(tf)
-        tf.deactivate()
 
         // Drop down
         hw.lifter.apply {
@@ -90,16 +90,14 @@ abstract class BaseAutonomous : LinearOpMode() {
 
         // Turn to get out of cage; we are currently sideways
         hw.turnFromStart(0f)
-        hw.turn(-270f)
-
-        // Begin retracting the lifter
-        hw.lifter.targetPosition = Hardware.LIFTER_AUTO_END_POSITION
-
-        hw.turn(when (goldPosition) {
+        hw.turn(-270f + when (goldPosition) {
             GoldPosition.LEFT -> 45f
             GoldPosition.CENTER -> 0f
             GoldPosition.RIGHT -> -45f
         })
+
+        // Begin retracting the lifter
+        hw.lifter.targetPosition = Hardware.LIFTER_AUTO_END_POSITION
 
         // Hit the gold mineral
         hw.drive(24.0) // far enough to always hit the mineral
@@ -136,11 +134,11 @@ abstract class BaseAutonomous : LinearOpMode() {
             }
             AutonomousStartLocation.FACING_CRATER -> {
                 if (goldPosition == GoldPosition.RIGHT || goldPosition == GoldPosition.LEFT) {
-                    hw.turnFromStart(0f) // turn back toward rover
+                    hw.turnFromStart(90f) // turn so back faces rover
                 }
                 hw.drive(-15.0) // change the amount as needed
                 // Navigate toward depot (turn toward depot) and drive into wall
-                hw.turnFromStart(-180f)
+                hw.turn(90f)
                 hw.drive(when (goldPosition) {
                     GoldPosition.RIGHT -> 11.8
                     GoldPosition.CENTER -> 38.2
@@ -149,15 +147,15 @@ abstract class BaseAutonomous : LinearOpMode() {
                 hw.drive(14.8)
                 hw.turn(45f)
                 // Drive until depot and release the object
-                hw.rotateArmFromStartPosition(62f, block = false)
+                hw.rotateArmFromStartPosition(100f, power = 0.5, block = false)
                 hw.drive(27.6)
                 hw.boxHingeServo.position = 1.0
                 hw.rotateArmFromStartPosition(0f, block = false)
-                hw.turn(180f)
 
                 // Navigate back to crater
-                hw.drive(80.0)
+                hw.drive(-80.0)
             }
         }
+        tf.deactivate()
     }
 }

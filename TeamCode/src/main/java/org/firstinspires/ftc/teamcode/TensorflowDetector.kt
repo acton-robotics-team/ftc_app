@@ -63,9 +63,8 @@ class TensorflowDetector(private val context: Context, private val telemetry: Te
     private lateinit var tfod: TFObjectDetector
 
     private fun inDetectionArea(mineral: Recognition): Boolean {
-        // Remove minerals detected above a certain height; they are likely to
-        // be in the crater. Also remove ones too far to the right.
-        return mineral.top > 400 && mineral.bottom > 500 && mineral.right < 1000
+        // Remove minerals selected above a certain height
+        return mineral.top > 400 && mineral.bottom > 500
     }
 
     fun getRecognitions(): List<Recognition> {
@@ -81,7 +80,7 @@ class TensorflowDetector(private val context: Context, private val telemetry: Te
 
         return when {
             goldMineral == null -> GoldPosition.RIGHT
-            goldMineral.right < 400 -> GoldPosition.CENTER
+            goldMineral.right > 400 -> GoldPosition.CENTER
             else -> GoldPosition.LEFT
         }
     }
