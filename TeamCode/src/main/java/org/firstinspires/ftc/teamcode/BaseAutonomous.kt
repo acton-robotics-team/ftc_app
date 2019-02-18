@@ -32,6 +32,7 @@ package org.firstinspires.ftc.teamcode
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.util.ElapsedTime
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition
 
 abstract class BaseAutonomous : LinearOpMode() {
     protected abstract val startLocation: AutonomousStartLocation
@@ -43,6 +44,13 @@ abstract class BaseAutonomous : LinearOpMode() {
         telemetry.logEx("$logHeader $entry")
     }
 
+    private fun printMinerals(minerals: List<Recognition>) {
+        minerals.forEach {
+            log("Mineral: ${it.label} @ bottom ${it.bottom}, top ${it.top}," +
+                    "left ${it.left}, right ${it.right}")
+        }
+    }
+
     private fun detectMineral(tf: TensorflowDetector): GoldPosition {
         // Search for mineral with Tensorflow
         val samplingTimeout = ElapsedTime()
@@ -51,7 +59,7 @@ abstract class BaseAutonomous : LinearOpMode() {
             goldPosition = tf.getPosition()
         }
 
-        telemetry.logEx("Found (preliminary) $goldPosition")
+        log("Found (preliminary) $goldPosition")
 
         // Spend at least three seconds detecting (sometimes Tensorflow does
         // not detect all minerals in the beginning)
@@ -63,10 +71,11 @@ abstract class BaseAutonomous : LinearOpMode() {
         if (goldPosition == null) {
             // Uh oh, we didn't manage to identify the mineral in time.
             // As a fallback, just go toward the center one.
-            telemetry.logEx("Not found; had to fall back to CENTER mineral.")
+            log("Not found; had to fall back to CENTER mineral.")
             goldPosition = GoldPosition.CENTER
         }
-        telemetry.logEx("Got gold position $goldPosition")
+        log("Got gold position $goldPosition")
+        printMinerals(tf.getRecognitions())
         return goldPosition
     }
 
@@ -151,7 +160,7 @@ abstract class BaseAutonomous : LinearOpMode() {
                 }
                 hw.drive(-15.0) // change the amount as needed
                 // Navigate toward depot (turn toward depot) and drive into wall
-                hw.turnFromStart(180f)
+                hw.turnFromStart(-180f)
                 hw.drive(when (goldPosition) {
                     GoldPosition.RIGHT -> 11.8
                     GoldPosition.CENTER -> 38.2

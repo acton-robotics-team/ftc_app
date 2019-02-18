@@ -68,26 +68,40 @@ class TensorflowDetector(private val context: Context, private val telemetry: Te
         return mineral.top > 400 && mineral.bottom > 500 && mineral.right < 1000
     }
 
+    fun getRecognitions(): List<Recognition> {
+        return tfod.recognitions
+    }
+
     fun getPosition(): GoldPosition? {
         // Then sort them so that the first mineral is the leftmost one.
-        val minerals = tfod.recognitions
+        val minerals = getRecognitions()
                 .filter { inDetectionArea(it) }
                 .sortedBy { it.left }
-        if (minerals.size != 2) {
+        if (minerals.size == 1) {
+            val mineral = minerals[0]
+            if (mineral.label == LABEL_GOLD_MINERAL) {
+                return when {
+                    mineral.right < 400 -> GoldPosition.CENTER
+                    else -> GoldPosition.LEFT
+                }
+            } else {
+                return null
+            }
+        } else if (minerals.size == 2) {
+            val leftMineral = minerals[0]
+            val rightMineral = minerals[1]
+
+            return when {
+                leftMineral.label == LABEL_GOLD_MINERAL && rightMineral.label == LABEL_SILVER_MINERAL ->
+                    GoldPosition.LEFT
+                leftMineral.label == LABEL_SILVER_MINERAL && rightMineral.label == LABEL_GOLD_MINERAL ->
+                    GoldPosition.CENTER
+                leftMineral.label == LABEL_SILVER_MINERAL && rightMineral.label == LABEL_SILVER_MINERAL ->
+                    GoldPosition.RIGHT
+                else -> null
+            }
+        } else {
             return null
-        }
-
-        val leftMineral = minerals[0]
-        val rightMineral = minerals[1]
-
-        return when {
-            leftMineral.label == LABEL_GOLD_MINERAL && rightMineral.label == LABEL_SILVER_MINERAL ->
-                GoldPosition.LEFT
-            leftMineral.label == LABEL_SILVER_MINERAL && rightMineral.label == LABEL_GOLD_MINERAL ->
-                GoldPosition.CENTER
-            leftMineral.label == LABEL_SILVER_MINERAL && rightMineral.label == LABEL_SILVER_MINERAL ->
-                GoldPosition.RIGHT
-            else -> null
         }
     }
 
