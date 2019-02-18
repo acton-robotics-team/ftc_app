@@ -95,7 +95,7 @@ class TankDrive : LinearOpMode() {
         if (boxPosition == 2) hw.boxSweeper.power = 0.0
         else if (gamepad2.left_trigger > 0 && !leftTriggerPressed) {
             hw.boxSweeper.power = when (spinToggle) {
-                true -> 0.7
+                true -> -0.7
                 else -> 0.0
             }
             spinToggle = !spinToggle
