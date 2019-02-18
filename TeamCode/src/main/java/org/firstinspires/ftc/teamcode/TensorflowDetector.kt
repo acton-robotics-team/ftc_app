@@ -65,7 +65,7 @@ class TensorflowDetector(private val context: Context, private val telemetry: Te
     private fun inDetectionArea(mineral: Recognition): Boolean {
         // Remove minerals detected above a certain height; they are likely to
         // be in the crater. Also remove ones too far to the right.
-        return mineral.top > 350 && mineral.right < 1000
+        return mineral.top > 500 && mineral.bottom > 600 && mineral.right < 1000
     }
 
     fun getPosition(): GoldPosition? {

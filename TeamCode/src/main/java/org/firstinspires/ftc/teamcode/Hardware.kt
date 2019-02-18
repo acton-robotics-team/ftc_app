@@ -247,11 +247,11 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
      */
     fun turnFromStart(deg: Float) {
         var rad = 0.0
-        var currentHeading = getHeading() * Math.PI /180
-        while (rad > currentHeading + Math.PI || rad < currentHeading - Math.PI) {
-            if (rad > currentHeading + Math.PI) {
+        var currentHeading = getHeading() * Math.PI / 180
+        while (rad >= currentHeading + Math.PI || rad <= currentHeading - Math.PI) {
+            if (rad >= currentHeading + Math.PI) {
                 rad -= 2 * Math.PI
-            } else if (rad < currentHeading - Math.PI) {
+            } else if (rad <= currentHeading - Math.PI) {
                 rad += 2 * Math.PI
             }
         }
@@ -283,7 +283,7 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
         const val DRIVE_FAST = 1.0
 
         const val LIFTER_BOTTOM_POSITION = 0
-        const val LIFTER_TOP_POSITION = 14600
+        const val LIFTER_TOP_POSITION = 15000
         const val LIFTER_AUTO_DROP_DOWN_POSITION = LIFTER_TOP_POSITION
         const val LIFTER_AUTO_END_POSITION = LIFTER_BOTTOM_POSITION
 

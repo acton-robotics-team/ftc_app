@@ -116,7 +116,6 @@ abstract class BaseAutonomous : LinearOpMode() {
 
         // Hit the gold mineral
         hw.drive(24.0) // far enough to always hit the mineral
-        return
 
         when (startLocation) {
             AutonomousStartLocation.FACING_DEPOT -> {
@@ -152,23 +151,23 @@ abstract class BaseAutonomous : LinearOpMode() {
                 if (goldPosition == GoldPosition.RIGHT || goldPosition == GoldPosition.LEFT) {
                     hw.turnFromStart(0f) // turn back toward rover
                 }
-                hw.drive(-10.0) // change the amount as needed
+                hw.drive(-15.0) // change the amount as needed
                 // Navigate toward depot (turn toward depot) and drive into wall
-                hw.turnFromStart(-85f)
+                hw.turnFromStart(-180f)
                 hw.drive(when (goldPosition) {
                     GoldPosition.RIGHT -> 11.8
                     GoldPosition.CENTER -> 38.2
                     GoldPosition.LEFT -> 47.25
                 })
                 hw.drive(14.8)
-                hw.turnFromStart(-45f)
+                hw.turn(45f)
                 // Drive until depot and release the object
                 hw.drive(27.6)
                 hw.turnImprecise(90f)
-                hw.markerReleaser.position = Hardware.MARKER_RELEASED
-                sleep(500)
-                hw.markerReleaser.position = Hardware.MARKER_RETRACTED
-                hw.turnFromStart(135f)
+                hw.rotateArmFromStartPosition(62f)
+                hw.boxHingeServo.position = 1.0
+                hw.rotateArmFromStartPosition(0f)
+                hw.turn(90f)
 
                 // Navigate back to crater
                 hw.drive(80.0)
