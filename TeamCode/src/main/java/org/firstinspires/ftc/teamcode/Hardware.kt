@@ -254,10 +254,10 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
     fun turnFromStart(deg: Float) {
         var rad = deg * Math.PI /180
         var lastTargetedRadians = lastTargetedPosition * Math.PI /180
-        while (rad >= lastTargetedRadians + Math.PI || rad <= lastTargetedRadians - Math.PI) {
-            if (rad >= lastTargetedRadians + Math.PI) {
+        while (rad > lastTargetedRadians + Math.PI || rad < lastTargetedRadians - Math.PI) {
+            if (rad > lastTargetedRadians + Math.PI) {
                 rad -= 2 * Math.PI
-            } else if (rad <= lastTargetedRadians - Math.PI) {
+            } else if (rad < lastTargetedRadians - Math.PI) {
                 rad += 2 * Math.PI
             }
         }
