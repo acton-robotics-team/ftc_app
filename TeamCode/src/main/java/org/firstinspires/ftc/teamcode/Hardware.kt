@@ -58,7 +58,6 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
             it.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         }
         rightArmRotator.direction = DcMotorSimple.Direction.REVERSE
-        boxSweeper.direction = DcMotorSimple.Direction.REVERSE
         boxHingeServo.direction = Servo.Direction.REVERSE
 
         armExtender.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
@@ -203,28 +202,6 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
         return getHeading() - 90f
     }
 
-    /**
-     * Turns from X degrees relative to the starting heading
-     *
-     * Right = negative, left = position
-     */
-    fun turnFromStart(deg: Float) {
-        var rad = (deg + 90f) * Math.PI / 180
-        while (rad > Math.PI || rad < -Math.PI) {
-            if (rad > Math.PI) {
-                rad -= 2 * Math.PI
-            } else if (rad < -Math.PI) {
-                rad += 2 * Math.PI
-            }
-        }
-        drivetrain.targetHeading = rad
-        while (opMode.opModeIsActive() && drivetrain.isRotating) {
-            doTelemetry(drivetrain)
-            drivetrain.updateHeading()
-        }
-        setDrivePower(0.0)
-    }
-
     fun turnImprecise(deg: Float) {
         val setTurnPower = { power: Double ->
             if (deg > 0) {
@@ -265,6 +242,32 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
         }
         setDrivePower(0.0)
         log("Finished turn.")
+    }
+
+    /**
+     * Turns from X degrees relative to the starting heading
+     *
+     * Right = negative, left = position
+     */
+    fun turnFromStart(deg: Float) {
+        var rad = (deg + 90f) * Math.PI / 180
+        var currentHeading = getHeading() * Math.PI /180
+        while (rad > currentHeading + Math.PI || rad < currentHeading - Math.PI) {
+            if (rad > currentHeading + Math.PI) {
+                rad -= 2 * Math.PI
+            } else if (rad < currentHeading - Math.PI) {
+                rad += 2 * Math.PI
+            }
+        }
+        log("turning to" + rad)
+        drivetrain.targetHeading = rad
+
+        while (opMode.opModeIsActive() && drivetrain.isRotating) {
+            doTelemetry(drivetrain)
+            drivetrain.updateHeading()
+        }
+        setDrivePower(0.0)
+        log("finished turning")
     }
 
     private fun log(entry: String) {
