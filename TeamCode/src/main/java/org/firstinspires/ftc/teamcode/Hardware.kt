@@ -246,7 +246,7 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
      * Right = negative, left = position
      */
     fun turnFromStart(deg: Float) {
-        var rad = (deg + 90f) * Math.PI / 180
+        var rad = 0.0
         var currentHeading = getHeading() * Math.PI /180
         while (rad > currentHeading + Math.PI || rad < currentHeading - Math.PI) {
             if (rad > currentHeading + Math.PI) {
@@ -255,6 +255,7 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
                 rad += 2 * Math.PI
             }
         }
+        rad += deg * Math.PI / 180
         log("turning to" + rad)
         drivetrain.targetHeading = rad
 
@@ -282,13 +283,14 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
         const val DRIVE_FAST = 1.0
 
         const val LIFTER_BOTTOM_POSITION = 0
-        const val LIFTER_TOP_POSITION = 14200
+        const val LIFTER_TOP_POSITION = 14600
         const val LIFTER_AUTO_DROP_DOWN_POSITION = LIFTER_TOP_POSITION
         const val LIFTER_AUTO_END_POSITION = LIFTER_BOTTOM_POSITION
 
         const val ARM_ROTATION_BOTTOM_LIMIT = 0
         const val ARM_ROTATION_UPPER_LIMIT = 1000
 
+        const val ARM_TEAM_MARKER_DROP_POSITION = 767
 
         const val MARKER_RELEASED = 0.1
         const val MARKER_RETRACTED = 1.0

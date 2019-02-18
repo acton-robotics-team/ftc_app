@@ -71,7 +71,6 @@ abstract class BaseAutonomous : LinearOpMode() {
     }
 
     override fun runOpMode() {
-        telemetry.isAutoClear = false
         log("Wait for initialization! Do not start!")
 
         val hw = Hardware(hardwareMap, this)
@@ -101,7 +100,8 @@ abstract class BaseAutonomous : LinearOpMode() {
         }
 
         // Turn to get out of cage; we are currently sideways
-        hw.turnFromStart(-270f)
+        hw.turnFromStart(0f)
+        hw.turn(-270f)
 
         // Begin retracting the lifter
         hw.lifter.targetPosition = Hardware.LIFTER_AUTO_END_POSITION
@@ -115,7 +115,7 @@ abstract class BaseAutonomous : LinearOpMode() {
         })
 
         // Hit the gold mineral
-        hw.drive(32.5) // far enough to always hit the mineral
+        hw.drive(24.0) // far enough to always hit the mineral
         return
 
         when (startLocation) {
