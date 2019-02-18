@@ -190,7 +190,18 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
      * Turns by X degrees relative to the robot's current heading
      */
     fun turn(deg: Float) {
-        turnFromStart(deg + lastTargetedPosition)
+        var currentHeading = getHeading() * Math.PI / 180
+        var rad = deg * Math.PI / 180 + currentHeading
+        log("turning to" + rad)
+        drivetrain.targetHeading = rad
+
+        while (opMode.opModeIsActive() && drivetrain.isRotating) {
+            doTelemetry(drivetrain)
+            drivetrain.updateHeading()
+        }
+        setDrivePower(0.0)
+        log("finished turning")
+        lastTargetedPosition = deg
     }
 
     fun turnImprecise(deg: Float) {
@@ -242,16 +253,15 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
      * Right = negative, left = position
      */
     fun turnFromStart(deg: Float) {
-        var rad = 0.0
+        var rad = deg * Math.PI /180
         var currentHeading = getHeading() * Math.PI / 180
-        while (rad >= currentHeading + Math.PI || rad <= currentHeading - Math.PI) {
+        while (rad >= currentHeading + Math.PI || rad < currentHeading - Math.PI) {
             if (rad >= currentHeading + Math.PI) {
                 rad -= 2 * Math.PI
-            } else if (rad <= currentHeading - Math.PI) {
+            } else if (rad < currentHeading - Math.PI) {
                 rad += 2 * Math.PI
             }
         }
-        rad += deg * Math.PI / 180
         log("turning to" + rad)
         drivetrain.targetHeading = rad
 
