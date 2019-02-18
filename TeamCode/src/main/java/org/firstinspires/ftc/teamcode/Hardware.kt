@@ -186,10 +186,16 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
     }
 
     /**
+     * The position that the rover was last set to move to. Ideally, the rover's
+     * actual position is pretty close to here.
+     */
+    private var lastTargetedPosition: Float = 0f
+
+    /**
      * Turns by X degrees relative to the robot's current heading
      */
     fun turn(deg: Float) {
-        turnFromStart(deg + getHeading())
+        turnFromStart(deg + lastTargetedPosition)
     }
 
     /**
@@ -212,6 +218,7 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
             drivetrain.updateHeading()
         }
         setDrivePower(0.0)
+        lastTargetedPosition = deg
     }
 
     fun turnImprecise(deg: Float) {
@@ -254,6 +261,7 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
         }
         setDrivePower(0.0)
         log("Finished turn.")
+        lastTargetedPosition += deg
     }
 
     private fun log(entry: String) {

@@ -88,11 +88,6 @@ abstract class BaseAutonomous : LinearOpMode() {
         }
         runtime.reset()
 
-        hw.turnFromStart(-270f) // right turn to face crater
-        // This weirdo turns more than 360 degrees (below)
-        hw.turn(90f) // left turn 90 degrees
-        hw.turn(-180f) // right turn 180 degrees
-
         val goldPosition = detectMineral(tf)
         tf.deactivate()
 
@@ -106,14 +101,14 @@ abstract class BaseAutonomous : LinearOpMode() {
         }
 
         // Turn to get out of cage; we are currently sideways
-        hw.turnFromStart(-180f) // turn to face center mineral
+        hw.turnFromStart(-270f)
 
         // Begin retracting the lifter
         hw.lifter.targetPosition = Hardware.LIFTER_AUTO_END_POSITION
 
         // Drive up to gold sampling position
         hw.drive(5.0)
-        hw.turnFromStart(-180f + when (goldPosition) {
+        hw.turn(when (goldPosition) {
             GoldPosition.LEFT -> 45f
             GoldPosition.CENTER -> 0f
             GoldPosition.RIGHT -> -45f
@@ -121,27 +116,24 @@ abstract class BaseAutonomous : LinearOpMode() {
 
         // Hit the gold mineral
         hw.drive(32.5) // far enough to always hit the mineral
-
         return
+
         when (startLocation) {
             AutonomousStartLocation.FACING_DEPOT -> {
                 // Turn to face the depot
                 when (goldPosition) {
-                    // turn back to center
-                    GoldPosition.RIGHT -> hw.turnFromStart(-180f)
+                    // turn back to center to drive toward the depot
+                    GoldPosition.RIGHT -> hw.turn(-45f)
                     // turn 45 degrees from initial position to aim toward wall
-                    GoldPosition.CENTER -> hw.turnFromStart(-180f - 45f)
+                    GoldPosition.CENTER -> hw.turn(-45f)
                     GoldPosition.LEFT -> {
-                        hw.turnFromStart(-180f - 45f)
-                        // Drive extra back
-                        hw.drive(17.7)
+                        hw.turnFromStart(-90f)
                     }
                 }
-                // Reverse into the depot
+                // Drive into the depot
                 hw.drive(35.0)
                 return
                 // Release the marker
-
 
                 hw.markerReleaser.position = Hardware.MARKER_RELEASED
                 sleep(250)
