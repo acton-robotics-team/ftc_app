@@ -269,7 +269,7 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
         }
         setDrivePower(0.0)
         log("finished turning")
-        lastTargetedPosition = rad
+        lastTargetedPosition = rad.toFloat()
     }
 
     private fun log(entry: String) {
