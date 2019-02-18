@@ -190,7 +190,7 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
      * Turns by X degrees relative to the robot's current heading
      */
     fun turn(deg: Float) {
-        var rad = deg * Math.PI / 180 + lastTargetedPosition
+        var rad = deg * Math.PI / 180 + lastTargetedPosition * Math.PI /180
         log("turning to" + rad)
         drivetrain.targetHeading = rad
 
@@ -253,10 +253,11 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
      */
     fun turnFromStart(deg: Float) {
         var rad = deg * Math.PI /180
-        while (rad >= lastTargetedPosition + Math.PI || rad <= lastTargetedPosition - Math.PI) {
-            if (rad >= lastTargetedPosition + Math.PI) {
+        var lastTargetedRadians = lastTargetedPosition * Math.PI /180
+        while (rad >= lastTargetedRadians + Math.PI || rad <= lastTargetedRadians - Math.PI) {
+            if (rad >= lastTargetedRadians + Math.PI) {
                 rad -= 2 * Math.PI
-            } else if (rad <= lastTargetedPosition - Math.PI) {
+            } else if (rad <= lastTargetedRadians - Math.PI) {
                 rad += 2 * Math.PI
             }
         }
@@ -269,7 +270,7 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
         }
         setDrivePower(0.0)
         log("finished turning")
-        lastTargetedPosition = rad.toFloat()
+        lastTargetedPosition = (rad * 180 / Math.PI).toFloat()
     }
 
     private fun log(entry: String) {
