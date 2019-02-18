@@ -47,10 +47,6 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
         listOf(frontLeftDrive, backLeftDrive).forEach {
             it.direction = DcMotorSimple.Direction.REVERSE
         }
-        // Let back motors use the encoder (front wheels do not have them)
-        listOf(backLeftDrive, backRightDrive).forEach {
-            it.mode = DcMotor.RunMode.RUN_USING_ENCODER
-        }
 
         listOf(leftArmRotator, rightArmRotator).forEach {
             it.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
@@ -166,8 +162,8 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
         }
 
         setDrivePower(0.0)
-        backLeftDrive.mode = DcMotor.RunMode.RUN_USING_ENCODER
-        backRightDrive.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        backLeftDrive.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+        backRightDrive.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
     }
 
     private fun doTelemetry(drivetrain: HeadingableTankDrivetrain) {

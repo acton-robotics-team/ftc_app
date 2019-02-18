@@ -106,8 +106,6 @@ abstract class BaseAutonomous : LinearOpMode() {
         // Begin retracting the lifter
         hw.lifter.targetPosition = Hardware.LIFTER_AUTO_END_POSITION
 
-        // Drive up to gold sampling position
-        hw.drive(5.0)
         hw.turn(when (goldPosition) {
             GoldPosition.LEFT -> 45f
             GoldPosition.CENTER -> 0f
@@ -153,7 +151,7 @@ abstract class BaseAutonomous : LinearOpMode() {
                 }
                 hw.drive(-15.0) // change the amount as needed
                 // Navigate toward depot (turn toward depot) and drive into wall
-                hw.turnFromStart(-180f)
+                hw.turnFromStart(180f)
                 hw.drive(when (goldPosition) {
                     GoldPosition.RIGHT -> 11.8
                     GoldPosition.CENTER -> 38.2
