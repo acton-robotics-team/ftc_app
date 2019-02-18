@@ -93,7 +93,7 @@ abstract class BaseAutonomous : LinearOpMode() {
         hw.turn(-270f + when (goldPosition) {
             GoldPosition.LEFT -> 45f
             GoldPosition.CENTER -> 0f
-            GoldPosition.RIGHT -> -45f
+            GoldPosition.RIGHT -> -37.5f
         })
 
         // Begin retracting the lifter
@@ -136,20 +136,20 @@ abstract class BaseAutonomous : LinearOpMode() {
                 if (goldPosition == GoldPosition.RIGHT || goldPosition == GoldPosition.LEFT) {
                     hw.turnFromStart(90f) // turn so back faces rover
                 }
-                hw.drive(-15.0) // change the amount as needed
+                hw.drive(-12.5) // change the amount as needed
                 // Navigate toward depot (turn toward depot) and drive into wall
-                hw.turn(90f)
+                hw.turn(85f)
                 hw.drive(when (goldPosition) {
-                    GoldPosition.RIGHT -> 11.8
+                    GoldPosition.LEFT -> 11.8
                     GoldPosition.CENTER -> 38.2
-                    GoldPosition.LEFT -> 47.25
+                    GoldPosition.RIGHT -> 47.25
                 })
                 hw.drive(14.8)
                 hw.turn(45f)
                 // Drive until depot and release the object
+                hw.boxHingeServo.position = 0.0 // toodles
                 hw.rotateArmFromStartPosition(100f, power = 0.5, block = false)
                 hw.drive(27.6)
-                hw.boxHingeServo.position = 1.0
                 hw.rotateArmFromStartPosition(0f, block = false)
 
                 // Navigate back to crater
