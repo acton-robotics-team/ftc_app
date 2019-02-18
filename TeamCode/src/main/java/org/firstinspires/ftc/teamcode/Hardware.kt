@@ -115,7 +115,7 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
      *
      * Blocks (it will wait until the movement is complete)
      */
-    fun rotateArmFromStartPosition(degrees: Float) {
+    fun rotateArmFromStartPosition(degrees: Float, power: Double = 0.1, block: Boolean = true) {
         if (degrees < 0 || degrees > 180) {
             throw IllegalArgumentException("wtf are you doing that's an unsafe arm value")
         }
@@ -125,13 +125,15 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
 
         listOf(leftArmRotator, rightArmRotator).forEach {
             it.mode = DcMotor.RunMode.RUN_TO_POSITION
-            it.power = 0.1
+            it.power = power
             it.targetPosition = ticks
         }
 
-        while (opMode.opModeIsActive() && leftArmRotator.isBusy && rightArmRotator.isBusy) {
+        if (block) {
+            while (opMode.opModeIsActive() && leftArmRotator.isBusy && rightArmRotator.isBusy) {
+            }
+            opMode.telemetry.logEx("Finished arm rotation of $degrees degrees")
         }
-        opMode.telemetry.logEx("Finished arm rotation of $degrees degrees")
     }
 
     fun drive(inches: Double, speed: Double = Hardware.DRIVE_FAST) {

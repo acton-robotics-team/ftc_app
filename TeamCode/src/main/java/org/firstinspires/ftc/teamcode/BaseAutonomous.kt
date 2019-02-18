@@ -53,28 +53,8 @@ abstract class BaseAutonomous : LinearOpMode() {
 
     private fun detectMineral(tf: TensorflowDetector): GoldPosition {
         // Search for mineral with Tensorflow
-        val samplingTimeout = ElapsedTime()
-        var goldPosition: GoldPosition? = null
-        while (opModeIsActive() && goldPosition == null && samplingTimeout.seconds() <= 10) {
-            goldPosition = tf.getPosition()
-        }
-
-        log("Found (preliminary) $goldPosition")
-
-        // Spend at least three seconds detecting (sometimes Tensorflow does
-        // not detect all minerals in the beginning)
-        val timeSpentDetecting = ElapsedTime()
-        while (opModeIsActive() && timeSpentDetecting.seconds() <= 2) {
-            goldPosition = tf.getPosition()
-        }
-
-        if (goldPosition == null) {
-            // Uh oh, we didn't manage to identify the mineral in time.
-            // As a fallback, just go toward the center one.
-            log("Not found; had to fall back to CENTER mineral.")
-            goldPosition = GoldPosition.CENTER
-        }
-        log("Got gold position $goldPosition")
+        val goldPosition = tf.getPosition()
+        log("Found $goldPosition")
         printMinerals(tf.getRecognitions())
         return goldPosition
     }
@@ -169,12 +149,11 @@ abstract class BaseAutonomous : LinearOpMode() {
                 hw.drive(14.8)
                 hw.turn(45f)
                 // Drive until depot and release the object
+                hw.rotateArmFromStartPosition(62f, block = false)
                 hw.drive(27.6)
-                hw.turnImprecise(90f)
-                hw.rotateArmFromStartPosition(62f)
                 hw.boxHingeServo.position = 1.0
-                hw.rotateArmFromStartPosition(0f)
-                hw.turn(90f)
+                hw.rotateArmFromStartPosition(0f, block = false)
+                hw.turn(180f)
 
                 // Navigate back to crater
                 hw.drive(80.0)
