@@ -106,29 +106,24 @@ abstract class BaseAutonomous : LinearOpMode() {
             AutonomousStartLocation.FACING_DEPOT -> {
                 // Turn to face the depot
                 when (goldPosition) {
-                    // turn back to center to drive toward the depot
-                    GoldPosition.RIGHT -> hw.turn(-45f)
-                    // turn 45 degrees from initial position to aim toward wall
-                    GoldPosition.CENTER -> hw.turn(-45f)
+                    GoldPosition.RIGHT -> hw.turn(60f)
+                    // Do nothing (already pointing toward depot)
+                    GoldPosition.CENTER -> {}
                     GoldPosition.LEFT -> {
-                        hw.turnFromStart(-90f)
+                        hw.turn(-60f)
                     }
                 }
-                // Drive into the depot
-                hw.drive(35.0)
-                return
-                // Release the marker
+                hw.boxHingeServo.position = 0.0 // toodles
+                // Release the claww
+                hw.rotateArmFromStartPosition(100f, power = 0.5, block = false)
+                // Drive up to the depot
+                hw.drive(18.0)
+                hw.rotateArmFromStartPosition(0f, block = false)
 
-                hw.markerReleaser.position = Hardware.MARKER_RELEASED
-                sleep(250)
-                hw.markerReleaser.position = Hardware.MARKER_RETRACTED
                 // Turn toward the crater (enemy side)
-                hw.turn(130f)
-                hw.drive(33.5)
-                // Do like a 5 point turn
-                hw.turnFromStart(-65f)
-                hw.drive(5.9)
-                hw.turnFromStart(-50f)
+                hw.turnFromStart(180f)
+                hw.drive(20.0)
+                hw.turn(45f)
                 // Drive toward the crater
                 hw.drive(51.2)
             }

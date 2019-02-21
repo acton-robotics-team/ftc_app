@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.util.ElapsedTime
 import kotlin.math.roundToInt
-import java.lang.IndexOutOfBoundsException
 
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -62,11 +61,11 @@ class TankDrive : LinearOpMode() {
 
     private fun runArm() {
         val armPower = -gamepad2.right_stick_y
+        val newPosition = (hw.leftArmRotator.currentPosition + (50 * armPower)).roundToInt()
         listOf(hw.leftArmRotator, hw.rightArmRotator).forEach {
             it.mode = DcMotor.RunMode.RUN_TO_POSITION
             it.power = 0.7
             if (Math.abs(armPower) > 0.1) {
-                val newPosition = (it.currentPosition + (50 * armPower)).roundToInt()
                 it.targetPosition = when {
                     // Let left bumper override limits on arm position
                     gamepad2.left_bumper -> newPosition
@@ -78,8 +77,8 @@ class TankDrive : LinearOpMode() {
         }
 
         hw.armExtender.power = when {
-            gamepad2.dpad_up -> -0.5
-            gamepad2.dpad_down -> 0.5
+            gamepad2.dpad_up -> -1.0
+            gamepad2.dpad_down -> 1.0
             else -> 0.0
         }
 
@@ -91,7 +90,7 @@ class TankDrive : LinearOpMode() {
         telemetry.addData("Arm extender target position", hw.armExtender.targetPosition)
     }
 
-    private fun runSweeper(){
+    private fun runSweeper() {
         if (boxPosition == 2) hw.boxSweeper.power = 0.0
         else if (gamepad2.left_trigger > 0 && !leftTriggerPressed) {
             hw.boxSweeper.power = when (spinToggle) {
@@ -100,21 +99,18 @@ class TankDrive : LinearOpMode() {
             }
             spinToggle = !spinToggle
             leftTriggerPressed = true
-        }
-        else if (gamepad2.left_trigger == 0.0f) leftTriggerPressed = false
+        } else if (gamepad2.left_trigger == 0.0f) leftTriggerPressed = false
     }
 
-    private fun runBoxHinge(){
+    private fun runBoxHinge() {
         if (gamepad2.right_bumper && !rightBumperPressed) {
-            if(boxPosition < 2) boxPosition++
+            if (boxPosition < 2) boxPosition++
             rightBumperPressed = true
-        }
-        else if (!gamepad2.right_bumper) rightBumperPressed = false
+        } else if (!gamepad2.right_bumper) rightBumperPressed = false
         if (gamepad2.right_trigger > 0 && !rightTriggerPressed) {
-            if(boxPosition > 0) boxPosition--
+            if (boxPosition > 0) boxPosition--
             rightTriggerPressed = true
-        }
-        else if (gamepad2.right_trigger == 0.0f) rightTriggerPressed = false
+        } else if (gamepad2.right_trigger == 0.0f) rightTriggerPressed = false
         hw.boxHingeServo.position = when (boxPosition) {
             0 -> 0.0
             1 -> 0.45
