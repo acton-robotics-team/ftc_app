@@ -82,10 +82,12 @@ class TankDrive : LinearOpMode() {
             }
         }
 
-        hw.armExtender.power = when {
-            gamepad2.dpad_up -> -1.0
-            gamepad2.dpad_down -> 1.0
-            else -> 0.0
+        hw.armExtender.apply {
+            power = when {
+                gamepad2.dpad_up && currentPosition < Hardware.ARM_EXTENDER_UPPER_LIMIT -> 1.0
+                gamepad2.dpad_down && currentPosition > Hardware.ARM_EXTENDER_BOTTOM_LIMIT -> -1.0
+                else -> 0.0
+            }
         }
 
         telemetry.addData("Left arm encoder value", hw.leftArmRotator.currentPosition)

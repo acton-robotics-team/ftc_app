@@ -298,6 +298,9 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
         const val ARM_ROTATION_UPPER_LIMIT = 1000
         const val ARM_ROTATION_MIDDLE_CHANGE = 700
 
+        const val ARM_EXTENDER_BOTTOM_LIMIT = 250
+        const val ARM_EXTENDER_UPPER_LIMIT = 7500
+
         const val ARM_TEAM_MARKER_DROP_POSITION = 767
 
         const val MARKER_RELEASED = 0.1
