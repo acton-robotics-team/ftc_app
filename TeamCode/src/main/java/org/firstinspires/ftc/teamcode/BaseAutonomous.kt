@@ -122,10 +122,10 @@ abstract class BaseAutonomous : LinearOpMode() {
 
                 // Turn toward the crater (enemy side)
                 hw.turnFromStart(180f)
-                hw.drive(20.0)
+                hw.drive(-20.0)
                 hw.turn(45f)
                 // Drive toward the crater
-                hw.drive(51.2)
+                hw.drive(-51.2)
             }
             AutonomousStartLocation.FACING_CRATER -> {
                 if (goldPosition == GoldPosition.RIGHT || goldPosition == GoldPosition.LEFT) {
