@@ -89,9 +89,17 @@ class TankDrive : LinearOpMode() {
         }
 
         telemetry.addData("Left arm encoder value", hw.leftArmRotator.currentPosition)
-        telemetry.addData("Left arm target position", hw.leftArmRotator.targetPosition)
+        if (hw.leftArmRotator.currentPosition < Hardware.ARM_ROTATION_MIDDLE_CHANGE) {
+            telemetry.addData("Left arm target position", hw.leftArmRotator.targetPosition)
+        } else {
+            telemetry.addData("Left arm motor power", armPower)
+        }
         telemetry.addData("Right arm encoder value", hw.rightArmRotator.currentPosition)
-        telemetry.addData("Right arm target position", hw.rightArmRotator.targetPosition)
+        if (hw.rightArmRotator.currentPosition < Hardware.ARM_ROTATION_MIDDLE_CHANGE) {
+            telemetry.addData("Right arm target position", hw.rightArmRotator.targetPosition)
+        } else {
+            telemetry.addData("Right arm motor power", armPower)
+        }
         telemetry.addData("Arm extender encoder value", hw.armExtender.currentPosition)
         telemetry.addData("Arm extender target position", hw.armExtender.targetPosition)
     }
