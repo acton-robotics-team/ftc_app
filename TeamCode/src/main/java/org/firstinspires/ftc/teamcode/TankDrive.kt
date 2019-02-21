@@ -28,6 +28,8 @@ class TankDrive : LinearOpMode() {
     var leftTriggerPressed = false
     var rightTriggerPressed = false
     var rightBumperPressed = false
+    var isCollecting = false
+    var downPressed = false
 
     private fun runTankDrive() {
         val powerModifier = if (gamepad1.a) Hardware.DRIVE_SLOW else Hardware.DRIVE_FAST
@@ -63,16 +65,20 @@ class TankDrive : LinearOpMode() {
         val armPower = -gamepad2.right_stick_y
         val newPosition = (hw.leftArmRotator.currentPosition + (50 * armPower)).roundToInt()
         listOf(hw.leftArmRotator, hw.rightArmRotator).forEach {
-            it.mode = DcMotor.RunMode.RUN_TO_POSITION
-            it.power = 0.7
-            if (Math.abs(armPower) > 0.1) {
-                it.targetPosition = when {
-                    // Let left bumper override limits on arm position
-                    gamepad2.left_bumper -> newPosition
-                    else -> limitValue(newPosition,
-                            Hardware.ARM_ROTATION_BOTTOM_LIMIT, Hardware.ARM_ROTATION_UPPER_LIMIT)
+            if (it.currentPosition < Hardware.ARM_ROTATION_MIDDLE_CHANGE) {
+                it.mode = DcMotor.RunMode.RUN_TO_POSITION
+                it.power = 0.7
+                if (Math.abs(armPower) > 0.1) {
+                    it.targetPosition = when {
+                        // Let left bumper override limits on arm position
+                        gamepad2.left_bumper -> newPosition
+                        else -> limitValue(newPosition,
+                                Hardware.ARM_ROTATION_BOTTOM_LIMIT, Hardware.ARM_ROTATION_UPPER_LIMIT)
+                    }
                 }
-
+            } else {
+                it.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+                it.power = armPower.toDouble()
             }
         }
 
@@ -83,9 +89,17 @@ class TankDrive : LinearOpMode() {
         }
 
         telemetry.addData("Left arm encoder value", hw.leftArmRotator.currentPosition)
-        telemetry.addData("Left arm target position", hw.leftArmRotator.targetPosition)
+        if (hw.leftArmRotator.currentPosition < Hardware.ARM_ROTATION_MIDDLE_CHANGE) {
+            telemetry.addData("Left arm target position", hw.leftArmRotator.targetPosition)
+        } else {
+            telemetry.addData("Left arm motor power", armPower)
+        }
         telemetry.addData("Right arm encoder value", hw.rightArmRotator.currentPosition)
-        telemetry.addData("Right arm target position", hw.rightArmRotator.targetPosition)
+        if (hw.rightArmRotator.currentPosition < Hardware.ARM_ROTATION_MIDDLE_CHANGE) {
+            telemetry.addData("Right arm target position", hw.rightArmRotator.targetPosition)
+        } else {
+            telemetry.addData("Right arm motor power", armPower)
+        }
         telemetry.addData("Arm extender encoder value", hw.armExtender.currentPosition)
         telemetry.addData("Arm extender target position", hw.armExtender.targetPosition)
     }
@@ -122,7 +136,35 @@ class TankDrive : LinearOpMode() {
     private fun runBox() {
         runSweeper()
         runBoxHinge()
+    }
 
+    private fun runMacros(){
+        if(gamepad2.left_stick_y < 0 && !downPressed) {
+            if (!isCollecting) {
+                setBoxToCollect()
+            } else {
+                setBoxToDeposit()
+            }
+            downPressed = true
+        } else if (gamepad2.left_stick_y >= 0) {
+            downPressed = false
+        }
+    }
+
+    private fun setBoxToCollect(){
+        boxPosition = 1
+        hw.boxHingeServo.position = 0.45
+        spinToggle = true;
+        hw.boxSweeper.power = -0.7
+        hw.rotateArmFromStartPosition(115f)
+    }
+
+    private fun setBoxToDeposit(){
+        boxPosition = 2
+        hw.boxHingeServo.position = 1.0
+        spinToggle = false
+        hw.boxSweeper.power = 0.0
+        hw.rotateArmFromStartPosition(80f)
     }
 
     override fun runOpMode() {
@@ -143,6 +185,8 @@ class TankDrive : LinearOpMode() {
             runLifter()
             runArm()
             runBox()
+            runMacros()
+
 
             // Show the elapsed game time
             telemetry.addData("Status", "Run Time: $runtime")
@@ -150,10 +194,6 @@ class TankDrive : LinearOpMode() {
             telemetry.addData("Encoder distance traveled (in.)",
                     hw.backRightDrive.currentPosition / Hardware.DRIVE_ENCODER_TICKS_PER_IN)
             telemetry.addData("IMU heading", hw.getHeading())
-            if (gamepad1.a) {
-                hw.backRightDrive.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-                hw.backRightDrive.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
-            }
             telemetry.update()
         }
     }
