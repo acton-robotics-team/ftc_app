@@ -184,6 +184,8 @@ class TankDrive : LinearOpMode() {
         waitForStart()
         runtime.reset()
 
+        hw.stickServo.position = 0.0
+
         // run until the end of the match (driver presses STOP)
         val loopTime = ElapsedTime()
 

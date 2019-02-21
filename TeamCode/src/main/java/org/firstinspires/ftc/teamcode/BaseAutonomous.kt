@@ -93,7 +93,7 @@ abstract class BaseAutonomous : LinearOpMode() {
         hw.turn(-270f + when (goldPosition) {
             GoldPosition.LEFT -> 45f
             GoldPosition.CENTER -> 0f
-            GoldPosition.RIGHT -> -37.5f
+            GoldPosition.RIGHT -> -30f
         })
 
         // Begin retracting the lifter
@@ -113,19 +113,21 @@ abstract class BaseAutonomous : LinearOpMode() {
                         hw.turn(-60f)
                     }
                 }
-                hw.boxHingeServo.position = 0.0 // toodles
-                // Release the claww
-                hw.rotateArmFromStartPosition(100f, power = 0.5, block = false)
                 // Drive up to the depot
+                // Release the claww
+                hw.boxHingeServo.position = 0.0 // toodles
+                hw.rotateArmFromStartPosition(100f, power = 0.25, block = false)
                 hw.drive(18.0)
                 hw.rotateArmFromStartPosition(0f, block = false)
 
                 // Turn toward the crater (enemy side)
                 hw.turnFromStart(180f)
-                hw.drive(-20.0)
-                hw.turn(45f)
+                hw.drive(30.0)
+                hw.turn(40f)
+                // Extend the stick boi
+                hw.stickServo.position = 1.0
                 // Drive toward the crater
-                hw.drive(-51.2)
+                hw.drive(51.2)
             }
             AutonomousStartLocation.FACING_CRATER -> {
                 if (goldPosition == GoldPosition.RIGHT || goldPosition == GoldPosition.LEFT) {

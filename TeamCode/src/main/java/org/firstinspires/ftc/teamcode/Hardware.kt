@@ -28,8 +28,7 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
 
     val boxHingeServo: Servo = hwMap.servo.get("box_hinge")
     val boxSweeper: CRServo = hwMap.crservo.get("box_sweeper")
-
-    val markerReleaser: Servo = hwMap.servo.get("marker")
+    val stickServo: Servo = hwMap.servo.get("stick")
 
     val imu: BNO055IMUImpl = hwMap.get(BNO055IMUImpl::class.java, "imu")
 
@@ -55,6 +54,7 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
         }
         rightArmRotator.direction = DcMotorSimple.Direction.REVERSE
         boxHingeServo.direction = Servo.Direction.REVERSE
+        stickServo.direction = Servo.Direction.REVERSE
 
         armExtender.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
 
