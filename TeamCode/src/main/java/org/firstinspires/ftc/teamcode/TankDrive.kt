@@ -142,8 +142,10 @@ class TankDrive : LinearOpMode() {
         if(gamepad2.left_stick_y < 0 && !downPressed) {
             if (!isCollecting) {
                 setBoxToCollect()
+                isCollecting=true;
             } else {
                 setBoxToDeposit()
+                isCollecting=false;
             }
             downPressed = true
         } else if (gamepad2.left_stick_y >= 0) {
@@ -156,7 +158,7 @@ class TankDrive : LinearOpMode() {
         hw.boxHingeServo.position = 0.45
         spinToggle = true
         hw.boxSweeper.power = -0.7
-        hw.rotateArmFromStartPosition(160f, 0.7)
+        hw.rotateArmFromStartPosition(145f, 0.7)
     }
 
     private fun setBoxToDeposit(){
