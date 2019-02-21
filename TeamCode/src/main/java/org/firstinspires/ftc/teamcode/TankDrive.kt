@@ -159,6 +159,7 @@ class TankDrive : LinearOpMode() {
         spinToggle = true
         hw.boxSweeper.power = -0.7
         hw.rotateArmFromStartPosition(145f, 0.7)
+        hw.rotateArmFromStartPosition(160f, 0.2)
     }
 
     private fun setBoxToDeposit(){
