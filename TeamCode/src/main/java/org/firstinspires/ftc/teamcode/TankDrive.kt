@@ -154,9 +154,9 @@ class TankDrive : LinearOpMode() {
     private fun setBoxToCollect(){
         boxPosition = 1
         hw.boxHingeServo.position = 0.45
-        spinToggle = true;
+        spinToggle = true
         hw.boxSweeper.power = -0.7
-        hw.rotateArmFromStartPosition(160f)
+        hw.rotateArmFromStartPosition(160f, 0.7)
     }
 
     private fun setBoxToDeposit(){
@@ -164,10 +164,10 @@ class TankDrive : LinearOpMode() {
         hw.boxSweeper.power = 0.0
         boxPosition = 2
         hw.boxHingeServo.position = 1.0
-        hw.rotateArmFromStartPosition(80f)
+        hw.rotateArmFromStartPosition(80f, 0.7)
         boxPosition = 0
         hw.boxHingeServo.position = 0.0
-        hw.rotateArmFromStartPosition(60f, block = false)
+        hw.rotateArmFromStartPosition(60f, 0.4, block = false)
     }
 
     override fun runOpMode() {
