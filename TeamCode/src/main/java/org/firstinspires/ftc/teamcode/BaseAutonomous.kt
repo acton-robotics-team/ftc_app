@@ -101,19 +101,20 @@ abstract class BaseAutonomous : LinearOpMode() {
         // Hit the gold mineral
         hw.drive(24.0) // far enough to always hit the mineral
 
+        if (goldPosition == GoldPosition.RIGHT || goldPosition == GoldPosition.LEFT) {
+            hw.turnFromStart(90f) // turn so back faces rover
+        }
+        hw.drive(-12.5) // change the amount as needed
+        // Navigate toward depot (turn toward depot) and drive into wall
+        hw.turn(85f)
+        hw.drive(14.8 + when (goldPosition) {
+            GoldPosition.LEFT -> 11.8
+            GoldPosition.CENTER -> 38.2
+            GoldPosition.RIGHT -> 47.25
+        })
+
         when (startLocation) {
             AutonomousStartLocation.FACING_DEPOT -> {
-                if (goldPosition == GoldPosition.RIGHT || goldPosition == GoldPosition.LEFT) {
-                    hw.turnFromStart(90f) // turn so back faces rover
-                }
-                hw.drive(-12.5) // change the amount as needed
-                // Navigate toward depot (turn toward depot) and drive into wall
-                hw.turn(85f)
-                hw.drive(14.8 + when (goldPosition) {
-                    GoldPosition.LEFT -> 11.8
-                    GoldPosition.CENTER -> 38.2
-                    GoldPosition.RIGHT -> 47.25
-                })
                 hw.turn(-115f)
                 // Drive up to the depot
                 hw.drive(35.0)
@@ -126,18 +127,6 @@ abstract class BaseAutonomous : LinearOpMode() {
                 hw.drive(-51.2)
             }
             AutonomousStartLocation.FACING_CRATER -> {
-                if (goldPosition == GoldPosition.RIGHT || goldPosition == GoldPosition.LEFT) {
-                    hw.turnFromStart(90f) // turn so back faces rover
-                }
-                hw.drive(-12.5) // change the amount as needed
-                // Navigate toward depot (turn toward depot) and drive into wall
-                hw.turn(85f)
-                hw.drive(when (goldPosition) {
-                    GoldPosition.LEFT -> 11.8
-                    GoldPosition.CENTER -> 38.2
-                    GoldPosition.RIGHT -> 47.25
-                })
-                hw.drive(14.8)
                 hw.turn(45f)
                 // Drive until depot and release the object
                 hw.boxHingeServo.position = 0.0 // toodles
