@@ -44,11 +44,9 @@ abstract class BaseAutonomous : LinearOpMode() {
         telemetry.logEx("$logHeader $entry")
     }
 
-    private fun printMinerals(minerals: List<Recognition>) {
-        minerals.forEach {
-            log("Mineral: ${it.label} @ bottom ${it.bottom}, top ${it.top}," +
-                    "left ${it.left}, right ${it.right}")
-        }
+    private fun printMinerals(minerals: List<Recognition>) = minerals.forEach {
+        log("Mineral: ${it.label} @ bottom ${it.bottom}, top ${it.top}," +
+                "left ${it.left}, right ${it.right}")
     }
 
     private fun detectMineral(tf: TensorflowDetector): GoldPosition {
@@ -111,15 +109,14 @@ abstract class BaseAutonomous : LinearOpMode() {
                 hw.drive(-12.5) // change the amount as needed
                 // Navigate toward depot (turn toward depot) and drive into wall
                 hw.turn(85f)
-                hw.drive(when (goldPosition) {
+                hw.drive(14.8 + when (goldPosition) {
                     GoldPosition.LEFT -> 11.8
                     GoldPosition.CENTER -> 38.2
                     GoldPosition.RIGHT -> 47.25
                 })
-                hw.drive(14.8)
                 hw.turn(-115f)
                 // Drive up to the depot
-                hw.drive(27.0)
+                hw.drive(35.0)
                 // Release the claww
                 hw.boxHingeServo.position = 0.0 // toodles
                 hw.rotateArmFromStartPosition(100f, power = 0.5, block = true)
