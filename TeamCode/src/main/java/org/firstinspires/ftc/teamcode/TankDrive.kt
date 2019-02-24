@@ -83,6 +83,8 @@ class TankDrive : LinearOpMode() {
 
         hw.armExtender.apply {
             power = when {
+                gamepad2.left_bumper && gamepad2.dpad_up -> 1.0
+                gamepad2.left_bumper && gamepad2.dpad_down -> -1.0
                 gamepad2.dpad_up && currentPosition < Hardware.ARM_EXTENDER_UPPER_LIMIT -> 1.0
                 gamepad2.dpad_down && currentPosition > Hardware.ARM_EXTENDER_BOTTOM_LIMIT -> -1.0
                 else -> 0.0
@@ -140,9 +142,9 @@ class TankDrive : LinearOpMode() {
     }
 
     private fun runMacros(){
-        if(gamepad2.b) setBoxToCollect()
-        else if(gamepad2.a) setBoxToCarry()
-        else if(gamepad2.x) setBoxToDeposit()
+        if(gamepad2.a) setBoxToCollect()
+        else if(gamepad2.x) setBoxToCarry()
+        else if(gamepad2.y) setBoxToDeposit()
     }
 
     private fun setBoxToCollect(){
@@ -150,14 +152,16 @@ class TankDrive : LinearOpMode() {
         hw.boxHingeServo.position = 0.45
         spinToggle = true
         hw.boxSweeper.power = -0.7
-        hw.rotateArmFromStartPosition(145f, 0.7)
+        hw.rotateArmFromStartPosition(145f, 0.3)
         hw.rotateArmFromStartPosition(160f, 0.2)
     }
 
     private fun setBoxToDeposit(){
-        hw.rotateArmFromStartPosition(60f, 0.4)
-        spinToggle = true
-        hw.boxSweeper.power = 0.7
+        boxPosition = 0
+        hw.boxHingeServo.position = 0.0
+        hw.rotateArmFromStartPosition(40f, 0.4)
+        spinToggle = false
+        hw.boxSweeper.power = 0.0
     }
 
     private fun setBoxToCarry(){
@@ -165,9 +169,7 @@ class TankDrive : LinearOpMode() {
         hw.boxSweeper.power = 0.0
         boxPosition = 2
         hw.boxHingeServo.position = 1.0
-        hw.rotateArmFromStartPosition(80f, 0.7)
-        boxPosition = 0
-        hw.boxHingeServo.position = 0.0
+        hw.rotateArmFromStartPosition(80f, 0.5)
     }
 
     override fun runOpMode() {

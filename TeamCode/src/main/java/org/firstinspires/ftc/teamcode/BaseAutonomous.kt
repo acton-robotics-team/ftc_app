@@ -120,7 +120,7 @@ abstract class BaseAutonomous : LinearOpMode() {
                 hw.drive(35.0)
                 // Release the claww
                 hw.boxHingeServo.position = 0.0 // toodles
-                hw.rotateArmFromStartPosition(100f, power = 0.5, block = true)
+                hw.rotateArmFromStartPosition(115f, power = 0.5, block = true)
                 hw.rotateArmFromStartPosition(0f, block = false)
                 // Drive toward the crater
                 hw.turnFromStart(35f)
@@ -131,9 +131,9 @@ abstract class BaseAutonomous : LinearOpMode() {
                 // Drive until depot and release the object
                 hw.boxHingeServo.position = 0.0 // toodles
                 hw.rotateArmFromStartPosition(100f, power = 0.5, block = false)
-                hw.drive(27.6)
+                hw.drive(27.5)
                 hw.rotateArmFromStartPosition(0f, block = false)
-
+                hw.turn(10f)
                 // Navigate back to crater
                 hw.drive(-80.0)
             }
