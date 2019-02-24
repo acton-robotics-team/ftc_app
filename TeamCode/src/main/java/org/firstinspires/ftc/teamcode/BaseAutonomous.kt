@@ -68,6 +68,7 @@ abstract class BaseAutonomous : LinearOpMode() {
         val tf = TensorflowDetector(hardwareMap.appContext, telemetry)
         tf.activate()
         log("Initialized Tensorflow.")
+        hw.boxHingeServo.position = 0.45
 
         // Not using waitforStart because of bug https://github.com/ftctechnh/ftc_app/wiki/Troubleshooting#motorola-e4-phones-disconnecting-momentarily-reported-102018
         while (!opModeIsActive() && !isStopRequested) {
@@ -104,30 +105,28 @@ abstract class BaseAutonomous : LinearOpMode() {
 
         when (startLocation) {
             AutonomousStartLocation.FACING_DEPOT -> {
-                // Turn to face the depot
-                when (goldPosition) {
-                    GoldPosition.RIGHT -> hw.turn(60f)
-                    // Do nothing (already pointing toward depot)
-                    GoldPosition.CENTER -> {}
-                    GoldPosition.LEFT -> {
-                        hw.turn(-60f)
-                    }
+                if (goldPosition == GoldPosition.RIGHT || goldPosition == GoldPosition.LEFT) {
+                    hw.turnFromStart(90f) // turn so back faces rover
                 }
+                hw.drive(-12.5) // change the amount as needed
+                // Navigate toward depot (turn toward depot) and drive into wall
+                hw.turn(85f)
+                hw.drive(when (goldPosition) {
+                    GoldPosition.LEFT -> 11.8
+                    GoldPosition.CENTER -> 38.2
+                    GoldPosition.RIGHT -> 47.25
+                })
+                hw.drive(14.8)
+                hw.turn(-115f)
                 // Drive up to the depot
+                hw.drive(27.0)
                 // Release the claww
                 hw.boxHingeServo.position = 0.0 // toodles
-                hw.rotateArmFromStartPosition(100f, power = 0.25, block = false)
-                hw.drive(18.0)
+                hw.rotateArmFromStartPosition(100f, power = 0.5, block = true)
                 hw.rotateArmFromStartPosition(0f, block = false)
-
-                // Turn toward the crater (enemy side)
-                hw.turnFromStart(180f)
-                hw.drive(30.0)
-                hw.turn(40f)
-                // Extend the stick boi
-                hw.stickServo.position = 1.0
                 // Drive toward the crater
-                hw.drive(51.2)
+                hw.turnFromStart(35f)
+                hw.drive(-51.2)
             }
             AutonomousStartLocation.FACING_CRATER -> {
                 if (goldPosition == GoldPosition.RIGHT || goldPosition == GoldPosition.LEFT) {
