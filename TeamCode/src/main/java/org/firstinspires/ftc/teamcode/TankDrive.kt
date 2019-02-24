@@ -141,13 +141,17 @@ class TankDrive : LinearOpMode() {
         runBoxHinge()
     }
 
-    private fun runMacros(){
-        if(gamepad2.a) setBoxToCollect()
-        else if(gamepad2.x) setBoxToCarry()
-        else if(gamepad2.y) setBoxToDeposit()
+    private fun runMacros() {
+        when {
+            gamepad2.a -> setBoxToCollect()
+            gamepad2.x -> setBoxToCarry()
+            gamepad2.y -> setBoxToDeposit()
+        }
     }
 
-    private fun setBoxToCollect(){
+    private fun setBoxToCollect() {
+        hw.leftArmSupporter.position = Hardware.ARM_SUPPORTER_UP_POSITION
+        hw.rightArmSupporter.position = Hardware.ARM_SUPPORTER_UP_POSITION
         boxPosition = 1
         hw.boxHingeServo.position = 0.45
         spinToggle = true
@@ -156,7 +160,7 @@ class TankDrive : LinearOpMode() {
         hw.rotateArmFromStartPosition(160f, 0.2)
     }
 
-    private fun setBoxToDeposit(){
+    private fun setBoxToDeposit() {
         boxPosition = 0
         hw.boxHingeServo.position = 0.0
         hw.rotateArmFromStartPosition(40f, 0.4)
@@ -164,7 +168,7 @@ class TankDrive : LinearOpMode() {
         hw.boxSweeper.power = 0.0
     }
 
-    private fun setBoxToCarry(){
+    private fun setBoxToCarry() {
         spinToggle = false
         hw.boxSweeper.power = 0.0
         boxPosition = 2

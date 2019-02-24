@@ -29,6 +29,8 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
     val boxHingeServo: Servo = hwMap.servo.get("box_hinge")
     val boxSweeper: CRServo = hwMap.crservo.get("box_sweeper")
     val stickServo: Servo = hwMap.servo.get("stick")
+    val leftArmSupporter: Servo = hwMap.servo.get("left_arm_supporter")
+    val rightArmSupporter: Servo = hwMap.servo.get("right_arm_supporter")
 
     val imu: BNO055IMUImpl = hwMap.get(BNO055IMUImpl::class.java, "imu")
 
@@ -36,7 +38,7 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
         maxErrorForIntegral = 0.002
     }
     private val controller = FinishableIntegratedController(IntegratingGyroscopeSensor(imu), pid, ErrorTimeThresholdFinishingAlgorithm(Math.PI / 12.5, 1.0))
-    val drivetrain = FourWheelDriveTrain(backLeftDrive, backRightDrive, frontLeftDrive, frontRightDrive, controller)
+    private val drivetrain = FourWheelDriveTrain(backLeftDrive, backRightDrive, frontLeftDrive, frontRightDrive, controller)
 
     init {
         listOf(frontLeftDrive, frontRightDrive, backRightDrive, backLeftDrive).forEach {
@@ -55,6 +57,7 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
         rightArmRotator.direction = DcMotorSimple.Direction.REVERSE
         boxHingeServo.direction = Servo.Direction.REVERSE
         stickServo.direction = Servo.Direction.REVERSE
+        rightArmSupporter.direction = Servo.Direction.REVERSE
 
         armExtender.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
 
@@ -301,10 +304,8 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
         const val ARM_EXTENDER_BOTTOM_LIMIT = 250
         const val ARM_EXTENDER_UPPER_LIMIT = 7500
 
-        const val ARM_TEAM_MARKER_DROP_POSITION = 767
-
-        const val MARKER_RELEASED = 0.1
-        const val MARKER_RETRACTED = 1.0
+        const val ARM_SUPPORTER_UP_POSITION = 0.75
+        const val ARM_SUPPORTER_DOWN_POSITION = 0.15
 
         const val OMNIWHEELS_RADIUS_IN = 2
         const val DRIVE_ENCODER_TICKS_PER_IN = NEVEREST_40_TICKS_PER_REV / (2 * Math.PI * OMNIWHEELS_RADIUS_IN)
