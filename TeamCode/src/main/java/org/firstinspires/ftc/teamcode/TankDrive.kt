@@ -28,7 +28,6 @@ class TankDrive : LinearOpMode() {
     private var leftTriggerPressed = false
     private var rightTriggerPressed = false
     private var rightBumperPressed = false
-    private var isCollecting = false
 
     private fun runTankDrive() {
         val powerModifier = if (gamepad1.a) Hardware.DRIVE_SLOW else Hardware.DRIVE_FAST
@@ -47,6 +46,10 @@ class TankDrive : LinearOpMode() {
     private fun runLifter() {
         if (gamepad1.left_bumper) {
             hw.lifter.mode = DcMotor.RunMode.RUN_TO_POSITION
+            while (hw.armExtender.currentPosition > Hardware.ARM_EXTENDER_BOTTOM_LIMIT)
+                hw.armExtender.power = -1.0
+            hw.armExtender.power = 0.0
+            hw.rotateArmFromStartPosition(0.0f, 0.2)
             hw.lifter.power = 1.0
             hw.lifter.targetPosition = Hardware.LIFTER_TOP_POSITION
         } else {
@@ -156,14 +159,17 @@ class TankDrive : LinearOpMode() {
         hw.boxHingeServo.position = 0.45
         spinToggle = true
         hw.boxSweeper.power = -0.7
-        hw.rotateArmFromStartPosition(145f, 0.3)
-        hw.rotateArmFromStartPosition(160f, 0.2)
+        hw.rotateArmFromStartPosition(145f, 0.1)
+        hw.rotateArmFromStartPosition(160f, 0.1)
     }
 
     private fun setBoxToDeposit() {
+        while (hw.armExtender.currentPosition < Hardware.ARM_EXTENDER_UPPER_LIMIT)
+            hw.armExtender.power = 1.0
+        hw.armExtender.power = 0.0
         boxPosition = 0
         hw.boxHingeServo.position = 0.0
-        hw.rotateArmFromStartPosition(40f, 0.4)
+        hw.rotateArmFromStartPosition(40f, 0.1)
         spinToggle = false
         hw.boxSweeper.power = 0.0
     }
