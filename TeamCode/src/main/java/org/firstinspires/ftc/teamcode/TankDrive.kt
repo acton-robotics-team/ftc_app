@@ -23,13 +23,12 @@ import kotlin.math.roundToInt
 class TankDrive : LinearOpMode() {
     private val runtime = ElapsedTime()
     private lateinit var hw: Hardware
-    var boxPosition = 1
-    var spinToggle = true
-    var leftTriggerPressed = false
-    var rightTriggerPressed = false
-    var rightBumperPressed = false
-    var isCollecting = false
-    var downPressed = false
+    private var boxPosition = 1
+    private var spinToggle = true
+    private var leftTriggerPressed = false
+    private var rightTriggerPressed = false
+    private var rightBumperPressed = false
+    private var isCollecting = false
 
     private fun runTankDrive() {
         val powerModifier = if (gamepad1.a) Hardware.DRIVE_SLOW else Hardware.DRIVE_FAST
@@ -141,18 +140,9 @@ class TankDrive : LinearOpMode() {
     }
 
     private fun runMacros(){
-        if(gamepad2.left_stick_y < 0 && !downPressed) {
-            if (!isCollecting) {
-                setBoxToCollect()
-                isCollecting=true;
-            } else {
-                setBoxToDeposit()
-                isCollecting=false;
-            }
-            downPressed = true
-        } else if (gamepad2.left_stick_y >= 0) {
-            downPressed = false
-        }
+        if(gamepad2.b) setBoxToCollect()
+        else if(gamepad2.a) setBoxToCarry()
+        else if(gamepad2.x) setBoxToDeposit()
     }
 
     private fun setBoxToCollect(){
@@ -165,6 +155,12 @@ class TankDrive : LinearOpMode() {
     }
 
     private fun setBoxToDeposit(){
+        hw.rotateArmFromStartPosition(60f, 0.4)
+        spinToggle = true
+        hw.boxSweeper.power = 0.7
+    }
+
+    private fun setBoxToCarry(){
         spinToggle = false
         hw.boxSweeper.power = 0.0
         boxPosition = 2
@@ -172,7 +168,6 @@ class TankDrive : LinearOpMode() {
         hw.rotateArmFromStartPosition(80f, 0.7)
         boxPosition = 0
         hw.boxHingeServo.position = 0.0
-        hw.rotateArmFromStartPosition(60f, 0.4, block = false)
     }
 
     override fun runOpMode() {

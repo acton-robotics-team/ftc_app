@@ -116,7 +116,7 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
      * Blocks (it will wait until the movement is complete)
      */
     fun rotateArmFromStartPosition(degrees: Float, power: Double = 0.1, block: Boolean = true) {
-        if (degrees < 0 || degrees > 180) {
+        if (degrees < 0 || degrees > 160) {
             throw IllegalArgumentException("wtf are you doing that's an unsafe arm value")
         }
         val ticks = (2 * NEVEREST_40_TICKS_PER_REV * (degrees / 360)).roundToInt()
