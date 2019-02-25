@@ -23,11 +23,10 @@ import kotlin.math.roundToInt
 class TankDrive : LinearOpMode() {
     private val runtime = ElapsedTime()
     private lateinit var hw: Hardware
-    private var boxPosition = 1
+    private var boxGateClosed = true
     private var spinToggle = true
     private var leftTriggerPressed = false
     private var rightTriggerPressed = false
-    private var rightBumperPressed = false
 
     private fun runTankDrive() {
         val powerModifier = if (gamepad1.a) Hardware.DRIVE_SLOW else Hardware.DRIVE_FAST
@@ -111,8 +110,7 @@ class TankDrive : LinearOpMode() {
     }
 
     private fun runSweeper() {
-        if (boxPosition == 2) hw.boxSweeper.power = 0.0
-        else if (gamepad2.left_trigger > 0 && !leftTriggerPressed) {
+        if (gamepad2.left_trigger > 0 && !leftTriggerPressed) {
             hw.boxSweeper.power = when (spinToggle) {
                 true -> -0.7
                 else -> 0.0
@@ -122,26 +120,19 @@ class TankDrive : LinearOpMode() {
         } else if (gamepad2.left_trigger == 0.0f) leftTriggerPressed = false
     }
 
-    private fun runBoxHinge() {
-        if (gamepad2.right_bumper && !rightBumperPressed) {
-            if (boxPosition < 2) boxPosition++
-            rightBumperPressed = true
-        } else if (!gamepad2.right_bumper) rightBumperPressed = false
-        if (gamepad2.right_trigger > 0 && !rightTriggerPressed) {
-            if (boxPosition > 0) boxPosition--
-            rightTriggerPressed = true
+    private fun runBoxGate() {
+        if (gamepad2.right_trigger > 0 && !rightTriggerPressed){
+            hw.boxGate.position = when (boxGateClosed) {
+                true -> 0.0
+                false -> 1.0
+            }
+            boxGateClosed = !boxGateClosed
         } else if (gamepad2.right_trigger == 0.0f) rightTriggerPressed = false
-        hw.boxHingeServo.position = when (boxPosition) {
-            0 -> 0.0
-            1 -> 0.45
-            2 -> 1.0
-            else -> throw IndexOutOfBoundsException("box position out of bounds")
-        }
     }
 
     private fun runBox() {
         runSweeper()
-        runBoxHinge()
+        runBoxGate()
     }
 
     private fun runMacros() {
@@ -155,8 +146,6 @@ class TankDrive : LinearOpMode() {
     private fun setBoxToCollect() {
         hw.leftArmSupporter.position = Hardware.ARM_SUPPORTER_UP_POSITION
         hw.rightArmSupporter.position = Hardware.ARM_SUPPORTER_UP_POSITION
-        boxPosition = 1
-        hw.boxHingeServo.position = 0.45
         spinToggle = true
         hw.boxSweeper.power = -0.7
         hw.rotateArmFromStartPosition(160f, 0.1, block = false)
@@ -168,16 +157,12 @@ class TankDrive : LinearOpMode() {
         while (hw.armExtender.currentPosition < Hardware.ARM_EXTENDER_UPPER_LIMIT)
             hw.armExtender.power = 1.0
         hw.armExtender.power = 0.0
-        boxPosition = 0
-        hw.boxHingeServo.position = 0.0
         hw.rotateArmFromStartPosition(40f, 0.2, block = false)
     }
 
     private fun setBoxToCarry() {
         spinToggle = false
         hw.boxSweeper.power = 0.0
-        boxPosition = 2
-        hw.boxHingeServo.position = 1.0
         hw.rotateArmFromStartPosition(80f, 0.5, block = false)
     }
 

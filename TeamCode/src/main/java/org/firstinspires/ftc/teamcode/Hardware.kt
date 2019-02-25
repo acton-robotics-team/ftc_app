@@ -26,7 +26,7 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
     val rightArmRotator: DcMotor = hwMap.dcMotor.get("arm_rotator_right")
     val armExtender: DcMotor = hwMap.dcMotor.get("arm_extender")
 
-    val boxHingeServo: Servo = hwMap.servo.get("box_hinge")
+    val boxGate: Servo = hwMap.servo.get("box_gate")
     val boxSweeper: CRServo = hwMap.crservo.get("box_sweeper")
     val stickServo: Servo = hwMap.servo.get("stick")
     val leftArmSupporter: Servo = hwMap.servo.get("left_arm_supporter")
@@ -55,7 +55,6 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
             it.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         }
         rightArmRotator.direction = DcMotorSimple.Direction.REVERSE
-        boxHingeServo.direction = Servo.Direction.REVERSE
         stickServo.direction = Servo.Direction.REVERSE
         rightArmSupporter.direction = Servo.Direction.REVERSE
 
