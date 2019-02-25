@@ -159,19 +159,18 @@ class TankDrive : LinearOpMode() {
         hw.boxHingeServo.position = 0.45
         spinToggle = true
         hw.boxSweeper.power = -0.7
-        hw.rotateArmFromStartPosition(145f, 0.1)
-        hw.rotateArmFromStartPosition(160f, 0.1)
+        hw.rotateArmFromStartPosition(160f, 0.1, block = false)
     }
 
     private fun setBoxToDeposit() {
+        spinToggle = false
+        hw.boxSweeper.power = 0.0
         while (hw.armExtender.currentPosition < Hardware.ARM_EXTENDER_UPPER_LIMIT)
             hw.armExtender.power = 1.0
         hw.armExtender.power = 0.0
         boxPosition = 0
         hw.boxHingeServo.position = 0.0
-        hw.rotateArmFromStartPosition(40f, 0.1)
-        spinToggle = false
-        hw.boxSweeper.power = 0.0
+        hw.rotateArmFromStartPosition(40f, 0.2, block = false)
     }
 
     private fun setBoxToCarry() {
@@ -179,7 +178,7 @@ class TankDrive : LinearOpMode() {
         hw.boxSweeper.power = 0.0
         boxPosition = 2
         hw.boxHingeServo.position = 1.0
-        hw.rotateArmFromStartPosition(80f, 0.5)
+        hw.rotateArmFromStartPosition(80f, 0.5, block = false)
     }
 
     override fun runOpMode() {
