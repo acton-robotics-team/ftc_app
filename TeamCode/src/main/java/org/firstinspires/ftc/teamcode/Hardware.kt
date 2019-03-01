@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.hardware.bosch.BNO055IMUImpl
@@ -58,7 +58,9 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
         stickServo.direction = Servo.Direction.REVERSE
         rightArmSupporter.direction = Servo.Direction.REVERSE
 
-        armExtender.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+
+        armExtender.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        armExtender.mode = DcMotor.RunMode.RUN_TO_POSITION
 
         // Zero encoders
         lifter.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
@@ -300,8 +302,8 @@ class Hardware(hwMap: HardwareMap, private val opMode: LinearOpMode) {
         const val ARM_ROTATION_UPPER_LIMIT = 1000
         const val ARM_ROTATION_MIDDLE_CHANGE = 700
 
-        const val ARM_EXTENDER_BOTTOM_LIMIT = 250
-        const val ARM_EXTENDER_UPPER_LIMIT = 9800
+        const val ARM_EXTENDER_BOTTOM_LIMIT = 500
+        const val ARM_EXTENDER_UPPER_LIMIT = 5900
 
         const val ARM_SUPPORTER_UP_POSITION = 0.75
         const val ARM_SUPPORTER_DOWN_POSITION = 0.15

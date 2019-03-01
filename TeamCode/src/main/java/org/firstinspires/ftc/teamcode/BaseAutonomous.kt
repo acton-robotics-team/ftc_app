@@ -66,7 +66,7 @@ abstract class BaseAutonomous : LinearOpMode() {
         val tf = TensorflowDetector(hardwareMap.appContext, telemetry)
         tf.activate()
         log("Initialized Tensorflow.")
-        hw.boxHingeServo.position = 0.45
+        hw.boxGate.position = 1.0
 
         // Not using waitforStart because of bug https://github.com/ftctechnh/ftc_app/wiki/Troubleshooting#motorola-e4-phones-disconnecting-momentarily-reported-102018
         while (!opModeIsActive() && !isStopRequested) {
@@ -119,7 +119,7 @@ abstract class BaseAutonomous : LinearOpMode() {
                 // Drive up to the depot
                 hw.drive(35.0)
                 // Release the claww
-                hw.boxHingeServo.position = 0.0 // toodles
+                hw.boxGate.position = 0.0 // toodles
                 hw.rotateArmFromStartPosition(115f, power = 0.5, block = true)
                 hw.rotateArmFromStartPosition(0f, block = false)
                 // Drive toward the crater
@@ -129,7 +129,7 @@ abstract class BaseAutonomous : LinearOpMode() {
             AutonomousStartLocation.FACING_CRATER -> {
                 hw.turn(45f)
                 // Drive until depot and release the object
-                hw.boxHingeServo.position = 0.0 // toodles
+                hw.boxGate.position = 0.0 // toodles
                 hw.rotateArmFromStartPosition(100f, power = 0.5, block = false)
                 hw.drive(27.5)
                 hw.rotateArmFromStartPosition(0f, block = false)

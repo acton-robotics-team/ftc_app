@@ -45,9 +45,8 @@ class TankDrive : LinearOpMode() {
     private fun runLifter() {
         if (gamepad1.left_bumper) {
             hw.lifter.mode = DcMotor.RunMode.RUN_TO_POSITION
-            while (hw.armExtender.currentPosition > Hardware.ARM_EXTENDER_BOTTOM_LIMIT)
-                hw.armExtender.power = -1.0
-            hw.armExtender.power = 0.0
+            hw.armExtender.power = 1.0
+            hw.armExtender.targetPosition = Hardware.ARM_EXTENDER_BOTTOM_LIMIT
             hw.rotateArmFromStartPosition(0.0f, 0.2)
             hw.lifter.power = 1.0
             hw.lifter.targetPosition = Hardware.LIFTER_TOP_POSITION
@@ -84,13 +83,12 @@ class TankDrive : LinearOpMode() {
         }
 
         hw.armExtender.apply {
-            power = when {
-                gamepad2.left_bumper && gamepad2.dpad_up -> 1.0
-                gamepad2.left_bumper && gamepad2.dpad_down -> -1.0
-                gamepad2.dpad_up && currentPosition < Hardware.ARM_EXTENDER_UPPER_LIMIT -> 1.0
-                gamepad2.dpad_down && currentPosition > Hardware.ARM_EXTENDER_BOTTOM_LIMIT -> -1.0
-                else -> 0.0
-            }
+            power = 1.0
+            var currentArmPosition = hw.armExtender.currentPosition
+            if(gamepad2.left_bumper && gamepad2.dpad_up) targetPosition = currentArmPosition + 250
+            else if(gamepad2.left_bumper && gamepad2.dpad_down) targetPosition = currentArmPosition - 250
+            else if(gamepad2.dpad_up && currentPosition < Hardware.ARM_EXTENDER_UPPER_LIMIT) targetPosition = currentArmPosition + 250
+            else if(gamepad2.dpad_down && currentPosition > Hardware.ARM_EXTENDER_BOTTOM_LIMIT) targetPosition = currentArmPosition - 250
         }
 
         telemetry.addData("Left arm encoder value", hw.leftArmRotator.currentPosition)
@@ -111,8 +109,12 @@ class TankDrive : LinearOpMode() {
 
     private fun runSweeper() {
         if (gamepad2.left_trigger > 0 && !leftTriggerPressed) {
+            if(leftTriggerPressed){
+                hw.boxSweeper.power = 1.0
+                spinToggle = false
+            }
             hw.boxSweeper.power = when (spinToggle) {
-                true -> -0.7
+                true -> -1.0
                 else -> 0.0
             }
             spinToggle = !spinToggle
@@ -127,6 +129,7 @@ class TankDrive : LinearOpMode() {
                 false -> 1.0
             }
             boxGateClosed = !boxGateClosed
+            rightTriggerPressed = true
         } else if (gamepad2.right_trigger == 0.0f) rightTriggerPressed = false
     }
 
@@ -144,26 +147,32 @@ class TankDrive : LinearOpMode() {
     }
 
     private fun setBoxToCollect() {
+        setBoxToCarry()
+        hw.boxGate.position = 1.0
+        boxGateClosed = true
         hw.leftArmSupporter.position = Hardware.ARM_SUPPORTER_UP_POSITION
         hw.rightArmSupporter.position = Hardware.ARM_SUPPORTER_UP_POSITION
         spinToggle = true
-        hw.boxSweeper.power = -0.7
-        hw.rotateArmFromStartPosition(160f, 0.1, block = false)
+        hw.boxSweeper.power = -1.0
+        hw.rotateArmFromStartPosition(160f, 0.2, block = false)
     }
 
     private fun setBoxToDeposit() {
+        setBoxToCarry()
+        hw.armExtender.power = 1.0
+        hw.armExtender.targetPosition = Hardware.ARM_EXTENDER_UPPER_LIMIT
         spinToggle = false
         hw.boxSweeper.power = 0.0
-        while (hw.armExtender.currentPosition < Hardware.ARM_EXTENDER_UPPER_LIMIT)
-            hw.armExtender.power = 1.0
-        hw.armExtender.power = 0.0
-        hw.rotateArmFromStartPosition(40f, 0.2, block = false)
+        hw.rotateArmFromStartPosition(53f, 0.3, block = false)
     }
 
     private fun setBoxToCarry() {
-        spinToggle = false
+        hw.boxGate.position = 1.0
+        boxGateClosed = true
+        spinToggle = true
         hw.boxSweeper.power = 0.0
-        hw.rotateArmFromStartPosition(80f, 0.5, block = false)
+        hw.armExtender.targetPosition = Hardware.ARM_EXTENDER_UPPER_LIMIT/3
+        hw.rotateArmFromStartPosition(80f, 1.0, block = true)
     }
 
     override fun runOpMode() {
