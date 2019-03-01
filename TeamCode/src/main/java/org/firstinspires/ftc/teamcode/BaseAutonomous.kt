@@ -133,7 +133,7 @@ abstract class BaseAutonomous : LinearOpMode() {
                 hw.rotateArmFromStartPosition(100f, power = 0.5, block = false)
                 hw.drive(27.5)
                 hw.rotateArmFromStartPosition(0f, block = false)
-                hw.turn(10f)
+                hw.turn(15f)
                 // Navigate back to crater
                 hw.drive(-80.0)
             }
