@@ -49,7 +49,7 @@ abstract class BaseAutonomous : LinearOpMode() {
                 "left ${it.left}, right ${it.right}")
     }
 
-    private fun detectMineral(tf: TensorflowDetector): GoldPosition {
+    private fun detectMineral(tf: TensorflowDetector2): GoldPosition {
         // Search for mineral with Tensorflow
         val goldPosition = tf.getPosition()
         log("Found $goldPosition")
@@ -63,7 +63,7 @@ abstract class BaseAutonomous : LinearOpMode() {
         val hw = Hardware(hardwareMap, this)
         log("Initialized all hardware.")
 
-        val tf = TensorflowDetector(hardwareMap.appContext, telemetry)
+        val tf = TensorflowDetector2(hardwareMap.appContext, telemetry)
         tf.activate()
         log("Initialized Tensorflow.")
         hw.boxGate.position = 1.0
