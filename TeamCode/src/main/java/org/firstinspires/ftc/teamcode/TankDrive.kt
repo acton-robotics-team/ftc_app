@@ -109,16 +109,18 @@ class TankDrive : LinearOpMode() {
 
     private fun runSweeper() {
         if (gamepad2.left_trigger > 0 && !leftTriggerPressed) {
-            if(leftTriggerPressed){
+            if(gamepad2.left_bumper){
                 hw.boxSweeper.power = 1.0
                 spinToggle = false
+                leftTriggerPressed = true
+            } else {
+                hw.boxSweeper.power = when (spinToggle) {
+                    true -> -1.0
+                    else -> 0.0
+                }
+                spinToggle = !spinToggle
+                leftTriggerPressed = true
             }
-            hw.boxSweeper.power = when (spinToggle) {
-                true -> -1.0
-                else -> 0.0
-            }
-            spinToggle = !spinToggle
-            leftTriggerPressed = true
         } else if (gamepad2.left_trigger == 0.0f) leftTriggerPressed = false
     }
 
@@ -154,7 +156,8 @@ class TankDrive : LinearOpMode() {
         hw.rightArmSupporter.position = Hardware.ARM_SUPPORTER_UP_POSITION
         spinToggle = true
         hw.boxSweeper.power = -1.0
-        hw.rotateArmFromStartPosition(160f, 0.2, block = false)
+        hw.rotateArmFromStartPosition(120f, 0.1, block = true)
+        hw.rotateArmFromStartPosition(160f, 0.1, block = false)
     }
 
     private fun setBoxToDeposit() {
