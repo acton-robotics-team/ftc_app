@@ -63,12 +63,20 @@ class TensorflowDetector(private val context: Context, private val telemetry: Te
     private lateinit var tfod: TFObjectDetector
 
     private fun inDetectionArea(mineral: Recognition): Boolean {
-        // Remove minerals selected above a certain height
-        return mineral.top > 400 && mineral.bottom > 500
+        // Remove minerals selected above a certain height and too far to the left
+        return mineral.top > 400 && mineral.bottom > 500 && mineral.left < 1150
     }
 
     fun getRecognitions(): List<Recognition> {
         return tfod.recognitions
+    }
+
+    fun getGoldOffset(): Float? {
+        val minerals = getRecognitions()
+                .filter { inDetectionArea(it) }
+                .sortedBy { it.left }
+        val goldMineral = minerals.find { it.label == LABEL_GOLD_MINERAL }
+        return goldMineral?.right
     }
 
     fun getPosition(): GoldPosition {
@@ -76,11 +84,14 @@ class TensorflowDetector(private val context: Context, private val telemetry: Te
         val minerals = getRecognitions()
                 .filter { inDetectionArea(it) }
                 .sortedBy { it.left }
-        val goldMineral = minerals.find { it.label == LABEL_GOLD_MINERAL }
+        val goldMineral = minerals.filter { it.label == LABEL_GOLD_MINERAL }
+                // find lowest gold mineral available
+                .sortedByDescending { it.bottom }
+                .getOrNull(0)
 
         return when {
             goldMineral == null -> GoldPosition.RIGHT
-            goldMineral.right > 400 -> GoldPosition.CENTER
+            goldMineral.right > 550 -> GoldPosition.CENTER
             else -> GoldPosition.LEFT
         }
     }

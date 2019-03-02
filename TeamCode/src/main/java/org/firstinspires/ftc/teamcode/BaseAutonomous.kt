@@ -72,6 +72,7 @@ abstract class BaseAutonomous : LinearOpMode() {
         while (!opModeIsActive() && !isStopRequested) {
             telemetry.addData("Status", "Waiting for start command...")
             telemetry.addData("Detected gold position (wait until correct)", tf.getPosition())
+            telemetry.addData("Gold offset", tf.getGoldOffset())
             telemetry.update()
         }
         runtime.reset()
@@ -91,7 +92,7 @@ abstract class BaseAutonomous : LinearOpMode() {
         hw.turnFromStart(0f)
         hw.turn(-270f + when (goldPosition) {
             GoldPosition.LEFT -> 45f
-            GoldPosition.CENTER -> 0f
+            GoldPosition.CENTER -> 10f
             GoldPosition.RIGHT -> -30f
         })
 
@@ -101,9 +102,7 @@ abstract class BaseAutonomous : LinearOpMode() {
         // Hit the gold mineral
         hw.drive(24.0) // far enough to always hit the mineral
 
-        if (goldPosition == GoldPosition.RIGHT || goldPosition == GoldPosition.LEFT) {
-            hw.turnFromStart(90f) // turn so back faces rover
-        }
+        hw.turnFromStart(90f) // turn so back faces rover
         hw.drive(-12.5) // change the amount as needed
         // Navigate toward depot (turn toward depot) and drive into wall
         hw.turn(85f)
@@ -115,7 +114,10 @@ abstract class BaseAutonomous : LinearOpMode() {
 
         when (startLocation) {
             AutonomousStartLocation.FACING_DEPOT -> {
-                hw.turn(-115f)
+                // We are at -5 deg from start, turn -125f to get to -130
+                // Ideal: turn -130f here to get to -135 degrees
+                // Actual: turn -125f here to get to -130 degrees, to compensate for any inaccuracy
+                hw.turn(-125f)
                 // Drive up to the depot
                 hw.drive(35.0)
                 // Release the claww
