@@ -13,6 +13,7 @@ public class Hardware {
     public DcMotor backRightDrive;
     public DcMotor leftArm;
     public DcMotor rightArm;
+    private DcMotor led;
 
     public Hardware(HardwareMap hwMap) {
         frontLeftDrive = hwMap.dcMotor.get("front_left");
@@ -21,6 +22,7 @@ public class Hardware {
         backRightDrive = hwMap.dcMotor.get("back_right");
         leftArm = hwMap.dcMotor.get("left_arm");
         rightArm = hwMap.dcMotor.get("right_arm");
+        led = hwMap.dcMotor.get("led");
 
         for (DcMotor motor : Arrays.asList(
                 frontLeftDrive, frontRightDrive,
@@ -32,5 +34,9 @@ public class Hardware {
         frontLeftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
         leftArm.setDirection(DcMotorSimple.Direction.REVERSE);
+    }
+
+    public void setLed(int brightness) {
+        led.setPower(brightness);
     }
 }
