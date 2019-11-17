@@ -31,5 +31,6 @@ public class Hardware {
 
         frontLeftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftArm.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 }
