@@ -18,7 +18,6 @@ public class TankDrive extends LinearOpMode {
         hw.frontRightDrive.setPower(gamepad1.right_stick_y);
     }
 
-
     private void runArm() {
         double armPower = 0;
         if (gamepad1.dpad_up) {
