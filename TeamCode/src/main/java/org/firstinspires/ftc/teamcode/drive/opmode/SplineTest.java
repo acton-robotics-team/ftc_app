@@ -4,7 +4,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.drive.tank.SampleTankDriveREVOptimized;
+import org.firstinspires.ftc.teamcode.drive.tank.SuperiorestTankDrive;
 
 /*
  * This is an example of a more complex path to really test the tuning.
@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.drive.tank.SampleTankDriveREVOptimized;
 public class SplineTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        SampleTankDriveREVOptimized drive = new SampleTankDriveREVOptimized(hardwareMap);
+        SuperiorestTankDrive drive = new SuperiorestTankDrive(hardwareMap);
 
         waitForStart();
 

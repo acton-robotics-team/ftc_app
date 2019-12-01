@@ -8,6 +8,7 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.getMotorVeloci
 import android.support.annotation.NonNull;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -23,20 +24,22 @@ import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
 import org.openftc.revextensions2.ExpansionHubEx;
 import org.openftc.revextensions2.ExpansionHubMotor;
 import org.openftc.revextensions2.RevBulkData;
+import org.openftc.revextensions2.RevExtensions2;
 
 /*
  * Optimized tank drive implementation for REV ExHs. The time savings may significantly improve
  * trajectory following performance with moderate additional complexity.
  */
-public class SampleTankDriveREVOptimized extends SampleTankDriveBase {
+public class SuperiorestTankDrive extends SampleTankDriveBase {
     private ExpansionHubEx hub;
     private List<ExpansionHubMotor> motors, leftMotors, rightMotors;
     private BNO055IMU imu;
 
-    public SampleTankDriveREVOptimized(HardwareMap hardwareMap) {
+    public SuperiorestTankDrive(HardwareMap hardwareMap) {
         super();
 
         LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
+        RevExtensions2.init();
 
         // TODO: adjust the names of the following hardware devices to match your configuration
         // for simplicity, we assume that the desired IMU and drive motors are on the same hub
@@ -56,7 +59,7 @@ public class SampleTankDriveREVOptimized extends SampleTankDriveBase {
         ExpansionHubMotor leftFront = hardwareMap.get(ExpansionHubMotor.class, "front_left");
         ExpansionHubMotor leftRear = hardwareMap.get(ExpansionHubMotor.class, "back_left");
         ExpansionHubMotor rightRear = hardwareMap.get(ExpansionHubMotor.class, "back_right");
-        ExpansionHubMotor rightFront = hardwareMap.get(ExpansionHubMotor.class, "back_front");
+        ExpansionHubMotor rightFront = hardwareMap.get(ExpansionHubMotor.class, "front_right");
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
         leftMotors = Arrays.asList(leftFront, leftRear);

@@ -18,7 +18,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
-import org.firstinspires.ftc.teamcode.drive.tank.SampleTankDriveREVOptimized;
+import org.firstinspires.ftc.teamcode.drive.tank.SuperiorestTankDrive;
 
 import java.util.List;
 
@@ -47,7 +47,7 @@ public class DriveVelocityPIDTuner extends LinearOpMode {
     private String catName;
     private CustomVariable catVar;
 
-    private SampleTankDriveREVOptimized drive;
+    private SuperiorestTankDrive drive;
 
     private static MotionProfile generateProfile(boolean movingForward) {
         MotionState start = new MotionState(movingForward ? 0 : DISTANCE, 0, 0, 0);
@@ -132,7 +132,7 @@ public class DriveVelocityPIDTuner extends LinearOpMode {
 
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
-        drive = new SampleTankDriveREVOptimized(hardwareMap);
+        drive = new SuperiorestTankDrive(hardwareMap);
 
         addPidVariable();
 

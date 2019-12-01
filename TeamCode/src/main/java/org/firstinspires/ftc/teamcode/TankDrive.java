@@ -49,6 +49,8 @@ public class TankDrive extends LinearOpMode {
         hw.leftArm.setTargetPosition(0);
         hw.rightArm.setTargetPosition(0);
 
+        hw.setLed(gamepad1.right_trigger);
+
         while (opModeIsActive()) {
             loopTime.reset();
 

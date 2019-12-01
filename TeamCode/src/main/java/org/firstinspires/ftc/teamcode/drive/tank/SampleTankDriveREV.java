@@ -21,7 +21,7 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.getMotorVeloci
 
 /*
  * Simple tank drive hardware implementation for REV hardware. If your hardware configuration
- * satisfies the requirements, SampleTankDriveREVOptimized is highly recommended.
+ * satisfies the requirements, SuperiorestTankDrive is highly recommended.
  */
 public class SampleTankDriveREV extends SampleTankDriveBase {
     private List<DcMotorEx> motors, leftMotors, rightMotors;

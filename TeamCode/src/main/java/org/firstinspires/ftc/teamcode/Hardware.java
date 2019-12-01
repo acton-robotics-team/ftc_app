@@ -36,7 +36,7 @@ public class Hardware {
         leftArm.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
-    public void setLed(int brightness) {
+    public void setLed(double brightness) {
         led.setPower(brightness);
     }
 }
