@@ -12,10 +12,10 @@ public class TankDrive extends LinearOpMode {
     private Hardware hw;
 
     private void drivetrain() {
-        hw.backLeftDrive.setPower(gamepad1.left_stick_y);
-        hw.frontLeftDrive.setPower(gamepad1.left_stick_y);
-        hw.backRightDrive.setPower(gamepad1.right_stick_y);
-        hw.frontRightDrive.setPower(gamepad1.right_stick_y);
+        hw.backLeftDrive.setPower(-gamepad1.left_stick_y);
+        hw.frontLeftDrive.setPower(-gamepad1.left_stick_y);
+        hw.backRightDrive.setPower(-gamepad1.right_stick_y);
+        hw.frontRightDrive.setPower(-gamepad1.right_stick_y);
     }
 
     private void runArm() {
@@ -59,6 +59,10 @@ public class TankDrive extends LinearOpMode {
 
             telemetry.addData("Run time", runtime.milliseconds());
             telemetry.addData("Loop time", loopTime.milliseconds());
+            telemetry.addData("Front left", hw.frontLeftDrive.getCurrentPosition());
+            telemetry.addData("Back left", hw.backLeftDrive.getCurrentPosition());
+            telemetry.addData("Front right", hw.frontRightDrive.getCurrentPosition());
+            telemetry.addData("Back right", hw.backRightDrive.getCurrentPosition());
             telemetry.update();
         }
     }

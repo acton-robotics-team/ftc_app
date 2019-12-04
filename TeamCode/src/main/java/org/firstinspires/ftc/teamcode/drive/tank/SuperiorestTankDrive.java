@@ -76,8 +76,8 @@ public class SuperiorestTankDrive extends SampleTankDriveBase {
             setPIDCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
         }
 
-        // Reverse left motors using DcMotor.setDirection()
-        for (ExpansionHubMotor motor : leftMotors) {
+        // Reverse right motors using DcMotor.setDirection()
+        for (ExpansionHubMotor motor : rightMotors) {
             motor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
 
