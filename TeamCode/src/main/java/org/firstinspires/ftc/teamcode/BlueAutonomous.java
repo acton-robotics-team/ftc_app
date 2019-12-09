@@ -1,13 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.content.ContentResolver;
-import android.content.res.AssetManager;
-import android.os.Environment;
-
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.acmerobotics.roadrunner.trajectory.TrajectoryConfig;
-import com.acmerobotics.roadrunner.trajectory.TrajectoryLoader;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -16,16 +10,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.drive.tank.SuperiorestTankDrive;
+import org.firstinspires.ftc.teamcode.util.AssetsTrajectoryLoader;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.List;
 
-@Autonomous
-public class BaseAutonomous extends LinearOpMode {
+@Autonomous(name = "Autonomous: Blue side")
+public class BlueAutonomous extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "Skystone.tflite";
     private static final String LABEL_FIRST_ELEMENT = "Stone";
     private static final String LABEL_SECOND_ELEMENT = "Skystone";
@@ -57,6 +48,7 @@ public class BaseAutonomous extends LinearOpMode {
      */
     private TFObjectDetector tfod;
 
+    private Hardware hw;
     private SuperiorestTankDrive drive;
 
 
@@ -92,8 +84,15 @@ public class BaseAutonomous extends LinearOpMode {
 
     private void driveDistance(double in) {
         double initialDistanceIn = drive.getWheelPositions().get(0);
-        drive.setMotorPowers(0.5, 0.5);
-        while (opModeIsActive() && drive.getWheelPositions().get(0) < initialDistanceIn + in) {}
+        if (in > 0) {
+            drive.setMotorPowers(0.5, 0.5);
+            while (opModeIsActive() && drive.getWheelPositions().get(0) < initialDistanceIn + in) {
+            }
+        } else {
+            drive.setMotorPowers(-0.5, -0.5);
+            while (opModeIsActive() && drive.getWheelPositions().get(0) > initialDistanceIn + in) {
+            }
+        }
         drive.setMotorPowers(0, 0);
     }
 
@@ -102,77 +101,98 @@ public class BaseAutonomous extends LinearOpMode {
         initVuforia();
         initTfod();
         tfod.activate();
+        hw = new Hardware(hardwareMap);
+        hw.armHolder.setPosition(Hardware.ARM_HOLDER_HOLDING);
         drive = new SuperiorestTankDrive(hardwareMap);
         drive.setPoseEstimate(new Pose2d(12, 24 + 24 + 12, Math.toRadians(270)));
 
-        File file = new File(Environment.getExternalStorageDirectory() + "/" + File.separator + "BlueAutonomous.yaml");
-        InputStream stream;
-        try {
-            file.createNewFile();
-            stream = hardwareMap.appContext.getAssets().open("trajectory/BlueAutonomous.yaml");
-            // write the bytes in file
-            if (file.exists()) {
-                byte[] buffer = new byte[stream.available()];
-                stream.read(buffer);
-
-                OutputStream outStream = new FileOutputStream(file);
-                outStream.write(buffer);
-                outStream.close();
-                System.out.println("file created: " + file);
-            }
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Failure to create file.");
-        }
-
-        Trajectory traj = TrajectoryLoader.load(
-                new File(Environment.getExternalStorageDirectory().getPath() + "/BlueAutonomous.yaml"));
+//        Trajectory traj;
+//        try {
+//            traj = AssetsTrajectoryLoader.load("BlueAutonomous-basic");
+//        } catch (IOException e) {
+//            throw new IllegalArgumentException("Failure to load asset.");
+//        }
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
         waitForStart();
 
-        drive.followTrajectorySync(traj);
-        drive.setMotorPowers(0.2, 0.2);
+        hw.armHolder.setPosition(Hardware.ARM_HOLDER_RETRACTED);
 
-        // Now we are in front of the skystones; scan for skystones
-        while (opModeIsActive()) {
-            if (tfod != null) {
-                // getUpdatedRecognitions() will return null if no new information is available since
-                // the last time that call was made.
-                List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                if (updatedRecognitions != null) {
-                    telemetry.addData("# Object Detected", updatedRecognitions.size());
-
-                    // step through the list of recognitions and display boundary info.
-                    int i = 0;
-                    for (Recognition recognition : updatedRecognitions) {
-                        telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-                        telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
-                                recognition.getLeft(), recognition.getTop());
-                        telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
-                                recognition.getRight(), recognition.getBottom());
-                        float recognitionMiddle = (recognition.getLeft() + recognition.getRight()) / 2;
-
-                        int midpoint = recognition.getImageWidth() / 2;
-                        telemetry.addData("Recognition middle", recognitionMiddle);
-                        telemetry.addData("Midpoint", midpoint);
-
-                        if (recognitionMiddle > midpoint) {
-                            telemetry.addLine("Reached center.");
-                            break;
-                        }
-                    }
-                    telemetry.update();
-                }
-            }
-        }
-
-        drive.turnSync(Math.toRadians(-90));
-        driveDistance(6);
-
-        if (tfod != null) {
-            tfod.shutdown();
-        }
+        driveDistance(24 * 3 - 9);
+        drive.turnSync(Math.toRadians(135));
+        driveDistance(24 + 6);
+        drive.turnSync(Math.toRadians(20));
+        driveDistance(24 * 1.5);
+        drive.turnSync(Math.toRadians(110));
+        driveDistance(24 * 1.7);
+//        hw.armHolder.setPosition(Hardware.ARM_HOLDER_RETRACTED);
+//
+//        drive.followTrajectorySync(traj);
+//        drive.setMotorPowers(0.2, 0.2);
+//
+//        // Now we are in front of the skystones; scan for skystones
+//        while (opModeIsActive()) {
+//            if (tfod != null) {
+//                // getUpdatedRecognitions() will return null if no new information is available since
+//                // the last time that call was made.
+//                List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+//                if (updatedRecognitions != null) {
+//                    telemetry.addData("# Object Detected", updatedRecognitions.size());
+//
+//                    // step through the list of recognitions and display boundary info.
+//                    int i = 0;
+//                    for (Recognition recognition : updatedRecognitions) {
+//                        telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+//                        telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+//                                recognition.getLeft(), recognition.getTop());
+//                        telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+//                                recognition.getRight(), recognition.getBottom());
+//                        float recognitionMiddle = (recognition.getLeft() + recognition.getRight()) / 2;
+//
+//                        int midpoint = recognition.getImageWidth() / 2;
+//                        telemetry.addData("Recognition middle", recognitionMiddle);
+//                        telemetry.addData("Midpoint", midpoint);
+//
+//                        if (recognitionMiddle > midpoint) {
+//                            telemetry.addLine("Reached center.");
+//                            break;
+//                        }
+//                    }
+//                    telemetry.update();
+//                }
+//            }
+//        }
+//
+//        drive.turnSync(Math.toRadians(-90));
+//        driveDistance(6);
+//
+//        // Pick up stone
+////        hw.setArmAngle();
+//        hw.grabberPivot.setPosition(Hardware.GRABBER_PIVOT_POS_GRAB);
+//        hw.grabber.setPosition(Hardware.GRABBER_OPEN);
+//        sleep(2000);
+//        hw.grabber.setPosition(Hardware.GRABBER_CLOSED);
+//        sleep(500);
+//        hw.grabberPivot.setPosition(Hardware.GRABBER_PIVOT_POS_RELEASE);
+//
+//        // Drive to foundation
+//        drive.followTrajectorySync(
+//                drive.trajectoryBuilder()
+//                        .splineTo(new Pose2d(24, 60, 0))
+//                        .build());
+//
+//        // Place stone
+//
+//        // Drive to tape separating loading and building zone
+//        drive.followTrajectorySync(
+//                drive.trajectoryBuilder()
+//                        .splineTo(new Pose2d(0, 60, 0))
+//                        .build());
+//
+//        if (tfod != null) {
+//            tfod.shutdown();
+//        }
     }
 }

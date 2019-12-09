@@ -3,15 +3,12 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
-
-import java.util.Arrays;
 
 @TeleOp(name = "Tank Drive")
 public class TankDrive extends LinearOpMode {
     private Hardware hw;
 
-    private void drivetrain() {
+    private void runDrivetrain() {
         hw.backLeftDrive.setPower(-gamepad1.left_stick_y);
         hw.frontLeftDrive.setPower(-gamepad1.left_stick_y);
         hw.backRightDrive.setPower(-gamepad1.right_stick_y);
@@ -19,21 +16,37 @@ public class TankDrive extends LinearOpMode {
     }
 
     private void runArm() {
-        double armPower = 0;
-        if (gamepad1.dpad_up) {
-            armPower = 0.5;
-        } else if (gamepad1.dpad_down) {
-            armPower = -0.5;
-        }
-        int newPosition = (int) (hw.leftArm.getCurrentPosition() + (50 * armPower));
-        for (DcMotor motor : Arrays.asList(hw.leftArm, hw.rightArm)) {
-            motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motor.setPower(0.7);
-            if (Math.abs(armPower) > 0.1) {
-                motor.setTargetPosition(newPosition);
-            }
-        }
+        double armPower = -gamepad2.right_stick_y;
+        double extensionPower = -gamepad2.left_stick_y;
+
+//        int newPosition = (int) (hw.leftArm.getCurrentPosition() + (50 * armPower));
+//        if (Math.abs(armPower) > 0.1) {
+//            hw.setArmPosition(newPosition);
+//        }
+//        hw.leftArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        hw.rightArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        hw.leftArm.setPower(armPower);
+//        hw.rightArm.setPower(armPower);
+        telemetry.addData("Arm position", hw.leftArm.getCurrentPosition());
+        telemetry.addData("Arm position right", hw.rightArm.getCurrentPosition());
+
+//        hw.armExtender.setPower(extensionPower);
+//        telemetry.addData("Arm extender position", hw.armExtender.getCurrentPosition());
     }
+
+    private void runGrabber() {
+        double grabberPos = gamepad2.right_trigger;
+        double grabberPivotPos = gamepad2.left_trigger;
+
+        hw.grabberPivot.setPosition(grabberPivotPos);
+        hw.grabber.setPosition(grabberPos);
+        telemetry.addData("Grabber position", hw.grabber.getPosition());
+        telemetry.addData("Grabber pivot pos", hw.grabberPivot.getPosition());
+
+//        hw.armHolder.setPosition(gamepad2.a ? Hardware.ARM_HOLDER_RETRACTED : Hardware.ARM_HOLDER_HOLDING);
+    }
+
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -43,26 +56,14 @@ public class TankDrive extends LinearOpMode {
         telemetry.update();
 
         waitForStart();
-        ElapsedTime runtime = new ElapsedTime();
-        ElapsedTime loopTime = new ElapsedTime();
-
-        hw.leftArm.setTargetPosition(0);
-        hw.rightArm.setTargetPosition(0);
-
-        hw.setLed(gamepad1.right_trigger);
 
         while (opModeIsActive()) {
-            loopTime.reset();
-
-            drivetrain();
+            runDrivetrain();
             runArm();
+            runGrabber();
 
-            telemetry.addData("Run time", runtime.milliseconds());
-            telemetry.addData("Loop time", loopTime.milliseconds());
-            telemetry.addData("Front left", hw.frontLeftDrive.getCurrentPosition());
-            telemetry.addData("Back left", hw.backLeftDrive.getCurrentPosition());
-            telemetry.addData("Front right", hw.frontRightDrive.getCurrentPosition());
-            telemetry.addData("Back right", hw.backRightDrive.getCurrentPosition());
+            hw.led.setPower(gamepad2.x ? 0.5 : 0);
+
             telemetry.update();
         }
     }
