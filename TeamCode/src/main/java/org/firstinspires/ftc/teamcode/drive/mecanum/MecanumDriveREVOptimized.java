@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.drive.tank;
+package org.firstinspires.ftc.teamcode.drive.mecanum;
 
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MOTOR_VELO_PID;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.RUN_USING_ENCODER;
@@ -7,13 +7,12 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.getMotorVeloci
 
 import android.support.annotation.NonNull;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
-import com.acmerobotics.roadrunner.localization.ThreeTrackingWheelLocalizer;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,21 +21,21 @@ import org.firstinspires.ftc.teamcode.drive.localizer.StandardTrackingWheelLocal
 import org.firstinspires.ftc.teamcode.util.AxesSigns;
 import org.firstinspires.ftc.teamcode.util.BNO055IMUUtil;
 import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
-import org.jetbrains.annotations.NotNull;
 import org.openftc.revextensions2.ExpansionHubEx;
 import org.openftc.revextensions2.ExpansionHubMotor;
 import org.openftc.revextensions2.RevBulkData;
 
 /*
- * Optimized tank drive implementation for REV ExHs. The time savings may significantly improve
+ * Optimized mecanum drive implementation for REV ExHs. The time savings may significantly improve
  * trajectory following performance with moderate additional complexity.
  */
-public class SuperiorestTankDrive extends SampleTankDriveBase {
+public class MecanumDriveREVOptimized extends SampleMecanumDriveBase {
     private ExpansionHubEx hub;
-    private List<ExpansionHubMotor> motors, leftMotors, rightMotors;
+    private ExpansionHubMotor leftFront, leftRear, rightRear, rightFront;
+    private List<ExpansionHubMotor> motors;
     private BNO055IMU imu;
 
-    public SuperiorestTankDrive(HardwareMap hardwareMap) {
+    public MecanumDriveREVOptimized(HardwareMap hardwareMap) {
         super();
 
         LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
@@ -51,19 +50,16 @@ public class SuperiorestTankDrive extends SampleTankDriveBase {
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         imu.initialize(parameters);
 
-        // Remap the IMU axes so that the z-axis points
+        // TODO: if your hub is mounted vertically, remap the IMU axes so that the z-axis points
         // upward (normal to the floor) using a command like the following:
         BNO055IMUUtil.remapAxes(imu, AxesOrder.XYZ, AxesSigns.NPN);
 
-        // add/remove motors depending on your robot (e.g., 6WD)
-        ExpansionHubMotor leftFront = hardwareMap.get(ExpansionHubMotor.class, "front_left");
-        ExpansionHubMotor leftRear = hardwareMap.get(ExpansionHubMotor.class, "back_left");
-        ExpansionHubMotor rightRear = hardwareMap.get(ExpansionHubMotor.class, "back_right");
-        ExpansionHubMotor rightFront = hardwareMap.get(ExpansionHubMotor.class, "front_right");
+        leftFront = hardwareMap.get(ExpansionHubMotor.class, "front_left");
+        leftRear = hardwareMap.get(ExpansionHubMotor.class, "back_left");
+        rightRear = hardwareMap.get(ExpansionHubMotor.class, "back_right");
+        rightFront = hardwareMap.get(ExpansionHubMotor.class, "front_right");
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
-        leftMotors = Arrays.asList(leftFront, leftRear);
-        rightMotors = Arrays.asList(rightFront, rightRear);
 
         for (ExpansionHubMotor motor : motors) {
             if (RUN_USING_ENCODER) {
@@ -76,8 +72,8 @@ public class SuperiorestTankDrive extends SampleTankDriveBase {
             setPIDCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
         }
 
-        // Reverse right motors using DcMotor.setDirection()
-        for (ExpansionHubMotor motor : rightMotors) {
+        // TODO: reverse any motors using DcMotor.setDirection()
+        for (ExpansionHubMotor motor : Arrays.asList(rightFront, rightRear)) {
             motor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
 
@@ -87,7 +83,7 @@ public class SuperiorestTankDrive extends SampleTankDriveBase {
 
     @Override
     public PIDCoefficients getPIDCoefficients(DcMotor.RunMode runMode) {
-        PIDFCoefficients coefficients = leftMotors.get(0).getPIDFCoefficients(runMode);
+        PIDFCoefficients coefficients = leftFront.getPIDFCoefficients(runMode);
         return new PIDCoefficients(coefficients.p, coefficients.i, coefficients.d);
     }
 
@@ -103,48 +99,40 @@ public class SuperiorestTankDrive extends SampleTankDriveBase {
     @NonNull
     @Override
     public List<Double> getWheelPositions() {
-        double leftSum = 0, rightSum = 0;
         RevBulkData bulkData = hub.getBulkInputData();
 
         if (bulkData == null) {
-            return Arrays.asList(0.0, 0.0);
+            return Arrays.asList(0.0, 0.0, 0.0, 0.0);
         }
 
-        for (DcMotorEx leftMotor : leftMotors) {
-            leftSum += encoderTicksToInches(bulkData.getMotorCurrentPosition(leftMotor));
+        List<Double> wheelPositions = new ArrayList<>();
+        for (ExpansionHubMotor motor : motors) {
+            wheelPositions.add(encoderTicksToInches(bulkData.getMotorCurrentPosition(motor)));
         }
-        for (DcMotorEx rightMotor : rightMotors) {
-            rightSum += encoderTicksToInches(bulkData.getMotorCurrentPosition(rightMotor));
-        }
-        return Arrays.asList(leftSum / leftMotors.size(), rightSum / rightMotors.size());
+        return wheelPositions;
     }
 
     @Override
     public List<Double> getWheelVelocities() {
-        double leftSum = 0, rightSum = 0;
         RevBulkData bulkData = hub.getBulkInputData();
 
         if (bulkData == null) {
-            return Arrays.asList(0.0, 0.0);
+            return Arrays.asList(0.0, 0.0, 0.0, 0.0);
         }
 
-        for (DcMotorEx leftMotor : leftMotors) {
-            leftSum += encoderTicksToInches(bulkData.getMotorVelocity(leftMotor));
+        List<Double> wheelVelocities = new ArrayList<>();
+        for (ExpansionHubMotor motor : motors) {
+            wheelVelocities.add(encoderTicksToInches(bulkData.getMotorVelocity(motor)));
         }
-        for (DcMotorEx rightMotor : rightMotors) {
-            rightSum += encoderTicksToInches(bulkData.getMotorVelocity(rightMotor));
-        }
-        return Arrays.asList(leftSum / leftMotors.size(), rightSum / rightMotors.size());
+        return wheelVelocities;
     }
 
     @Override
-    public void setMotorPowers(double v, double v1) {
-        for (ExpansionHubMotor leftMotor : leftMotors) {
-            leftMotor.setPower(v);
-        }
-        for (ExpansionHubMotor rightMotor : rightMotors) {
-            rightMotor.setPower(v1);
-        }
+    public void setMotorPowers(double v, double v1, double v2, double v3) {
+        leftFront.setPower(v);
+        leftRear.setPower(v1);
+        rightRear.setPower(v2);
+        rightFront.setPower(v3);
     }
 
     @Override

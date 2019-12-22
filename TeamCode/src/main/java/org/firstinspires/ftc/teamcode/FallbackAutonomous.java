@@ -3,11 +3,11 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.drive.tank.SuperiorestTankDrive;
+import org.firstinspires.ftc.teamcode.drive.tank.TankDriveREVOptimized;
 
 @Autonomous(name = "Fallback autonomous")
 public class FallbackAutonomous extends LinearOpMode {
-    private SuperiorestTankDrive drive;
+    private TankDriveREVOptimized drive;
 
     private void driveDistance(double in) {
         double initialDistanceIn = drive.getWheelPositions().get(0);
@@ -26,7 +26,7 @@ public class FallbackAutonomous extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         Hardware hw = new Hardware(hardwareMap);
-        drive = new SuperiorestTankDrive(hardwareMap);
+        drive = new TankDriveREVOptimized(hardwareMap);
         waitForStart();
         driveDistance(12);
     }

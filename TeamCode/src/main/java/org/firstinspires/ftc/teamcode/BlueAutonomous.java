@@ -1,19 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.firstinspires.ftc.teamcode.drive.tank.SuperiorestTankDrive;
-import org.firstinspires.ftc.teamcode.util.AssetsTrajectoryLoader;
-
-import java.io.IOException;
-import java.util.List;
+import org.firstinspires.ftc.teamcode.drive.tank.TankDriveREVOptimized;
 
 @Autonomous(name = "Autonomous: Blue side")
 public class BlueAutonomous extends LinearOpMode {
@@ -49,7 +43,7 @@ public class BlueAutonomous extends LinearOpMode {
     private TFObjectDetector tfod;
 
     private Hardware hw;
-    private SuperiorestTankDrive drive;
+    private TankDriveREVOptimized drive;
 
 
     /**
@@ -103,7 +97,7 @@ public class BlueAutonomous extends LinearOpMode {
         tfod.activate();
         hw = new Hardware(hardwareMap);
         hw.armHolder.setPosition(Hardware.ARM_HOLDER_HOLDING);
-        drive = new SuperiorestTankDrive(hardwareMap);
+        drive = new TankDriveREVOptimized(hardwareMap);
         drive.setPoseEstimate(new Pose2d(12, 24 + 24 + 12, Math.toRadians(270)));
 
 //        Trajectory traj;

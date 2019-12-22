@@ -7,13 +7,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.firstinspires.ftc.teamcode.drive.tank.SuperiorestTankDrive;
+import org.firstinspires.ftc.teamcode.drive.tank.TankDriveREVOptimized;
 import org.firstinspires.ftc.teamcode.util.AssetsTrajectoryLoader;
 
 import java.io.IOException;
-import java.util.List;
 
 @Autonomous(name = "Autonomous: Red side")
 public class RedAutonomous extends LinearOpMode {
@@ -49,7 +47,7 @@ public class RedAutonomous extends LinearOpMode {
     private TFObjectDetector tfod;
 
     private Hardware hw;
-    private SuperiorestTankDrive drive;
+    private TankDriveREVOptimized drive;
 
 
     /**
@@ -103,7 +101,7 @@ public class RedAutonomous extends LinearOpMode {
         tfod.activate();
         hw = new Hardware(hardwareMap);
         hw.armHolder.setPosition(Hardware.ARM_HOLDER_HOLDING);
-        drive = new SuperiorestTankDrive(hardwareMap);
+        drive = new TankDriveREVOptimized(hardwareMap);
         drive.setPoseEstimate(new Pose2d(30, -72, Math.toRadians(90)));
 
         Trajectory traj;
