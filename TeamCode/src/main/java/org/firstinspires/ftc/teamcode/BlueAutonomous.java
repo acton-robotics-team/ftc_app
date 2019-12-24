@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.firstinspires.ftc.teamcode.drive.tank.TankDriveREVOptimized;
+import org.firstinspires.ftc.teamcode.drive.mecanum.MecanumDriveREVOptimized;
 
 @Autonomous(name = "Autonomous: Blue side")
 public class BlueAutonomous extends LinearOpMode {
@@ -43,7 +43,7 @@ public class BlueAutonomous extends LinearOpMode {
     private TFObjectDetector tfod;
 
     private Hardware hw;
-    private TankDriveREVOptimized drive;
+    private MecanumDriveREVOptimized drive;
 
 
     /**
@@ -79,15 +79,15 @@ public class BlueAutonomous extends LinearOpMode {
     private void driveDistance(double in) {
         double initialDistanceIn = drive.getWheelPositions().get(0);
         if (in > 0) {
-            drive.setMotorPowers(0.5, 0.5);
+            drive.setMotorPowers(0.5, 0.5, 0.5, 0.5);
             while (opModeIsActive() && drive.getWheelPositions().get(0) < initialDistanceIn + in) {
             }
         } else {
-            drive.setMotorPowers(-0.5, -0.5);
+            drive.setMotorPowers(-0.5, -0.5, -0.5, -0.5);
             while (opModeIsActive() && drive.getWheelPositions().get(0) > initialDistanceIn + in) {
             }
         }
-        drive.setMotorPowers(0, 0);
+        drive.setMotorPowers(0, 0, 0, 0);
     }
 
     @Override
@@ -96,8 +96,7 @@ public class BlueAutonomous extends LinearOpMode {
         initTfod();
         tfod.activate();
         hw = new Hardware(hardwareMap);
-        hw.armHolder.setPosition(Hardware.ARM_HOLDER_HOLDING);
-        drive = new TankDriveREVOptimized(hardwareMap);
+        drive = new MecanumDriveREVOptimized(hardwareMap);
         drive.setPoseEstimate(new Pose2d(12, 24 + 24 + 12, Math.toRadians(270)));
 
 //        Trajectory traj;
@@ -111,8 +110,6 @@ public class BlueAutonomous extends LinearOpMode {
         telemetry.update();
 
         waitForStart();
-
-        hw.armHolder.setPosition(Hardware.ARM_HOLDER_RETRACTED);
 
         driveDistance(24 * 3 - 9);
         drive.turnSync(Math.toRadians(135));
