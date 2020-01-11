@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.motors.NeveRest40Gearmotor;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -15,8 +16,13 @@ public class Hardware {
     public DcMotor frontRightDrive;
     public DcMotor backLeftDrive;
     public DcMotor backRightDrive;
-    public DcMotor leftIntake;
-    public DcMotor rightIntake;
+    public DcMotor arm;
+    public Servo clawPivot;
+    public Servo rightClaw;
+    public Servo leftClaw;
+
+    public static final int ARM_MAX = (int)(1440 / 0.65);
+    public static final int ARM_MIN = 0;
 
     public Hardware(HardwareMap hwMap) {
         led = hwMap.dcMotor.get("led");
@@ -25,12 +31,14 @@ public class Hardware {
         frontRightDrive = hwMap.dcMotor.get("front_right");
         backLeftDrive = hwMap.dcMotor.get("back_left");
         backRightDrive = hwMap.dcMotor.get("back_right");
-        leftIntake = hwMap.dcMotor.get("left_intake");
-        rightIntake = hwMap.dcMotor.get("right_intake");
+        arm = hwMap.dcMotor.get("arm");
+        clawPivot = hwMap.servo.get("pivot");
+        rightClaw = hwMap.servo.get("right");
+        leftClaw = hwMap.servo.get("left");
 
         for (DcMotor motor : Arrays.asList(
                 frontLeftDrive, frontRightDrive,
-                backLeftDrive, backRightDrive)) {
+                backLeftDrive, backRightDrive, arm)) {
             motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -40,9 +48,13 @@ public class Hardware {
             motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
 
+        arm.setDirection(DcMotorSimple.Direction.REVERSE);
+        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        arm.setTargetPosition(0);
+
         frontRightDrive.setDirection(DcMotorSimple.Direction.REVERSE);
         backRightDrive.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        leftIntake.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightClaw.setDirection(Servo.Direction.REVERSE);
     }
 }

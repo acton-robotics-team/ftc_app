@@ -8,6 +8,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class ManualMecanumDrive extends LinearOpMode {
     private Hardware hw;
 
+    private static int limit(int value, int min, int max) {
+        return Math.min(max, Math.max(min, value));
+    }
+
     private void runMecanumDrive() {
         // Reset speed variables
         double LF = 0;
@@ -16,19 +20,28 @@ public class ManualMecanumDrive extends LinearOpMode {
         double RR = 0;
 
         // Get joystick values
-        double Y1 = -gamepad1.right_stick_y; // invert so up is positive
-        double X1 = gamepad1.right_stick_x;
+        double Y1 = -gamepad1.left_stick_y; // invert so up is positive
+        double X1 = gamepad1.left_stick_x;
 //            double Y2 = -gamepad1.left_stick_y; // Y2 is not used at present
-        double X2 = gamepad1.left_stick_x;
+        double X2 = gamepad1.right_stick_x;
 
         // Forward/back movement
-        LF += Y1; RF += Y1; LR += Y1; RR += Y1;
+        LF += Y1;
+        RF += Y1;
+        LR += Y1;
+        RR += Y1;
 
         // Side to side movement
-        LF += X1; RF -= X1; LR -= X1; RR += X1;
+        LF += X1;
+        RF -= X1;
+        LR -= X1;
+        RR += X1;
 
         // Rotation movement
-        LF += X2; RF -= X2; LR += X2; RR -= X2;
+        LF += X2;
+        RF -= X2;
+        LR += X2;
+        RR -= X2;
 
         // Send values to the motors
         hw.frontLeftDrive.setPower(LF);
@@ -43,9 +56,27 @@ public class ManualMecanumDrive extends LinearOpMode {
         telemetry.addData("RR", "%.3f", RR);
     }
 
-    private void runIntake() {
-        hw.leftIntake.setPower(gamepad1.left_trigger);
-        hw.rightIntake.setPower(gamepad1.right_trigger);
+    private void runArm() {
+        hw.leftClaw.setPosition(gamepad2.left_bumper ? 1 : 0.3);
+        hw.rightClaw.setPosition(gamepad2.right_bumper ? 1 : 0.3);
+
+        int targetPosition = hw.arm.getCurrentPosition();
+        if (gamepad2.right_trigger > 0) {
+            targetPosition += 50;
+        } else if (gamepad2.left_trigger > 0) {
+            targetPosition -= 50;
+        }
+        hw.arm.setTargetPosition(targetPosition);
+
+        double angle = 205 - (double)hw.arm.getCurrentPosition() / 1440 * 360;
+        telemetry.addData("Arm angle", angle);
+
+        double clawPosition = 0.5 - 0.5 * angle / 90;
+        if (Math.abs(clawPosition) >= 1.0) {
+            clawPosition = 0.5;
+        }
+        telemetry.addData("Claw position", clawPosition);
+        hw.clawPivot.setPosition(clawPosition);
     }
 
     @Override
@@ -60,7 +91,8 @@ public class ManualMecanumDrive extends LinearOpMode {
         while (opModeIsActive()) {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             runMecanumDrive();
-            runIntake();
+            runArm();
+            hw.led.setPower(gamepad1.right_trigger * 0.5);
             telemetry.update();
         }
     }
