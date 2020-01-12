@@ -60,20 +60,25 @@ public class ManualMecanumDrive extends LinearOpMode {
         hw.leftClaw.setPosition(gamepad2.left_bumper ? 1 : 0.3);
         hw.rightClaw.setPosition(gamepad2.right_bumper ? 1 : 0.3);
 
-        int targetPosition = hw.arm.getCurrentPosition();
+        int targetPosition = hw.arm.getTargetPosition();
         if (gamepad2.right_trigger > 0) {
-            targetPosition += 50;
+            targetPosition += 5;
         } else if (gamepad2.left_trigger > 0) {
-            targetPosition -= 50;
+            targetPosition -= 5;
         }
+        targetPosition = limit(targetPosition, Hardware.ARM_MIN, Hardware.ARM_MAX);
+
+        hw.arm.setPower(1);
         hw.arm.setTargetPosition(targetPosition);
 
-        double angle = 205 - (double)hw.arm.getCurrentPosition() / 1440 * 360;
+        double angle = 205 - (double) hw.arm.getCurrentPosition() / Hardware.NEVEREST_TICKS_PER_REV * 360;
         telemetry.addData("Arm angle", angle);
+        telemetry.addData("Arm target position", hw.arm.getTargetPosition());
+        telemetry.addData("Arm current position", hw.arm.getCurrentPosition());
 
         double clawPosition = 0.5 - 0.5 * angle / 90;
-        if (Math.abs(clawPosition) >= 1.0) {
-            clawPosition = 0.5;
+        if (clawPosition <= 0 || clawPosition >= 1.0) {
+            clawPosition = 0.6;
         }
         telemetry.addData("Claw position", clawPosition);
         hw.clawPivot.setPosition(clawPosition);
