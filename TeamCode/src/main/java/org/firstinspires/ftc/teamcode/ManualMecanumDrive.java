@@ -57,21 +57,27 @@ public class ManualMecanumDrive extends LinearOpMode {
     }
 
     private void runArm() {
-        hw.leftClaw.setPosition(gamepad2.left_bumper ? 1 : 0.3);
-        hw.rightClaw.setPosition(gamepad2.right_bumper ? 1 : 0.3);
+        hw.leftClaw.setPosition(gamepad2.left_bumper ? Hardware.CLAW_CLOSED : Hardware.CLAW_OPEN);
+        hw.rightClaw.setPosition(gamepad2.right_bumper ? Hardware.CLAW_CLOSED : Hardware.CLAW_OPEN);
 
         int targetPosition = hw.arm.getTargetPosition();
         if (gamepad2.right_trigger > 0) {
-            targetPosition += 5;
+            targetPosition += 7;
         } else if (gamepad2.left_trigger > 0) {
-            targetPosition -= 5;
+            targetPosition -= 7;
+        } else if (gamepad2.a) {
+            targetPosition = Hardware.ARM_GRAB;
+        } else if (gamepad2.x) {
+            targetPosition = Hardware.ARM_LIFT_1;
+        } else if (gamepad2.y) {
+            targetPosition = Hardware.ARM_LIFT_2;
         }
         targetPosition = limit(targetPosition, Hardware.ARM_MIN, Hardware.ARM_MAX);
 
-        hw.arm.setPower(1);
+        hw.arm.setPower(0.25);
         hw.arm.setTargetPosition(targetPosition);
 
-        double angle = 205 - (double) hw.arm.getCurrentPosition() / Hardware.NEVEREST_TICKS_PER_REV * 360;
+        double angle = 195 - (double) hw.arm.getCurrentPosition() / Hardware.NEVEREST_TICKS_PER_REV * 360;
         telemetry.addData("Arm angle", angle);
         telemetry.addData("Arm target position", hw.arm.getTargetPosition());
         telemetry.addData("Arm current position", hw.arm.getCurrentPosition());
@@ -82,6 +88,23 @@ public class ManualMecanumDrive extends LinearOpMode {
         }
         telemetry.addData("Claw position", clawPosition);
         hw.clawPivot.setPosition(clawPosition);
+    }
+
+    private void runFoundation() {
+        hw.leftFoundation.setPosition(gamepad1.left_trigger);
+        hw.rightFoundation.setPosition(gamepad1.left_trigger);
+    }
+
+    private void runCapstone() {
+        if (gamepad1.x) {
+            hw.capstone.setPosition(1);
+        } else {
+            hw.capstone.setPosition(0);
+        }
+    }
+
+    private void runLed() {
+        hw.led.setPower(gamepad1.right_trigger * 0.3);
     }
 
     @Override
@@ -97,7 +120,11 @@ public class ManualMecanumDrive extends LinearOpMode {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             runMecanumDrive();
             runArm();
-            hw.led.setPower(gamepad1.right_trigger * 0.5);
+            runFoundation();
+            runLed();
+            telemetry.addData("Right tracking wheel", hw.rightTrackingWheel.getCurrentPosition());
+            telemetry.addData("Middle tracking wheel", hw.middleTrackingWheel.getCurrentPosition());
+            telemetry.addData("Left tracking wheel", hw.leftTrackingWheel.getCurrentPosition());
             telemetry.update();
         }
     }

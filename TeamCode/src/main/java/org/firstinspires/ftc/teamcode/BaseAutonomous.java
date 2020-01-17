@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -10,11 +8,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.drive.mecanum.MecanumDriveREVOptimized;
-import org.firstinspires.ftc.teamcode.util.AssetsTrajectoryLoader;
 
-import java.io.IOException;
 import java.util.List;
 
+@SuppressWarnings("StatementWithEmptyBody")
 public abstract class BaseAutonomous extends LinearOpMode {
     public enum Alliance {
         RED, BLUE
@@ -129,7 +126,6 @@ public abstract class BaseAutonomous extends LinearOpMode {
                     recognition.getLeft(), recognition.getTop());
             telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
                     recognition.getRight(), recognition.getBottom());
-            telemetry.update();
 
             float recognitionMiddle = (recognition.getLeft() + recognition.getRight()) / 2;
 
@@ -153,7 +149,10 @@ public abstract class BaseAutonomous extends LinearOpMode {
         tfod.activate();
         hw = new Hardware(hardwareMap);
         drive = new MecanumDriveREVOptimized(hardwareMap);
-        drive.setPoseEstimate(new Pose2d(30, -72, Math.toRadians(90)));
+        drive.setPoseEstimate(new Pose2d(-36, -66, Math.toRadians(90)));
+
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
 
         SkystoneLocation stoneLocation = null;
         while (!opModeIsActive() && !isStopRequested()) {
@@ -168,103 +167,89 @@ public abstract class BaseAutonomous extends LinearOpMode {
             stoneLocation = SkystoneLocation.LEFT;
         }
 
-        Trajectory traj;
-        try {
-            traj = AssetsTrajectoryLoader.load("BaseAutonomous-basic");
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Failure to load asset.");
-        }
+        hw.arm.setPower(0.75);
+        hw.arm.setTargetPosition(Hardware.ARM_LIFT_2);
+
         switch (stoneLocation) {
             case RIGHT:
-            case MIDDLE:
-            case LEFT:
+                drive.followTrajectorySync(drive.trajectoryBuilder()
+                        .splineTo(new Pose2d(-28, -30, Math.toRadians(90))).build());
                 break;
-            default:
+            case MIDDLE:
+                drive.followTrajectorySync(drive.trajectoryBuilder()
+                        .splineTo(new Pose2d(-36, -30, Math.toRadians(90))).build());
+                break;
+            case LEFT:
+                drive.followTrajectorySync(drive.trajectoryBuilder()
+                        .splineTo(new Pose2d(-44, -30, Math.toRadians(90))).build());
                 break;
         }
+        hw.arm.setTargetPosition(Hardware.ARM_GRAB);
+        while (opModeIsActive() && hw.arm.isBusy()) ;
 
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
+        hw.rightClaw.setPosition(Hardware.CLAW_CLOSED);
+        hw.leftClaw.setPosition(Hardware.CLAW_CLOSED);
+        sleep(500);
 
-        waitForStart();
+        hw.arm.setTargetPosition(Hardware.ARM_LIFT_2);
 
-        driveDistance(24 * 3 - 9);
-        drive.turnSync(Math.toRadians(-135));
-        driveDistance(24 + 6);
-        drive.turnSync(Math.toRadians(-20));
-        driveDistance(24 * 1.5);
-        drive.turnSync(Math.toRadians(-90));
-        driveDistance(24 * 1.7);
-//        // Drive to wall
-//        drive.followTrajectorySync(
-//                drive.trajectoryBuilder()
-//                        .splineTo(new Pose2d(0, -48, 0))
-//                        .build());
+        // Travel to foundation
+        drive.followTrajectorySync(drive.trajectoryBuilder()
+                .splineTo(new Pose2d(48, -30, Math.toRadians(90))).build());
 
-//        drive.followTrajectorySync(traj);
+        // Release block
+        hw.arm.setTargetPosition(Hardware.ARM_LIFT_1);
+        hw.leftClaw.setPosition(Hardware.CLAW_OPEN);
+        hw.rightClaw.setPosition(Hardware.CLAW_OPEN);
+        sleep(500);
 
-//        drive.setMotorPowers(0.2, 0.2);
-//
-//        // Now we are in front of the skystones; scan for skystones
-//        while (opModeIsActive()) {
-//            if (tfod != null) {
-//                // getUpdatedRecognitions() will return null if no new information is available since
-//                // the last time that call was made.
-//                List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-//                if (updatedRecognitions != null) {
-//                    telemetry.addData("# Object Detected", updatedRecognitions.size());
-//
-//                    // step through the list of recognitions and display boundary info.
-//                    int i = 0;
-//                    for (Recognition recognition : updatedRecognitions) {
-//                        telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-//                        telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
-//                                recognition.getLeft(), recognition.getTop());
-//                        telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
-//                                recognition.getRight(), recognition.getBottom());
-//                        float recognitionMiddle = (recognition.getLeft() + recognition.getRight()) / 2;
-//
-//                        int midpoint = recognition.getImageWidth() / 2;
-//                        telemetry.addData("Recognition middle", recognitionMiddle);
-//                        telemetry.addData("Midpoint", midpoint);
-//
-//                        if (recognitionMiddle > midpoint) {
-//                            telemetry.addLine("Reached center.");
-//                            break;
-//                        }
-//                    }
-//                    telemetry.update();
-//                }
-//            }
-//        }
-//
-//        drive.turnSync(Math.toRadians(-90));
-//        driveDistance(6);
-//
-//        // Pick up stone
-////        hw.setArmAngle();
-//        hw.grabberPivot.setPosition(Hardware.GRABBER_PIVOT_POS_GRAB);
-//        hw.grabber.setPosition(Hardware.GRABBER_OPEN);
-//        sleep(2000);
-//        hw.grabber.setPosition(Hardware.GRABBER_CLOSED);
-//        hw.grabberPivot.setPosition(Hardware.GRABBER_PIVOT_POS_RELEASE);
-//
-//        // Drive to foundation
-//        drive.followTrajectorySync(
-//                drive.trajectoryBuilder()
-//                        .splineTo(new Pose2d(24, 60, 0))
-//                        .build());
-//
-//        // Place stone
-//
-//        // Drive to tape separating loading and building zone
-//        drive.followTrajectorySync(
-//                drive.trajectoryBuilder()
-//                        .splineTo(new Pose2d(0, 60, 0))
-//                        .build());
-//
-//        if (tfod != null) {
-//            tfod.shutdown();
-//        }
+        // Go back to get second block
+        hw.arm.setTargetPosition(Hardware.ARM_LIFT_2);
+        switch (stoneLocation) {
+            case RIGHT:
+                drive.followTrajectorySync(drive.trajectoryBuilder()
+                        .splineTo(new Pose2d(-52, -30, Math.toRadians(90))).build());
+                break;
+            case MIDDLE:
+                drive.followTrajectorySync(drive.trajectoryBuilder()
+                        .splineTo(new Pose2d(-60, -30, Math.toRadians(90))).build());
+                break;
+            case LEFT:
+                drive.followTrajectorySync(drive.trajectoryBuilder()
+                        .splineTo(new Pose2d(-68, -30, Math.toRadians(90))).build());
+                break;
+        }
+        hw.arm.setTargetPosition(Hardware.ARM_GRAB);
+        while (opModeIsActive() && hw.arm.isBusy()) ;
+
+        hw.rightClaw.setPosition(Hardware.CLAW_CLOSED);
+        hw.leftClaw.setPosition(Hardware.CLAW_CLOSED);
+        sleep(500);
+
+        // Go to foundation and drop
+        drive.followTrajectorySync(drive.trajectoryBuilder()
+                .splineTo(new Pose2d(48, -30, Math.toRadians(90))).build());
+
+        // Release block
+        hw.arm.setTargetPosition(Hardware.ARM_LIFT_1);
+        hw.leftClaw.setPosition(Hardware.CLAW_OPEN);
+        hw.rightClaw.setPosition(Hardware.CLAW_OPEN);
+
+        // Drag foundation
+        hw.leftFoundation.setPosition(1);
+        hw.rightFoundation.setPosition(1);
+        sleep(500);
+
+        // Back up and place foundation
+        drive.followTrajectorySync(drive.trajectoryBuilder()
+                .splineTo(new Pose2d(40, -48, Math.toRadians(0))).build());
+
+        // Park under skybridge
+        drive.followTrajectorySync(drive.trajectoryBuilder()
+                .splineTo(new Pose2d(0, -48, Math.toRadians(180))).build());
+
+        if (tfod != null) {
+            tfod.shutdown();
+        }
     }
 }
