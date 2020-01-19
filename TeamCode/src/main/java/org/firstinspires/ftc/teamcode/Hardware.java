@@ -67,6 +67,7 @@ public class Hardware {
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
 
+
         // Revert PIDF changes in SDK 5.3 to use SDK 5.2 coefficients
         // Fixes slow behavior on movement as seen from https://ftcforum.firstinspires.org/forum/control-hub-pilot-forum/77745-trouble-with-run_to_position-with-skystone-5-3-and-rev-firmware-1-8-2
         arm.setVelocityPIDFCoefficients(10, 3, 0, 0);
