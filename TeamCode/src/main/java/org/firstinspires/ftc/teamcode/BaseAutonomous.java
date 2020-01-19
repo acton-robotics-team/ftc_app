@@ -91,20 +91,6 @@ public abstract class BaseAutonomous extends LinearOpMode {
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_STONE, LABEL_SKYSTONE);
     }
 
-    private void driveDistance(double in) {
-        double initialDistanceIn = drive.getWheelPositions().get(0);
-        if (in > 0) {
-            drive.setMotorPowers(0.5, 0.5, 0.5, 0.5);
-            while (opModeIsActive() && drive.getWheelPositions().get(0) < initialDistanceIn + in) {
-            }
-        } else {
-            drive.setMotorPowers(-0.5, -0.5, -0.5, -0.5);
-            while (opModeIsActive() && drive.getWheelPositions().get(0) > initialDistanceIn + in) {
-            }
-        }
-        drive.setMotorPowers(0, 0, 0, 0);
-    }
-
     @SuppressLint("DefaultLocale")
     private SkystoneLocation detectSkystone() {
         // getUpdatedRecognitions() will return null if no new information is available since
