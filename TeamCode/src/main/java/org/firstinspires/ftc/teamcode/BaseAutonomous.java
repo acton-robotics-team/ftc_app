@@ -1,7 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.annotation.SuppressLint;
+
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.vuforia.CameraDevice;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
@@ -75,8 +78,8 @@ public abstract class BaseAutonomous extends LinearOpMode {
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
-
-        // Loading trackables is not necessary for the TensorFlow Object Detection engine.
+        // Turn on flash
+        CameraDevice.getInstance().setFlashTorchMode(true);
     }
 
     /**
@@ -86,7 +89,7 @@ public abstract class BaseAutonomous extends LinearOpMode {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
                 "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minimumConfidence = 0.8;
+        tfodParameters.minimumConfidence = 0.5;
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_STONE, LABEL_SKYSTONE);
     }
@@ -105,23 +108,18 @@ public abstract class BaseAutonomous extends LinearOpMode {
         drive.setMotorPowers(0, 0, 0, 0);
     }
 
+    @SuppressLint("DefaultLocale")
     private SkystoneLocation detectSkystone() {
-        if (tfod == null) {
-            return null;
-        }
-
         // getUpdatedRecognitions() will return null if no new information is available since
         // the last time that call was made.
-        List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-        if (updatedRecognitions == null) {
-            return null;
-        }
-        telemetry.addData("# Object Detected", updatedRecognitions.size());
+        List<Recognition> recognitions = tfod.getRecognitions();
+        telemetry.addData("# Object Detected", recognitions.size());
 
         // step through the list of recognitions and display boundary info.
         int i = 0;
-        for (Recognition recognition : updatedRecognitions) {
-            telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+        for (Recognition recognition : recognitions) {
+            telemetry.addData(String.format("label (%d)", i),
+                    recognition.getLabel());
             telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
                     recognition.getLeft(), recognition.getTop());
             telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
@@ -142,6 +140,14 @@ public abstract class BaseAutonomous extends LinearOpMode {
         return null;
     }
 
+    private Pose2d mirror(int redX, int redY, double redHeading) {
+        if (alliance == Alliance.RED) {
+            return new Pose2d(redX, redY, redHeading);
+        } else {
+            return new Pose2d(redX, -redY, redHeading + Math.PI);
+        }
+    }
+
     @Override
     public void runOpMode() {
         initVuforia();
@@ -149,15 +155,16 @@ public abstract class BaseAutonomous extends LinearOpMode {
         tfod.activate();
         hw = new Hardware(hardwareMap);
         drive = new MecanumDriveREVOptimized(hardwareMap);
-        drive.setPoseEstimate(new Pose2d(-36, -66, Math.toRadians(90)));
-
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
+        drive.setPoseEstimate(mirror(-36, -66, Math.toRadians(90)));
 
         SkystoneLocation stoneLocation = null;
         while (!opModeIsActive() && !isStopRequested()) {
-            stoneLocation = detectSkystone();
+            SkystoneLocation newLocation = detectSkystone();
+            if (newLocation != null) {
+                stoneLocation = newLocation;
+            }
 
+            telemetry.addData("Status", "Initialized");
             telemetry.addData("Skystone location", stoneLocation);
             telemetry.update();
         }
@@ -173,15 +180,15 @@ public abstract class BaseAutonomous extends LinearOpMode {
         switch (stoneLocation) {
             case RIGHT:
                 drive.followTrajectorySync(drive.trajectoryBuilder()
-                        .splineTo(new Pose2d(-28, -30, Math.toRadians(90))).build());
+                        .splineTo(mirror(-28, -30, Math.toRadians(90))).build());
                 break;
             case MIDDLE:
                 drive.followTrajectorySync(drive.trajectoryBuilder()
-                        .splineTo(new Pose2d(-36, -30, Math.toRadians(90))).build());
+                        .splineTo(mirror(-36, -30, Math.toRadians(90))).build());
                 break;
             case LEFT:
                 drive.followTrajectorySync(drive.trajectoryBuilder()
-                        .splineTo(new Pose2d(-44, -30, Math.toRadians(90))).build());
+                        .splineTo(mirror(-44, -30, Math.toRadians(90))).build());
                 break;
         }
         hw.arm.setTargetPosition(Hardware.ARM_GRAB);
@@ -195,7 +202,7 @@ public abstract class BaseAutonomous extends LinearOpMode {
 
         // Travel to foundation
         drive.followTrajectorySync(drive.trajectoryBuilder()
-                .splineTo(new Pose2d(48, -30, Math.toRadians(90))).build());
+                .splineTo(mirror(48, -30, Math.toRadians(90))).build());
 
         // Release block
         hw.arm.setTargetPosition(Hardware.ARM_LIFT_1);
@@ -208,15 +215,15 @@ public abstract class BaseAutonomous extends LinearOpMode {
         switch (stoneLocation) {
             case RIGHT:
                 drive.followTrajectorySync(drive.trajectoryBuilder()
-                        .splineTo(new Pose2d(-52, -30, Math.toRadians(90))).build());
+                        .splineTo(mirror(-52, -30, Math.toRadians(90))).build());
                 break;
             case MIDDLE:
                 drive.followTrajectorySync(drive.trajectoryBuilder()
-                        .splineTo(new Pose2d(-60, -30, Math.toRadians(90))).build());
+                        .splineTo(mirror(-60, -30, Math.toRadians(90))).build());
                 break;
             case LEFT:
                 drive.followTrajectorySync(drive.trajectoryBuilder()
-                        .splineTo(new Pose2d(-68, -30, Math.toRadians(90))).build());
+                        .splineTo(mirror(-68, -30, Math.toRadians(90))).build());
                 break;
         }
         hw.arm.setTargetPosition(Hardware.ARM_GRAB);
@@ -228,7 +235,7 @@ public abstract class BaseAutonomous extends LinearOpMode {
 
         // Go to foundation and drop
         drive.followTrajectorySync(drive.trajectoryBuilder()
-                .splineTo(new Pose2d(48, -30, Math.toRadians(90))).build());
+                .splineTo(mirror(48, -30, Math.toRadians(90))).build());
 
         // Release block
         hw.arm.setTargetPosition(Hardware.ARM_LIFT_1);
@@ -242,11 +249,11 @@ public abstract class BaseAutonomous extends LinearOpMode {
 
         // Back up and place foundation
         drive.followTrajectorySync(drive.trajectoryBuilder()
-                .splineTo(new Pose2d(40, -48, Math.toRadians(0))).build());
+                .splineTo(mirror(40, -48, Math.toRadians(0))).build());
 
         // Park under skybridge
         drive.followTrajectorySync(drive.trajectoryBuilder()
-                .splineTo(new Pose2d(0, -48, Math.toRadians(180))).build());
+                .splineTo(mirror(0, -48, Math.toRadians(180))).build());
 
         if (tfod != null) {
             tfod.shutdown();

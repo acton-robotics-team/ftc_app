@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.drive.mecanum.MecanumDriveREVOptimized;
 @Config
 @Autonomous(group = "drive")
 public class StraightTest extends LinearOpMode {
-    public static double DISTANCE = 60;
+    public static double DISTANCE = 12;
 
     @Override
     public void runOpMode() throws InterruptedException {

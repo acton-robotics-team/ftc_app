@@ -25,6 +25,11 @@ public class ManualMecanumDrive extends LinearOpMode {
 //            double Y2 = -gamepad1.left_stick_y; // Y2 is not used at present
         double X2 = gamepad1.right_stick_x;
 
+        if (gamepad1.left_trigger > 0) {
+            // Brakes
+            X1 = X2 = Y1 = 0;
+        }
+
         // Forward/back movement
         LF += Y1;
         RF += Y1;
@@ -91,8 +96,8 @@ public class ManualMecanumDrive extends LinearOpMode {
     }
 
     private void runFoundation() {
-        hw.leftFoundation.setPosition(gamepad1.left_trigger);
-        hw.rightFoundation.setPosition(gamepad1.left_trigger);
+        hw.leftFoundation.setPosition(gamepad1.right_trigger);
+        hw.rightFoundation.setPosition(gamepad1.right_trigger);
     }
 
     private void runCapstone() {
@@ -104,7 +109,7 @@ public class ManualMecanumDrive extends LinearOpMode {
     }
 
     private void runLed() {
-        hw.led.setPower(gamepad1.right_trigger * 0.3);
+        hw.led.setPower(gamepad1.left_trigger * 0.3);
     }
 
     @Override
@@ -121,6 +126,7 @@ public class ManualMecanumDrive extends LinearOpMode {
             runMecanumDrive();
             runArm();
             runFoundation();
+            runCapstone();
             runLed();
             telemetry.addData("Right tracking wheel", hw.rightTrackingWheel.getCurrentPosition());
             telemetry.addData("Middle tracking wheel", hw.middleTrackingWheel.getCurrentPosition());

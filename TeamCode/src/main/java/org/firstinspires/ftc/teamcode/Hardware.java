@@ -45,7 +45,8 @@ public class Hardware {
         backRightDrive = hwMap.dcMotor.get("back_right");
         rightTrackingWheel = hwMap.dcMotor.get("right_tracking");
         middleTrackingWheel = backRightDrive;
-        leftTrackingWheel = backLeftDrive;
+        leftTrackingWheel = hwMap.dcMotor.get("left_tracking");
+        leftTrackingWheel.setDirection(DcMotorSimple.Direction.REVERSE);
 
         arm = hwMap.get(DcMotorEx.class, "arm");
         clawPivot = hwMap.servo.get("pivot");
@@ -57,7 +58,6 @@ public class Hardware {
         capstone = hwMap.servo.get("capstone");
 
         rightFoundation.setDirection(Servo.Direction.REVERSE);
-        capstone.scaleRange(0.5, 1);
 
         for (DcMotor motor : Arrays.asList(
                 frontLeftDrive, frontRightDrive,
