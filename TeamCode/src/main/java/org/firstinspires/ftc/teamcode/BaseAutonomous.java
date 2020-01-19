@@ -133,29 +133,33 @@ public abstract class BaseAutonomous extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        initVuforia();
-        initTfod();
-        tfod.activate();
+//        initVuforia();
+//        initTfod();
+//        tfod.activate();
         hw = new Hardware(hardwareMap);
         drive = new MecanumDriveREVOptimized(hardwareMap);
         drive.setPoseEstimate(mirror(-36, -66, Math.toRadians(90)));
 
-        SkystoneLocation stoneLocation = null;
-        while (!opModeIsActive() && !isStopRequested()) {
-            SkystoneLocation newLocation = detectSkystone();
-            if (newLocation != null) {
-                stoneLocation = newLocation;
-            }
+//        SkystoneLocation stoneLocation = null;
+//        while (!opModeIsActive() && !isStopRequested()) {
+//            SkystoneLocation newLocation = detectSkystone();
+//            if (newLocation != null) {
+//                stoneLocation = newLocation;
+//            }
+//
+//            telemetry.addData("Status", "Initialized");
+//            telemetry.addData("Skystone location", stoneLocation);
+//            telemetry.update();
+//        }
+//
+//        if (stoneLocation == null) {
+//            // Whatever, just go for the left
+//            stoneLocation = SkystoneLocation.LEFT;
+//        }
 
-            telemetry.addData("Status", "Initialized");
-            telemetry.addData("Skystone location", stoneLocation);
-            telemetry.update();
-        }
+        SkystoneLocation stoneLocation = SkystoneLocation.LEFT;
 
-        if (stoneLocation == null) {
-            // Whatever, just go for the left
-            stoneLocation = SkystoneLocation.LEFT;
-        }
+        waitForStart();
 
         hw.arm.setPower(0.2);
         hw.arm.setTargetPosition(Hardware.ARM_LIFT_2);
@@ -179,23 +183,23 @@ public abstract class BaseAutonomous extends LinearOpMode {
         hw.leftClaw.setPosition(Hardware.CLAW_OPEN);
         while (opModeIsActive() && hw.arm.isBusy()) ;
 
-        hw.rightClaw.setPosition(Hardware.CLAW_CLOSED);
-        hw.leftClaw.setPosition(Hardware.CLAW_CLOSED);
-        sleep(500);
-
-        hw.arm.setTargetPosition(Hardware.ARM_LIFT_2);
-        while (opModeIsActive() && hw.arm.isBusy()) ;
-
-        // Travel to foundation
-        drive.followTrajectorySync(drive.trajectoryBuilder()
-                .splineTo(mirror(-36, -50, Math.toRadians(90)))
-                .splineTo(mirror(48, -30, Math.toRadians(90))).build());
-
-        // Release block
-        hw.arm.setTargetPosition(Hardware.ARM_LIFT_1);
-        hw.leftClaw.setPosition(Hardware.CLAW_OPEN);
-        hw.rightClaw.setPosition(Hardware.CLAW_OPEN);
-        sleep(500);
+//        hw.rightClaw.setPosition(Hardware.CLAW_CLOSED);
+//        hw.leftClaw.setPosition(Hardware.CLAW_CLOSED);
+//        sleep(500);
+//
+//        hw.arm.setTargetPosition(Hardware.ARM_LIFT_2);
+//        while (opModeIsActive() && hw.arm.isBusy()) ;
+//
+//        // Travel to foundation
+//        drive.followTrajectorySync(drive.trajectoryBuilder()
+//                .splineTo(mirror(-36, -50, Math.toRadians(90)))
+//                .splineTo(mirror(48, -30, Math.toRadians(90))).build());
+//
+//        // Release block
+//        hw.arm.setTargetPosition(Hardware.ARM_LIFT_1);
+//        hw.leftClaw.setPosition(Hardware.CLAW_OPEN);
+//        hw.rightClaw.setPosition(Hardware.CLAW_OPEN);
+//        sleep(500);
 //
 //        // Go back to get second block
 //        hw.arm.setTargetPosition(Hardware.ARM_LIFT_2);
@@ -230,21 +234,21 @@ public abstract class BaseAutonomous extends LinearOpMode {
 //        hw.rightClaw.setPosition(Hardware.CLAW_OPEN);
 //
 //        // Drag foundation
-        drive.turnSync(Math.toRadians(-90));
-        hw.leftFoundation.setPosition(1);
-        hw.rightFoundation.setPosition(1);
-        sleep(500);
-
-        // Back up and place foundation
-        drive.followTrajectorySync(drive.trajectoryBuilder()
-                .splineTo(mirror(40, -48, Math.toRadians(0))).build());
-
-        // Park under skybridge
-        drive.followTrajectorySync(drive.trajectoryBuilder()
-                .splineTo(mirror(0, -48, Math.toRadians(180))).build());
-
-        if (tfod != null) {
-            tfod.shutdown();
-        }
+//        drive.turnSync(Math.toRadians(-90));
+//        hw.leftFoundation.setPosition(1);
+//        hw.rightFoundation.setPosition(1);
+//        sleep(500);
+//
+//        // Back up and place foundation
+//        drive.followTrajectorySync(drive.trajectoryBuilder()
+//                .splineTo(mirror(40, -48, Math.toRadians(0))).build());
+//
+//        // Park under skybridge
+//        drive.followTrajectorySync(drive.trajectoryBuilder()
+//                .splineTo(mirror(0, -48, Math.toRadians(180))).build());
+//
+//        if (tfod != null) {
+//            tfod.shutdown();
+//        }
     }
 }

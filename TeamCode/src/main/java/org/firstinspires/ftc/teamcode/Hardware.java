@@ -81,7 +81,6 @@ public class Hardware {
 
         rightClaw.setDirection(Servo.Direction.REVERSE);
 
-        leftFoundation.setDirection(Servo.Direction.REVERSE);
         rightFoundation.setDirection(Servo.Direction.REVERSE);
     }
 }

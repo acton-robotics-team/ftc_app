@@ -40,7 +40,6 @@ public abstract class BaseFallbackFoundationAutonomous extends LinearOpMode {
         Hardware hw = new Hardware(hardwareMap);
         drive = new MecanumDriveREVOptimized(hardwareMap);
 
-
         waitForStart();
     }
 }

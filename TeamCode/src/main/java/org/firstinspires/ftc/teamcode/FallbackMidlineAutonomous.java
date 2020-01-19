@@ -29,6 +29,6 @@ public class FallbackMidlineAutonomous extends LinearOpMode {
 
         waitForStart();
 
-        driveDistance(6);
+        driveDistance(24);
     }
 }

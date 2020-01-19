@@ -108,7 +108,7 @@ public class RevereRedAutonomous extends LinearOpMode {
         drive.turnSync(Math.toRadians(-135));
         driveDistance(24 + 6);
         drive.turnSync(Math.toRadians(-20));
-        driveDistance(24 * 1.5);
+        driveDistance(24 * 2);
         drive.turnSync(Math.toRadians(-90));
         driveDistance(24 * 1.7);
 //        hw.armHolder.setPosition(Hardware.ARM_HOLDER_RETRACTED);

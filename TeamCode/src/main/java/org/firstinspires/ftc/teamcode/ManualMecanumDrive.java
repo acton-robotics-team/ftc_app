@@ -128,9 +128,10 @@ public class ManualMecanumDrive extends LinearOpMode {
             runFoundation();
             runCapstone();
             runLed();
-            telemetry.addData("Right tracking wheel", hw.rightTrackingWheel.getCurrentPosition());
-            telemetry.addData("Middle tracking wheel", hw.middleTrackingWheel.getCurrentPosition());
-            telemetry.addData("Left tracking wheel", hw.leftTrackingWheel.getCurrentPosition());
+            telemetry.addData("Back left", hw.backLeftDrive.getCurrentPosition());
+            telemetry.addData("Front left", hw.frontLeftDrive.getCurrentPosition());
+            telemetry.addData("Back right", hw.backRightDrive.getCurrentPosition());
+            telemetry.addData("Front right", hw.frontRightDrive.getCurrentPosition());
             telemetry.update();
         }
     }
