@@ -5,8 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.drive.mecanum.MecanumDriveREVOptimized;
 
-@Autonomous(name = "Fallback autonomous")
-public class FallbackAutonomous extends LinearOpMode {
+@Autonomous(name = "Fallback midline autonomous")
+public class FallbackMidlineAutonomous extends LinearOpMode {
     private MecanumDriveREVOptimized drive;
 
     private void driveDistance(double in) {
@@ -25,9 +25,10 @@ public class FallbackAutonomous extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Hardware hw = new Hardware(hardwareMap);
         drive = new MecanumDriveREVOptimized(hardwareMap);
+
         waitForStart();
-        driveDistance(12);
+
+        driveDistance(6);
     }
 }

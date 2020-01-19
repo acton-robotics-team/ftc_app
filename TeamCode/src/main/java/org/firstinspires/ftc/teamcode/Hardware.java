@@ -63,7 +63,7 @@ public class Hardware {
                 frontLeftDrive, frontRightDrive,
                 backLeftDrive, backRightDrive, arm)) {
             motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
 
@@ -80,5 +80,8 @@ public class Hardware {
         backRightDrive.setDirection(DcMotorSimple.Direction.REVERSE);
 
         rightClaw.setDirection(Servo.Direction.REVERSE);
+
+        leftFoundation.setDirection(Servo.Direction.REVERSE);
+        rightFoundation.setDirection(Servo.Direction.REVERSE);
     }
 }

@@ -32,7 +32,7 @@ public class DriveConstants {
      * Set the first flag appropriately. If using the built-in motor velocity PID, update
      * MOTOR_VELO_PID with the tuned coefficients from DriveVelocityPIDTuner.
      */
-    public static final boolean RUN_USING_ENCODER = false;
+    public static final boolean RUN_USING_ENCODER = true;
 //    public static final PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(30, 0.5, 8);
     public static final PIDCoefficients MOTOR_VELO_PID = null;
 
@@ -46,7 +46,7 @@ public class DriveConstants {
      */
     public static double WHEEL_RADIUS = 1.932; // 50 mm
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (motor) speed
-    public static double TRACK_WIDTH = 10.5; // from TrackWidthTuner
+    public static double TRACK_WIDTH = 9.04; // from TrackWidthTuner
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using

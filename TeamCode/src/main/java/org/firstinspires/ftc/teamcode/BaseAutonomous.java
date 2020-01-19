@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.vuforia.CameraDevice;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
@@ -78,8 +77,6 @@ public abstract class BaseAutonomous extends LinearOpMode {
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
-        // Turn on flash
-        CameraDevice.getInstance().setFlashTorchMode(true);
     }
 
     /**
@@ -174,24 +171,26 @@ public abstract class BaseAutonomous extends LinearOpMode {
             stoneLocation = SkystoneLocation.LEFT;
         }
 
-        hw.arm.setPower(0.75);
+        hw.arm.setPower(0.2);
         hw.arm.setTargetPosition(Hardware.ARM_LIFT_2);
 
         switch (stoneLocation) {
             case RIGHT:
                 drive.followTrajectorySync(drive.trajectoryBuilder()
-                        .splineTo(mirror(-28, -30, Math.toRadians(90))).build());
+                        .splineTo(mirror(-28, -40, Math.toRadians(90))).build());
                 break;
             case MIDDLE:
                 drive.followTrajectorySync(drive.trajectoryBuilder()
-                        .splineTo(mirror(-36, -30, Math.toRadians(90))).build());
+                        .splineTo(mirror(-36, -40, Math.toRadians(90))).build());
                 break;
             case LEFT:
                 drive.followTrajectorySync(drive.trajectoryBuilder()
-                        .splineTo(mirror(-44, -30, Math.toRadians(90))).build());
+                        .splineTo(mirror(-44, -40, Math.toRadians(90))).build());
                 break;
         }
         hw.arm.setTargetPosition(Hardware.ARM_GRAB);
+        hw.rightClaw.setPosition(Hardware.CLAW_OPEN);
+        hw.leftClaw.setPosition(Hardware.CLAW_OPEN);
         while (opModeIsActive() && hw.arm.isBusy()) ;
 
         hw.rightClaw.setPosition(Hardware.CLAW_CLOSED);
@@ -199,9 +198,11 @@ public abstract class BaseAutonomous extends LinearOpMode {
         sleep(500);
 
         hw.arm.setTargetPosition(Hardware.ARM_LIFT_2);
+        while (opModeIsActive() && hw.arm.isBusy()) ;
 
         // Travel to foundation
         drive.followTrajectorySync(drive.trajectoryBuilder()
+                .splineTo(mirror(-36, -50, Math.toRadians(90)))
                 .splineTo(mirror(48, -30, Math.toRadians(90))).build());
 
         // Release block
@@ -209,40 +210,41 @@ public abstract class BaseAutonomous extends LinearOpMode {
         hw.leftClaw.setPosition(Hardware.CLAW_OPEN);
         hw.rightClaw.setPosition(Hardware.CLAW_OPEN);
         sleep(500);
-
-        // Go back to get second block
-        hw.arm.setTargetPosition(Hardware.ARM_LIFT_2);
-        switch (stoneLocation) {
-            case RIGHT:
-                drive.followTrajectorySync(drive.trajectoryBuilder()
-                        .splineTo(mirror(-52, -30, Math.toRadians(90))).build());
-                break;
-            case MIDDLE:
-                drive.followTrajectorySync(drive.trajectoryBuilder()
-                        .splineTo(mirror(-60, -30, Math.toRadians(90))).build());
-                break;
-            case LEFT:
-                drive.followTrajectorySync(drive.trajectoryBuilder()
-                        .splineTo(mirror(-68, -30, Math.toRadians(90))).build());
-                break;
-        }
-        hw.arm.setTargetPosition(Hardware.ARM_GRAB);
-        while (opModeIsActive() && hw.arm.isBusy()) ;
-
-        hw.rightClaw.setPosition(Hardware.CLAW_CLOSED);
-        hw.leftClaw.setPosition(Hardware.CLAW_CLOSED);
-        sleep(500);
-
-        // Go to foundation and drop
-        drive.followTrajectorySync(drive.trajectoryBuilder()
-                .splineTo(mirror(48, -30, Math.toRadians(90))).build());
-
-        // Release block
-        hw.arm.setTargetPosition(Hardware.ARM_LIFT_1);
-        hw.leftClaw.setPosition(Hardware.CLAW_OPEN);
-        hw.rightClaw.setPosition(Hardware.CLAW_OPEN);
-
-        // Drag foundation
+//
+//        // Go back to get second block
+//        hw.arm.setTargetPosition(Hardware.ARM_LIFT_2);
+//        switch (stoneLocation) {
+//            case RIGHT:
+//                drive.followTrajectorySync(drive.trajectoryBuilder()
+//                        .splineTo(mirror(-52, -30, Math.toRadians(90))).build());
+//                break;
+//            case MIDDLE:
+//                drive.followTrajectorySync(drive.trajectoryBuilder()
+//                        .splineTo(mirror(-60, -30, Math.toRadians(90))).build());
+//                break;
+//            case LEFT:
+//                drive.followTrajectorySync(drive.trajectoryBuilder()
+//                        .splineTo(mirror(-68, -30, Math.toRadians(90))).build());
+//                break;
+//        }
+//        hw.arm.setTargetPosition(Hardware.ARM_GRAB);
+//        while (opModeIsActive() && hw.arm.isBusy()) ;
+//
+//        hw.rightClaw.setPosition(Hardware.CLAW_CLOSED);
+//        hw.leftClaw.setPosition(Hardware.CLAW_CLOSED);
+//        sleep(500);
+//
+//        // Go to foundation and drop
+//        drive.followTrajectorySync(drive.trajectoryBuilder()
+//                .splineTo(mirror(48, -30, Math.toRadians(90))).build());
+//
+//        // Release block
+//        hw.arm.setTargetPosition(Hardware.ARM_LIFT_1);
+//        hw.leftClaw.setPosition(Hardware.CLAW_OPEN);
+//        hw.rightClaw.setPosition(Hardware.CLAW_OPEN);
+//
+//        // Drag foundation
+        drive.turnSync(Math.toRadians(-90));
         hw.leftFoundation.setPosition(1);
         hw.rightFoundation.setPosition(1);
         sleep(500);

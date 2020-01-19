@@ -1,11 +1,5 @@
 package org.firstinspires.ftc.teamcode.drive.mecanum;
 
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.BASE_CONSTRAINTS;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.TRACK_WIDTH;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kA;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kStatic;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
@@ -26,10 +20,17 @@ import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints;
 import com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints;
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.hardware.DcMotor;
+
 import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.BASE_CONSTRAINTS;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.TRACK_WIDTH;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kA;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kStatic;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
 
 /*
  * Base class with shared functionality for sample mecanum drives. All hardware-specific details are
@@ -37,8 +38,8 @@ import java.util.List;
  */
 @Config
 public abstract class SampleMecanumDriveBase extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(2, 0, 0.5);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(4, 0, 0.6);
 
 
     public enum Mode {
